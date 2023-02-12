@@ -1,13 +1,18 @@
 import Layout from "@/components/layout";
 import type { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
+import bg from "public/homebg.avif";
 
 const Signup: NextPage = () => {
   return (
     <Layout title="Sign up" hasTabBar>
-      <div className="h-screen w-full bg-gray-100 px-4 py-20">
+      <div className=" absolute -z-10 box-content h-96">
+        <Image src={bg} alt="Background" />
+      </div>
+      <div className="h-screen w-full px-4 py-20">
         <div className="mx-auto mt-14 max-w-lg rounded-3xl bg-white p-10 pb-14 shadow-lg">
           <svg
             className="mx-auto"
