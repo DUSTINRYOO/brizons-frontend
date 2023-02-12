@@ -10,8 +10,10 @@ import bg from "public/homebg.avif";
 const Signup: NextPage = () => {
   return (
     <Layout title="Log in" hasTabBar>
-      <div className=" absolute -z-10 box-content h-96">
-        <Image src={bg} alt="Background" />
+      <div className=" absolute -z-10 h-[115rem] w-screen overflow-hidden">
+        <div className="min relative h-[115rem] w-full min-w-[80rem] bg-slate-600">
+          <Image src={bg} alt="Background" fill />
+        </div>
       </div>
       <div className="h-screen w-full px-4 py-20">
         <div className="mx-auto mt-14 max-w-lg rounded-3xl bg-white p-10 pb-14 shadow-lg">
@@ -50,8 +52,8 @@ const Signup: NextPage = () => {
           <h3 className="text-md text-center font-bold text-gray-700">
             Broaden your horizons
           </h3>
-          <div className="mt-4 px-4">
-            <form className="mx-auto mt-6 flex w-80 flex-col space-y-4">
+          <div className="mt-4 px-4 max-sm:px-0 ">
+            <form className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 ">
               <Input name="username" label="Username" type="text" required />
               <Input
                 name="password"

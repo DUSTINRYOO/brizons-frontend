@@ -13,8 +13,10 @@ import Image from "next/image";
 const Home: NextPage = () => {
   return (
     <Layout title="Home" hasTabBar>
-      <div className=" absolute -z-10 box-content h-96">
-        <Image src={bg} alt="Background" />
+      <div className=" absolute -z-10 h-[115rem] w-screen overflow-hidden">
+        <div className="min relative h-[115rem] w-full min-w-[80rem] bg-slate-600">
+          <Image src={bg} alt="Background" fill />
+        </div>
       </div>
       <div className="h-screen w-full py-20">
         <div className="rounded-4xl mx-auto mt-0  h-screen max-w-6xl  p-10 pb-14 shadow-lg">
@@ -24,17 +26,17 @@ const Home: NextPage = () => {
           <h3 className="mt-4 text-center text-2xl font-bold text-gray-100">
             A portfolio-based archive service for everything in life.
           </h3>
-          <div className=" mt-8 grid grid-cols-4 items-center gap-6 ">
-            <div className="relative h-[27rem] w-full  overflow-hidden rounded-2xl">
+          <div className=" mt-8 grid grid-cols-2 items-center gap-6 sm:grid-cols-3 lg:grid-cols-4 ">
+            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam1} alt="Background" fill />
             </div>
-            <div className="relative h-[27rem] w-full  overflow-hidden rounded-2xl">
+            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam2} alt="Background" fill />
             </div>
-            <div className="relative h-[27rem] w-full  overflow-hidden rounded-2xl">
+            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam3} alt="Background" fill />
             </div>
-            <div className="relative h-[27rem] w-full  overflow-hidden rounded-2xl">
+            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam4} alt="Background" fill />
             </div>
           </div>

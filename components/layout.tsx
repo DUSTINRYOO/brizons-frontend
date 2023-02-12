@@ -24,7 +24,7 @@ export default function Layout({
     <div>
       <div>{children}</div>
       {hasTabBar ? (
-        <nav className="fixed top-0 flex h-14 w-full justify-between border-b bg-white px-20 pb-3 pt-3 text-xs text-gray-800 shadow-md">
+        <nav className="fixed top-0 flex h-14 w-full justify-between border-b bg-white px-20 py-3 text-xs text-gray-800 shadow-md max-md:pl-0 max-md:pr-4">
           <Link legacyBehavior href="/">
             <a className={cls("flex flex-col items-center justify-center ")}>
               <svg
@@ -65,7 +65,7 @@ export default function Layout({
             <Link legacyBehavior href="/">
               <a
                 className={cls(
-                  "ml-4 flex items-center justify-center text-xl font-extrabold ",
+                  "ml-4 flex items-center justify-center text-xl font-extrabold max-md:invisible max-md:m-0 max-md:text-sm",
                   router.pathname === "/"
                     ? "text-red-500"
                     : "transition-colors hover:text-red-500"
@@ -77,7 +77,7 @@ export default function Layout({
             <Link legacyBehavior href="/about">
               <a
                 className={cls(
-                  "ml-4 flex items-center justify-center text-xl font-extrabold ",
+                  "ml-4 flex items-center justify-center text-xl font-extrabold max-md:invisible max-md:m-0 max-md:text-sm",
                   router.pathname === "/about"
                     ? "text-red-500"
                     : "transition-colors hover:text-red-500"
@@ -90,7 +90,7 @@ export default function Layout({
             <Link legacyBehavior href="/login">
               <a
                 className={cls(
-                  "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-xl font-extrabold  text-gray-100",
+                  "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
                   router.pathname === "/login"
                     ? "text-red-500"
                     : "transition-all hover:scale-105 "
@@ -102,7 +102,7 @@ export default function Layout({
             <Link legacyBehavior href="/signup">
               <a
                 className={cls(
-                  "ml-4 flex items-center justify-center text-xl font-extrabold",
+                  "ml-4 flex items-center justify-center text-center text-xl font-extrabold",
                   router.pathname === "/signup"
                     ? "text-red-500"
                     : "transition-colors hover:text-red-500"
