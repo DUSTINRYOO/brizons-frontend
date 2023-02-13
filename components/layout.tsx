@@ -92,7 +92,7 @@ export default function Layout({
                 className={cls(
                   "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
                   router.pathname === "/login"
-                    ? "text-red-500"
+                    ? "text-gray-100"
                     : "transition-all hover:scale-105 "
                 )}
               >

@@ -5,13 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
-import bg from "public/homebg.avif";
+import bg from "public/homebg.png";
 
 const Signup: NextPage = () => {
   return (
     <Layout title="Log in" hasTabBar>
-      <div className=" absolute -z-10 h-[115rem] w-screen overflow-hidden">
-        <div className="min relative h-[115rem] w-full min-w-[80rem] bg-slate-600">
+      <div className=" absolute -z-10 h-screen w-screen overflow-hidden bg-black opacity-90">
+        <div className="relative mx-auto h-screen w-full min-w-[80rem] max-w-[80rem] bg-slate-600">
           <Image src={bg} alt="Background" fill />
         </div>
       </div>
