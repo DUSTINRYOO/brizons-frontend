@@ -49,8 +49,8 @@ const Home: NextPage = () => {
         </div>
         <Homepage
           bgColor="bg-red-500"
-          pageTitle="Search"
-          pageDescription="what you want"
+          pageTitle="Draw whatever you are into now!"
+          pageDescription="Visualize your progress of what you are doing!   Collect everything you love! and Be who you want to be!"
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
             <Image src={exam3} alt="Background" fill />
@@ -58,8 +58,8 @@ const Home: NextPage = () => {
         </Homepage>
         <Homepage
           bgColor="bg-black"
-          pageTitle="Search"
-          pageDescription="what you want"
+          pageTitle="Share your things!"
+          pageDescription="Experience, knowledge and knowhow... Also get more things from other people for what you want to try"
           reverse
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
@@ -68,8 +68,8 @@ const Home: NextPage = () => {
         </Homepage>
         <Homepage
           bgColor="bg-white"
-          pageTitle="Search"
-          pageDescription="what you want"
+          pageTitle="Big data hub!"
+          pageDescription="With various records and results people share for specific subjects, you can easily try or challange something you really want  "
           textColor="text-black"
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
