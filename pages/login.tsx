@@ -1,13 +1,48 @@
 import Layout from "@/components/layout";
-import { cls } from "@/libs/utils";
 import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
 import bg from "public/homebg.png";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { gql, useMutation } from "@apollo/client";
 
-const Signup: NextPage = () => {
+const LOGIN_MUTATION = gql`
+  mutation LoginMutation($username: String!, $password: String!) {
+    login(input: { username: $username, password: $password }) {
+      ok
+      token
+      error
+    }
+  }
+`;
+
+type loginForm = {
+  username: string;
+  password: string;
+};
+
+const Login: NextPage = () => {
+  const router = useRouter();
+  const [loginMutation, { loading, error, data }] = useMutation(LOGIN_MUTATION);
+  const onValid = async (data: loginForm) => {
+    loginMutation({
+      variables: {
+        username: data.username,
+        password: data.password,
+      },
+    });
+  };
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    formState: { errors },
+  } = useForm<loginForm>();
+  const onSubmit: SubmitHandler<loginForm> = (data) => onValid(data);
+
   return (
     <Layout title="Log in" hasTabBar>
       <div className=" absolute -z-10 h-screen w-screen overflow-hidden bg-black opacity-90">
@@ -53,14 +88,28 @@ const Signup: NextPage = () => {
             Broaden your horizons
           </h3>
           <div className="mt-4 px-4 max-sm:px-0 ">
-            <form className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 ">
-              <Input name="username" label="Username" type="text" required />
+            <form
+              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <Input
-                name="password"
+                label="Username"
+                type="text"
+                required
+                {...register("username", { required: true })}
+              />
+              {/*        {errors.username && (
+                <span>Don't forget to add your username.</span>
+              )} */}
+              <Input
                 label="Password"
                 type="password"
                 required
+                {...register("password", { required: true })}
               />
+              {/*     {errors.password && (
+                <span>Don't forget to add your username.</span>
+              )} */}
               <Link legacyBehavior href="/forgot">
                 <a className="w-fit border-b-2 border-gray-500 text-sm font-bold text-gray-700">
                   <span>Forgot your password?</span>
@@ -115,4 +164,4 @@ const Signup: NextPage = () => {
     </Layout>
   );
 };
-export default Signup;
+export default Login;
