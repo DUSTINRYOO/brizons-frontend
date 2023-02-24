@@ -8,10 +8,13 @@ import bg from "public/homebg.png";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { gql, useMutation } from "@apollo/client";
+import { LoginInput, LoginOutput } from "@/src/gql/graphql";
+import { watch } from "fs";
+import { getVariableValues } from "graphql";
 
 const LOGIN_MUTATION = gql`
-  mutation LoginMutation($username: String!, $password: String!) {
-    login(input: { username: $username, password: $password }) {
+  mutation LoginMutation($loginInput: LoginInput!) {
+    login(input: $loginInput) {
       ok
       token
       error
@@ -26,22 +29,35 @@ type loginForm = {
 
 const Login: NextPage = () => {
   const router = useRouter();
-  const [loginMutation, { loading, error, data }] = useMutation(LOGIN_MUTATION);
-  const onValid = async (data: loginForm) => {
+  const onCompleted = (data: LoginOutput) => {
+    const { error, ok, token } = data;
+    if (ok) {
+      console.log(token);
+    }
+  };
+
+  const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
+    LoginOutput,
+    LoginInput
+  >(LOGIN_MUTATION, {
+    onCompleted,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<loginForm>();
+  const onSubmit: SubmitHandler<loginForm> = (data) => {
+    console.log("He");
     loginMutation({
       variables: {
         username: data.username,
         password: data.password,
       },
     });
+    return;
   };
-  const {
-    register,
-    handleSubmit,
-    resetField,
-    formState: { errors },
-  } = useForm<loginForm>();
-  const onSubmit: SubmitHandler<loginForm> = (data) => onValid(data);
 
   return (
     <Layout title="Log in" hasTabBar>
@@ -89,14 +105,15 @@ const Login: NextPage = () => {
           </h3>
           <div className="mt-4 px-4 max-sm:px-0 ">
             <form
-              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72"
               onSubmit={handleSubmit(onSubmit)}
             >
               <Input
                 label="Username"
                 type="text"
+                name="username"
                 required
-                {...register("username", { required: true })}
+                register={register("username", { required: true })}
               />
               {/*        {errors.username && (
                 <span>Don't forget to add your username.</span>
@@ -104,8 +121,9 @@ const Login: NextPage = () => {
               <Input
                 label="Password"
                 type="password"
+                name="password"
                 required
-                {...register("password", { required: true })}
+                register={register("password", { required: true })}
               />
               {/*     {errors.password && (
                 <span>Don't forget to add your username.</span>
