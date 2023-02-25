@@ -14,8 +14,8 @@ const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
-      token
       error
+      token
     }
   }
 `;
@@ -25,22 +25,24 @@ type loginForm = {
   password: string;
 };
 
+interface loginMutation {
+  login: LoginOutput;
+}
+
 const Login: NextPage = () => {
   const router = useRouter();
-  const onCompleted = (data: LoginOutput) => {
-    console.log(data);
-    const { error, ok, token } = data;
+  const onCompleted = (data: loginMutation) => {
+    const {
+      login: { error, ok, token },
+    } = data;
     if (ok) {
       console.log(token);
     }
+    console.log(error);
   };
 
-  const [loginMutation, { data: loginMutationResult, loading }] = useMutation<
-    LoginOutput,
-    LoginInput
-  >(LOGIN_MUTATION, {
-    onCompleted,
-  });
+  const [loginMutation, { data: loginMutationResult, loading, error }] =
+    useMutation(LOGIN_MUTATION, { onCompleted });
 
   const {
     register,
@@ -49,12 +51,12 @@ const Login: NextPage = () => {
   } = useForm<loginForm>();
   const onSubmit = (data: LoginInput) => {
     if (!loading) {
-      console.log(data);
-      console.log(loginMutationResult);
       loginMutation({
         variables: {
-          username: data.username,
-          password: data.password,
+          loginInput: {
+            username: data.username,
+            password: data.password,
+          },
         },
       });
     }
