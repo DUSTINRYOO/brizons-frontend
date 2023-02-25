@@ -34,7 +34,7 @@ const Signup: NextPage = () => {
               x2="101.072"
               y2="50.9476"
               stroke="#ef4444"
-              stroke-width="12"
+              strokeWidth="12"
             />
             <line
               x1="50.7574"
@@ -42,7 +42,7 @@ const Signup: NextPage = () => {
               x2="88.5876"
               y2="38.4038"
               stroke="#ef4444"
-              stroke-width="12"
+              strokeWidth="12"
             />
           </svg>
           <h3 className="mt-4 text-center text-3xl font-bold">
@@ -53,7 +53,7 @@ const Signup: NextPage = () => {
           </h3>
           <div className="mt-4 px-4 max-sm:px-0 ">
             <form className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 ">
-              <Input name="username" label="Username" type="text" required />
+              {/*     <Input name="username" label="Username" type="text" required />
               <Input
                 name="password"
                 label="Password"
@@ -61,7 +61,7 @@ const Signup: NextPage = () => {
                 required
               />
               <Input name="email" label="Email" type="email" required />
-
+ */}
               <Button text={"Create an Account"} />
             </form>
             <Link legacyBehavior href="/login">

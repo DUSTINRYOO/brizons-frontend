@@ -9,11 +9,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { gql, useMutation } from "@apollo/client";
 import { LoginInput, LoginOutput } from "@/src/gql/graphql";
-import { watch } from "fs";
-import { getVariableValues } from "graphql";
 
 const LOGIN_MUTATION = gql`
-  mutation LoginMutation($loginInput: LoginInput!) {
+  mutation loginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
       token
@@ -30,6 +28,7 @@ type loginForm = {
 const Login: NextPage = () => {
   const router = useRouter();
   const onCompleted = (data: LoginOutput) => {
+    console.log(data);
     const { error, ok, token } = data;
     if (ok) {
       console.log(token);
@@ -48,15 +47,17 @@ const Login: NextPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<loginForm>();
-  const onSubmit: SubmitHandler<loginForm> = (data) => {
-    console.log("He");
-    loginMutation({
-      variables: {
-        username: data.username,
-        password: data.password,
-      },
-    });
-    return;
+  const onSubmit = (data: LoginInput) => {
+    if (!loading) {
+      console.log(data);
+      console.log(loginMutationResult);
+      loginMutation({
+        variables: {
+          username: data.username,
+          password: data.password,
+        },
+      });
+    }
   };
 
   return (
@@ -86,7 +87,7 @@ const Login: NextPage = () => {
               x2="101.072"
               y2="50.9476"
               stroke="#ef4444"
-              stroke-width="12"
+              strokeWidth="12"
             />
             <line
               x1="50.7574"
@@ -94,7 +95,7 @@ const Login: NextPage = () => {
               x2="88.5876"
               y2="38.4038"
               stroke="#ef4444"
-              stroke-width="12"
+              strokeWidth="12"
             />
           </svg>
           <h3 className="mt-4 text-center text-3xl font-bold">
@@ -105,25 +106,25 @@ const Login: NextPage = () => {
           </h3>
           <div className="mt-4 px-4 max-sm:px-0 ">
             <form
-              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72"
               onSubmit={handleSubmit(onSubmit)}
+              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72"
             >
               <Input
                 label="Username"
-                type="text"
                 name="username"
+                type="text"
                 required
-                register={register("username", { required: true })}
+                register={register("username")}
               />
               {/*        {errors.username && (
                 <span>Don't forget to add your username.</span>
               )} */}
               <Input
                 label="Password"
-                type="password"
                 name="password"
+                type="password"
                 required
-                register={register("password", { required: true })}
+                register={register("password")}
               />
               {/*     {errors.password && (
                 <span>Don't forget to add your username.</span>

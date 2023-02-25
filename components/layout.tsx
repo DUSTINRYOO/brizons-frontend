@@ -48,7 +48,7 @@ export default function Layout({
                   x2="101.072"
                   y2="52.9476"
                   stroke="#ef4444"
-                  stroke-width="12"
+                  strokeWidth="12"
                 />
                 <line
                   x1="50.7574"
@@ -56,7 +56,7 @@ export default function Layout({
                   x2="88.5876"
                   y2="40.4038"
                   stroke="#ef4444"
-                  stroke-width="12"
+                  strokeWidth="12"
                 />
               </svg>
             </a>
