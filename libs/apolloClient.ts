@@ -1,7 +1,8 @@
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache, makeVar } from "@apollo/client";
 import { useMemo } from "react";
 
 let apolloClient: any;
+export const isLoggedInVar = makeVar(false);
 
 function createApolloClient() {
   return new ApolloClient({
@@ -9,7 +10,19 @@ function createApolloClient() {
     link: new HttpLink({
       uri: "http://localhost:4000/graphql",
     }),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            isLoggedIn: {
+              read() {
+                return isLoggedInVar();
+              },
+            },
+          },
+        },
+      },
+    }),
   });
 }
 export function initializeApollo(initialState = Object || null) {

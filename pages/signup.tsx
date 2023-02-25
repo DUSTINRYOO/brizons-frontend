@@ -5,8 +5,69 @@ import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
 import bg from "public/homebg.png";
+import { gql, useMutation } from "@apollo/client";
+import { useForm } from "react-hook-form";
+import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
+import { useRouter } from "next/router";
+
+const CREATE_ACCOUNT_MUTATION = gql`
+  mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
+    createAccount(input: $createAccountInput) {
+      ok
+      error
+    }
+  }
+`;
+
+interface CreateAccountForm {
+  email: string;
+  password: string;
+  username: string;
+}
+
+interface createAccountMutation {
+  createAccount: CreateAccountOutput;
+}
 
 const Signup: NextPage = () => {
+  const router = useRouter();
+  const onCompleted = (data: createAccountMutation) => {
+    const {
+      createAccount: { ok, error },
+    } = data;
+    if (ok) {
+      router.push("/login");
+    }
+  };
+  const [
+    createAccountMutation,
+    { data: createAccountMutationResult, loading, error },
+  ] = useMutation(CREATE_ACCOUNT_MUTATION, {
+    onCompleted,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateAccountForm>({
+    mode: "onChange",
+  });
+
+  const onSubmit = (data: CreateAccountInput) => {
+    if (!loading) {
+      createAccountMutation({
+        variables: {
+          createAccountInput: {
+            email: data.email,
+            password: data.password,
+            username: data.username,
+          },
+        },
+      });
+    }
+  };
+
   return (
     <Layout title="Sign up" hasTabBar>
       <div className=" absolute -z-10 h-screen w-screen overflow-hidden bg-black opacity-90">
@@ -52,16 +113,32 @@ const Signup: NextPage = () => {
             Broaden your horizons
           </h3>
           <div className="mt-4 px-4 max-sm:px-0 ">
-            <form className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 ">
-              {/*     <Input name="username" label="Username" type="text" required />
+            <form
+              className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <Input
-                name="password"
+                label="Username"
+                name="username"
+                type="text"
+                required
+                register={register("username")}
+              />
+              <Input
                 label="Password"
+                name="password"
                 type="password"
                 required
+                register={register("password")}
               />
-              <Input name="email" label="Email" type="email" required />
- */}
+              <Input
+                label="Email"
+                name="email"
+                type="email"
+                required
+                register={register("email")}
+              />
+
               <Button text={"Create an Account"} />
             </form>
             <Link legacyBehavior href="/login">
