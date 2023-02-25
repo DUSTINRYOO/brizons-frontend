@@ -5,12 +5,11 @@ import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
 import bg from "public/homebg.png";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { gql, useMutation } from "@apollo/client";
 import { LoginInput, LoginOutput } from "@/src/gql/graphql";
 import { isLoggedInVar } from "@/libs/apolloClient";
-import { Helmet } from "react-helmet";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -66,9 +65,6 @@ const Login: NextPage = () => {
 
   return (
     <Layout title="Log in" hasTabBar>
-      <Helmet>
-        <title>Login | Brizons</title>
-      </Helmet>
       <div className=" absolute -z-10 h-screen w-screen overflow-hidden bg-black opacity-90">
         <div className="relative mx-auto h-screen w-full min-w-[80rem] max-w-[80rem] bg-slate-600">
           <Image src={bg} alt="Background" fill />

@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { cls } from "../libs/utils";
 import { useRouter } from "next/router";
+import { Helmet } from "react-helmet-async";
 
 interface LayoutProps {
   title?: string;
@@ -22,6 +23,9 @@ export default function Layout({
   };
   return (
     <div>
+      <Helmet>
+        <title>{title} | Brizons</title>
+      </Helmet>
       <div>{children}</div>
       {hasTabBar ? (
         <nav className="fixed top-0 flex h-14 w-full justify-between border-b bg-white px-20 py-3 text-xs text-gray-800 shadow-md max-md:pl-0 max-md:pr-4">
