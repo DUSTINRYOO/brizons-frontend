@@ -5,8 +5,6 @@ import { useMemo } from "react";
 let apolloClient: any;
 export const isLoggedInVar = makeVar(false);
 export const authTokenVar = makeVar("");
-console.log(isLoggedInVar());
-console.log(authTokenVar());
 
 if (typeof window !== "undefined") {
   const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
@@ -14,8 +12,6 @@ if (typeof window !== "undefined") {
     isLoggedInVar(Boolean(token));
     authTokenVar(token);
   }
-  console.log(isLoggedInVar());
-  console.log(authTokenVar());
 }
 
 function createApolloClient() {
