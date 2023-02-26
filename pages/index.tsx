@@ -10,7 +10,9 @@ import exam4 from "public/exam4.png";
 import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
-import { isLoggedInVar } from "@/libs/apolloClient";
+import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
+import { useEffect, useState } from "react";
+import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -24,7 +26,15 @@ const ME_QUERY = gql`
 `;
 const Home: NextPage = () => {
   const { data, loading, error } = useQuery(ME_QUERY);
+  const [token, setToken] = useState<string>();
+  useEffect(() => {
+    const tokenLocal = localStorage.getItem(LOCALSTORAGE_TOKEN);
+    if (tokenLocal) setToken(tokenLocal);
+  });
+  isLoggedInVar(Boolean(token));
+  authTokenVar(token);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const authToken = useReactiveVar(authTokenVar);
   return !isLoggedIn ? (
     <Layout title="Home" hasTabBar>
       <div className=" absolute -z-10 h-auto w-screen overflow-hidden">

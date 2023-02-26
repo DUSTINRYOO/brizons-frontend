@@ -1,18 +1,10 @@
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import { ApolloClient, HttpLink, InMemoryCache, makeVar } from "@apollo/client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 let apolloClient: any;
 export const isLoggedInVar = makeVar(false);
 export const authTokenVar = makeVar("");
-
-if (typeof window !== "undefined") {
-  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
-  if (token) {
-    isLoggedInVar(Boolean(token));
-    authTokenVar(token);
-  }
-}
 
 function createApolloClient() {
   return new ApolloClient({
@@ -63,5 +55,6 @@ export function initializeApollo(initialState = Object || null) {
 }
 export function useApollo(initialState: any) {
   const store = useMemo(() => initializeApollo(initialState), [initialState]);
+
   return store;
 }
