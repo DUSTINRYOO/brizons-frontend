@@ -24,8 +24,20 @@ const ME_QUERY = gql`
     }
   }
 `;
+type meQueryList = {
+  id: string;
+  email: string;
+  username: string;
+  verified: boolean;
+};
+
+interface meQuery {
+  me: meQueryList;
+}
+
 const Home: NextPage = () => {
-  const { data, loading, error } = useQuery(ME_QUERY);
+  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+  console.log(data, loading);
   const [token, setToken] = useState<string>();
   useEffect(() => {
     const tokenLocal = localStorage.getItem(LOCALSTORAGE_TOKEN);
@@ -35,6 +47,9 @@ const Home: NextPage = () => {
   authTokenVar(token);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
+  if (!data || loading || error) {
+    return <div>Loading</div>;
+  }
   return !isLoggedIn ? (
     <Layout title="Home" hasTabBar>
       <div className=" absolute -z-10 h-auto w-screen overflow-hidden">
@@ -111,7 +126,7 @@ const Home: NextPage = () => {
       <div className="h-auto w-full py-20">
         <div className="mx-auto mt-0 h-auto max-w-6xl p-10 pb-14 ">
           <h3 className="mt-4 text-center text-6xl font-bold text-gray-100">
-            ??
+            Hello, {data.me.username}!
           </h3>
           <h3 className="mt-4 text-center text-2xl font-bold text-gray-100">
             A portfolio-based archive service for all you want.
