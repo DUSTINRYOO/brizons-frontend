@@ -42,7 +42,7 @@ const Signup: NextPage = () => {
   const [
     createAccountMutation,
     { data: createAccountMutationResult, loading, error },
-  ] = useMutation(CREATE_ACCOUNT_MUTATION, {
+  ] = useMutation<createAccountMutation>(CREATE_ACCOUNT_MUTATION, {
     onCompleted,
   });
 

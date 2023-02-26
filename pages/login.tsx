@@ -9,7 +9,8 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { gql, useMutation } from "@apollo/client";
 import { LoginInput, LoginOutput } from "@/src/gql/graphql";
-import { isLoggedInVar } from "@/libs/apolloClient";
+import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
+import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -36,13 +37,16 @@ const Login: NextPage = () => {
     const {
       login: { error, ok, token },
     } = data;
-    if (ok) {
+    if (ok && token) {
+      localStorage.setItem(LOCALSTORAGE_TOKEN, token);
       isLoggedInVar(true);
+      authTokenVar(token);
+      router.push("/");
     }
   };
 
   const [loginMutation, { data: loginMutationResult, loading, error }] =
-    useMutation(LOGIN_MUTATION, { onCompleted });
+    useMutation<loginMutation>(LOGIN_MUTATION, { onCompleted });
 
   const {
     register,
