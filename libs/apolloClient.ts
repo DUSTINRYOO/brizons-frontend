@@ -1,31 +1,32 @@
-import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import {
   ApolloClient,
   createHttpLink,
-  HttpLink,
   InMemoryCache,
   makeVar,
 } from "@apollo/client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { setContext } from "@apollo/client/link/context";
+import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 
 let apolloClient: any;
-/* let token: string; */
+
 export const isLoggedInVar = makeVar(false);
 export const authTokenVar = makeVar("");
-/* if (typeof window !== "undefined") {
-  token = localStorage.getItem(LOCALSTORAGE_TOKEN) as string;
-} */
+
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
-  console.log(headers);
+  const token = localStorage.getItem(LOCALSTORAGE_TOKEN);
+  if (token) {
+    isLoggedInVar(Boolean(token));
+    authTokenVar(token);
+  }
   return {
     headers: {
       ...headers,
-      "x-jwt": authTokenVar() || "",
+      "x-jwt": authTokenVar(),
     },
   };
 });
