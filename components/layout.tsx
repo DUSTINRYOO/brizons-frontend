@@ -3,6 +3,9 @@ import Link from "next/link";
 import { cls } from "../libs/utils";
 import { useRouter } from "next/router";
 import { Helmet } from "react-helmet-async";
+import { useReactiveVar } from "@apollo/client";
+import { isLoggedInVar, authTokenVar } from "@/libs/apolloClient";
+import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 
 interface LayoutProps {
   title?: string;
@@ -18,8 +21,13 @@ export default function Layout({
   children,
 }: LayoutProps) {
   const router = useRouter();
-  const onClick = () => {
-    router.back();
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const onClickLogOut = () => {
+    if (isLoggedIn) {
+      localStorage.removeItem(LOCALSTORAGE_TOKEN);
+      isLoggedInVar(false);
+      authTokenVar("");
+    }
   };
   return (
     <div>
@@ -90,19 +98,29 @@ export default function Layout({
                 <span>ABOUT</span>
               </a>
             </Link>
-
-            <Link legacyBehavior href="/login">
-              <a
+            {!isLoggedIn ? (
+              <Link legacyBehavior href="/login">
+                <a
+                  className={cls(
+                    "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
+                    router.pathname === "/login"
+                      ? "text-gray-100"
+                      : "transition-all hover:scale-105 "
+                  )}
+                >
+                  <span>LOG IN</span>
+                </a>
+              </Link>
+            ) : (
+              <button
                 className={cls(
-                  "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
-                  router.pathname === "/login"
-                    ? "text-gray-100"
-                    : "transition-all hover:scale-105 "
+                  "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 transition-all hover:scale-105 "
                 )}
+                onClick={onClickLogOut}
               >
-                <span>LOG IN</span>
-              </a>
-            </Link>
+                LOG OUT
+              </button>
+            )}
             <Link legacyBehavior href="/signup">
               <a
                 className={cls(

@@ -10,9 +10,7 @@ import exam4 from "public/exam4.png";
 import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
-import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
-import { useEffect, useState } from "react";
-import { LOCALSTORAGE_TOKEN } from "@/src/constants";
+import { isLoggedInVar } from "@/libs/apolloClient";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -37,10 +35,8 @@ interface meQuery {
 
 const Home: NextPage = () => {
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
-
   const isLoggedIn = useReactiveVar(isLoggedInVar);
-  const authToken = useReactiveVar(authTokenVar);
-  console.log(data, loading, isLoggedIn, authToken);
+
   if (loading) {
     return <div>Loading</div>;
   }
