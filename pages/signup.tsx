@@ -5,10 +5,13 @@ import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
 import bg from "public/homebg.png";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { isLoggedInVar } from "@/libs/apolloClient";
+import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
@@ -31,6 +34,8 @@ interface createAccountMutation {
 
 const Signup: NextPage = () => {
   const router = useRouter();
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
+  console.log(isLoggedIn);
   const onCompleted = (data: createAccountMutation) => {
     const {
       createAccount: { ok, error },
@@ -67,6 +72,13 @@ const Signup: NextPage = () => {
       });
     }
   };
+  const userRedirect = () => {
+    if (isLoggedIn) router.replace("/");
+  };
+  useEffect(() => {
+    const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
+    if (localToken) userRedirect();
+  }, [isLoggedIn]);
 
   return (
     <Layout title="Sign up" hasTabBar>

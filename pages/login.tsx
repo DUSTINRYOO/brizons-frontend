@@ -7,10 +7,11 @@ import Input from "../components/input";
 import bg from "public/homebg.png";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { LoginInput, LoginOutput } from "@/src/gql/graphql";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
+import { useEffect } from "react";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -33,6 +34,10 @@ interface loginMutation {
 
 const Login: NextPage = () => {
   const router = useRouter();
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const authToken = useReactiveVar(authTokenVar);
+  console.log(authToken);
+  console.log(isLoggedIn);
   const onCompleted = (data: loginMutation) => {
     const {
       login: { error, ok, token },
@@ -66,6 +71,15 @@ const Login: NextPage = () => {
       });
     }
   };
+
+  const userRedirect = () => {
+    if (isLoggedIn) router.replace("/");
+  };
+
+  useEffect(() => {
+    const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
+    if (localToken) userRedirect();
+  }, [isLoggedIn]);
 
   return (
     <Layout title="Log in" hasTabBar>

@@ -121,18 +121,33 @@ export default function Layout({
                 LOG OUT
               </button>
             )}
-            <Link legacyBehavior href="/signup">
-              <a
-                className={cls(
-                  "ml-4 flex items-center justify-center text-center text-xl font-extrabold",
-                  router.pathname === "/signup"
-                    ? "text-red-500"
-                    : "transition-colors hover:text-red-500"
-                )}
-              >
-                <span>SIGN UP</span>
-              </a>
-            </Link>
+            {!isLoggedIn ? (
+              <Link legacyBehavior href="/signup">
+                <a
+                  className={cls(
+                    "ml-4 flex items-center justify-center text-center text-xl font-extrabold",
+                    router.pathname === "/signup"
+                      ? "text-red-500"
+                      : "transition-colors hover:text-red-500"
+                  )}
+                >
+                  <span>SIGN UP</span>
+                </a>
+              </Link>
+            ) : (
+              <Link legacyBehavior href="/profile">
+                <a
+                  className={cls(
+                    "ml-4 flex items-center justify-center text-center text-xl font-extrabold",
+                    router.pathname === "/profile"
+                      ? "text-red-500"
+                      : "transition-colors hover:text-red-500"
+                  )}
+                >
+                  <span>PROFILE</span>
+                </a>
+              </Link>
+            )}
           </div>
         </nav>
       ) : null}
