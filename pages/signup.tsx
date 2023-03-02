@@ -72,12 +72,12 @@ const Signup: NextPage = () => {
       });
     }
   };
-  const userRedirect = () => {
-    if (isLoggedIn) router.replace("/");
-  };
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
-    if (localToken) userRedirect();
+    if (localToken) {
+      isLoggedInVar(true);
+      router.replace("/");
+    }
   }, [isLoggedIn]);
 
   return (

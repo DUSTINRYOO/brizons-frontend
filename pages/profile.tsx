@@ -42,12 +42,11 @@ const Profile: NextPage = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
 
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
-  const userRedirect = () => {
-    if (!isLoggedIn) router.replace("/");
-  };
+
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
-    if (localToken === "") userRedirect();
+    console.log(localToken);
+    if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
   }, [isLoggedIn]);
 
   if (loading) {
