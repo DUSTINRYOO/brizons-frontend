@@ -57,19 +57,34 @@ const Briz: NextPage = () => {
           <div className=" absolute grid aspect-video w-full grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
             {baseGrid.map((id, i) => (
               <div
+                onMouseDown={() => {
+                  console.log("Mouse Down", i);
+                }}
+                onMouseEnter={() => {
+                  console.log("Mount Enter", i);
+                }}
+                onMouseUp={() => {
+                  console.log("Mount Up", i);
+                }}
                 key={i + 1 + ""}
-                className={`z-[-100] col-start-[${
+                className={`z-[100] col-start-[${
                   (i % 24) + 1 + ""
                 }] row-start-[${
                   Math.floor(i / 24 + 1) + ""
-                }] h-full w-full rounded-sm bg-gray-400 opacity-50`}
+                }] active:scale-20 h-full w-full rounded-md bg-gray-500 opacity-20 transition-all hover:opacity-50 active:scale-50 active:rounded-full active:bg-gray-500 active:opacity-100`}
               ></div>
             ))}
           </div>
           <div className="absolute grid aspect-video w-full grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
-            <div className="col-start-[2] col-end-[8] row-start-[3] row-end-[6] bg-slate-700 opacity-50"></div>
-            <div className="col-start-[6] col-end-[16] row-start-[4] row-end-[8] bg-yellow-700 opacity-50"></div>{" "}
-            <div className="col-start-[12] col-end-[22] row-start-[6] row-end-[12] bg-red-700 opacity-50"></div>
+            <div className="col-start-[2] col-end-[8] row-start-[3] row-end-[6] bg-slate-700 text-center text-4xl font-semibold  text-black opacity-50">
+              Let's
+            </div>
+            <div className="col-start-[6] col-end-[16] row-start-[4] row-end-[9] bg-yellow-700 text-center text-4xl font-semibold  text-black opacity-50">
+              Get it!
+            </div>{" "}
+            <div className="col-start-[13] col-end-[23] row-start-[6] row-end-[13] bg-red-700 text-center text-4xl font-semibold  text-black opacity-50">
+              Dustin!
+            </div>
           </div>
         </div>
       </div>
