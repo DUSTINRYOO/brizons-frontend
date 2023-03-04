@@ -37,7 +37,7 @@ export default function Layout({
       </Helmet>
       <div>{children}</div>
       {hasTabBar ? (
-        <nav className="fixed top-0 flex h-14 w-full justify-between border-b bg-white px-20 py-3 text-xs text-gray-800 shadow-md max-md:pl-0 max-md:pr-4">
+        <nav className="fixed top-0 z-[100] flex h-14 w-full justify-between border-b bg-white px-20 py-3 text-xs text-gray-800 shadow-md max-md:pl-0 max-md:pr-4">
           <Link legacyBehavior href="/">
             <a className={cls("flex flex-col items-center justify-center ")}>
               <svg
