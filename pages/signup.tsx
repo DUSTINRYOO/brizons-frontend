@@ -35,7 +35,7 @@ interface createAccountMutation {
 const Signup: NextPage = () => {
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
-  console.log(isLoggedIn);
+
   const onCompleted = (data: createAccountMutation) => {
     const {
       createAccount: { ok, error },

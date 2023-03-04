@@ -37,9 +37,6 @@ const Home: NextPage = () => {
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
-  console.log(authToken);
-  console.log(isLoggedIn);
-
   if (loading) {
     return <div>Loading</div>;
   }

@@ -45,10 +45,8 @@ const Profile: NextPage = () => {
 
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
-    console.log(localToken);
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
   }, [isLoggedIn]);
-
   if (loading) {
     return <div>Loading</div>;
   }

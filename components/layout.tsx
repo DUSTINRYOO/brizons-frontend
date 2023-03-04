@@ -27,6 +27,7 @@ export default function Layout({
       localStorage.removeItem(LOCALSTORAGE_TOKEN);
       isLoggedInVar(false);
       authTokenVar("");
+      router.push("/");
     }
   };
   return (
@@ -114,7 +115,7 @@ export default function Layout({
             ) : (
               <button
                 className={cls(
-                  "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 transition-all hover:scale-105 "
+                  "ml-4 flex items-center justify-center text-center text-xl font-extrabold transition-colors hover:text-red-500"
                 )}
                 onClick={onClickLogOut}
               >
@@ -135,16 +136,16 @@ export default function Layout({
                 </a>
               </Link>
             ) : (
-              <Link legacyBehavior href="/profile">
+              <Link legacyBehavior href="/briz">
                 <a
                   className={cls(
-                    "ml-4 flex items-center justify-center text-center text-xl font-extrabold",
-                    router.pathname === "/profile"
-                      ? "text-red-500"
-                      : "transition-colors hover:text-red-500"
+                    "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
+                    router.pathname === "/briz"
+                      ? "text-gray-100"
+                      : "transition-all hover:scale-105 "
                   )}
                 >
-                  <span>PROFILE</span>
+                  <span>BRIZ</span>
                 </a>
               </Link>
             )}
