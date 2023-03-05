@@ -151,7 +151,7 @@ const Briz: NextPage = () => {
             ))}
           </div>
           <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
-            {/*      <div className=" col-start-[2] col-end-[8] row-start-[3] row-end-[6] rounded-xl bg-blue-500 text-center text-6xl font-semibold  text-white">
+            <div className=" col-start-[2] col-end-[8] row-start-[3] row-end-[6] rounded-xl bg-blue-500 text-center text-6xl font-semibold  text-white">
               Let's
             </div>
             <div className=" col-start-[6] col-end-[16] row-start-[4] row-end-[8] rounded-xl bg-yellow-500 text-center text-6xl font-semibold text-white ">
@@ -159,7 +159,7 @@ const Briz: NextPage = () => {
             </div>
             <div className=" col-start-[13] col-end-[24] row-start-[6] row-end-[11] rounded-xl bg-red-500 text-center text-6xl font-semibold  text-white ">
               Dustin!
-            </div> */}
+            </div>
           </div>
         </div>
         <AnimatePresence>
@@ -172,14 +172,11 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-1/2 z-[115] mt-4 max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-14 opacity-0 shadow-lg"
+                className=" absolute  left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
                 <h3 className="text-center text-3xl font-bold">New Briz</h3>
-                <h3 className="text-md text-center font-bold text-gray-700">
-                  Broaden your horizons
-                </h3>
                 <div className="mt-4 px-4 max-sm:px-0 ">
                   <form
                     className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
@@ -192,6 +189,7 @@ const Briz: NextPage = () => {
                       required
                       register={register("thumbUrl")}
                     />
+
                     <Input
                       label="Title"
                       name="title"
@@ -203,9 +201,8 @@ const Briz: NextPage = () => {
                     <Input
                       label="Description"
                       name="description"
-                      type="text"
+                      type="textarea"
                       placeholder="Write a description"
-                      textarea
                       required
                       register={register("description")}
                     />
