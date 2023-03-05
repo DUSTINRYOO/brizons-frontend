@@ -1,3 +1,4 @@
+import { cls } from "@/libs/utils";
 import React from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
@@ -5,6 +6,8 @@ interface InputProps {
   label: string;
   name: string;
   type: string;
+  placeholder?: string;
+  textarea?: boolean;
   register: UseFormRegisterReturn;
   required: boolean;
 }
@@ -14,6 +17,8 @@ export default function Input({
   name,
   register,
   type,
+  placeholder,
+  textarea = false,
   required,
 }: InputProps) {
   return (
@@ -29,8 +34,12 @@ export default function Input({
           id={name}
           required={required}
           type={type}
+          placeholder={placeholder}
           {...register}
-          className="w-full appearance-none rounded-xl border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-red-500 focus:outline-none focus:ring-red-500"
+          className={cls(
+            "w-full appearance-none rounded-xl border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-red-500 focus:outline-none focus:ring-red-500",
+            textarea ? "h-24" : ""
+          )}
         />
       </div>
     </div>
