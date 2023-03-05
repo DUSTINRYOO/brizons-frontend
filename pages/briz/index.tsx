@@ -11,6 +11,7 @@ import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import { CreateAccountInput } from "@/src/gql/graphql";
+import { cls } from "@/libs/utils";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -48,8 +49,13 @@ const Briz: NextPage = () => {
   const baseGrid = [...Array(24 * 14)];
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
-  const [grid, setGrid] = useState<IGrid>();
-  const [dragging, setDragging] = useState<boolean>(false);
+  const [grid, setGrid] = useState<IGrid>({
+    colStart: -1,
+    colEnd: -1,
+    rowStart: -1,
+    rowEnd: -1,
+  });
+
   const [dragged, setDragged] = useState<boolean>(false);
   const {
     register,
@@ -59,6 +65,12 @@ const Briz: NextPage = () => {
     mode: "onChange",
   });
   const onOverlayClick = () => {
+    setGrid({
+      colStart: -1,
+      colEnd: -1,
+      rowStart: -1,
+      rowEnd: -1,
+    });
     setDragged(false);
   };
   const onSubmit = (data: any) => {
@@ -78,54 +90,83 @@ const Briz: NextPage = () => {
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
         <div className=" relative mx-auto mt-0 h-auto max-w-6xl px-4">
-          <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
+          <div className="absolute left-1/2 z-[101] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
             {baseGrid.map((id, i) => (
               <div
                 draggable
                 onDragStart={() => {
-                  setDragging(true);
                   setGrid({
                     ...grid,
-                    colStart: (i % 24) + 1,
-                    rowStart: Math.floor(i / 24 + 1),
+                    colStart: i % 24,
+                    rowStart: Math.floor(i / 24),
                   });
                 }}
                 onDragOver={() => {
                   setGrid({
                     ...grid,
-                    colEnd: (i % 24) + 1,
-                    rowEnd: Math.floor(i / 24 + 1),
+                    colEnd: i % 24,
+                    rowEnd: Math.floor(i / 24),
                   });
                 }}
                 onDragEnd={() => {
-                  setDragging(false);
                   setDragged(true);
-                  console.log(grid);
                 }}
-                key={i + 1 + ""}
-                className={`col-start-[${(i % 24) + 1 + ""}] row-start-[${
-                  Math.floor(i / 24 + 1) + ""
-                }] active:scale-20 h-full w-full rounded-md bg-gray-500 opacity-20 transition-all hover:opacity-50 active:scale-105  active:bg-gray-500 active:opacity-100`}
+                onDragEnter={() => {}}
+                key={i}
+                className={cls(
+                  `h-full w-full rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
+                  i % 24 <= grid!.colEnd! % 24 &&
+                    i % 24 >= grid!.colStart! % 24 &&
+                    Math.floor(i / 24) <= grid!.rowEnd! &&
+                    Math.floor(i / 24) >= grid!.rowStart!
+                    ? "scale-100 opacity-60"
+                    : "",
+                  grid!.colStart! > grid!.colEnd!
+                    ? i % 24 >= grid!.colEnd! % 24 &&
+                      i % 24 <= grid!.colStart! % 24 &&
+                      Math.floor(i / 24) <= grid!.rowEnd! &&
+                      Math.floor(i / 24) >= grid!.rowStart!
+                      ? "scale-100 opacity-60"
+                      : ""
+                    : "",
+                  grid!.rowStart! > grid!.rowEnd!
+                    ? i % 24 <= grid!.colEnd! % 24 &&
+                      i % 24 >= grid!.colStart! % 24 &&
+                      Math.floor(i / 24) >= grid!.rowEnd! &&
+                      Math.floor(i / 24) <= grid!.rowStart!
+                      ? "scale-100 opacity-60"
+                      : ""
+                    : "",
+                  grid!.rowStart! > grid!.rowEnd! &&
+                    grid!.colStart! > grid!.colEnd!
+                    ? i % 24 >= grid!.colEnd! % 24 &&
+                      i % 24 <= grid!.colStart! % 24 &&
+                      Math.floor(i / 24) >= grid!.rowEnd! &&
+                      Math.floor(i / 24) <= grid!.rowStart!
+                      ? "scale-100 opacity-60"
+                      : ""
+                    : ""
+                )}
               ></div>
             ))}
           </div>
-          <div className="absolute left-1/2 z-[90] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
-            <div className="col-start-[2] col-end-[8] row-start-[3] row-end-[6] bg-slate-700 text-center text-4xl font-semibold  text-black opacity-50">
+          <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
+            {/*      <div className=" col-start-[2] col-end-[8] row-start-[3] row-end-[6] rounded-xl bg-blue-500 text-center text-6xl font-semibold  text-white">
               Let's
             </div>
-            <div className="col-start-[6] col-end-[16] row-start-[4] row-end-[9] bg-yellow-700 text-center text-4xl font-semibold  text-black opacity-50">
+            <div className=" col-start-[6] col-end-[16] row-start-[4] row-end-[8] rounded-xl bg-yellow-500 text-center text-6xl font-semibold text-white ">
               Get it!
-            </div>{" "}
-            <div className="col-start-[13] col-end-[23] row-start-[6] row-end-[13] bg-red-700 text-center text-4xl font-semibold  text-black opacity-50">
-              Dustin!
             </div>
+            <div className=" col-start-[13] col-end-[24] row-start-[6] row-end-[11] rounded-xl bg-red-500 text-center text-6xl font-semibold  text-white ">
+              Dustin!
+            </div> */}
           </div>
         </div>
         <AnimatePresence>
           {dragged ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[110] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
