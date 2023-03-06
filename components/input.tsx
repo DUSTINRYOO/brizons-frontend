@@ -10,6 +10,7 @@ interface InputProps {
   placeholder?: string;
   register: UseFormRegisterReturn;
   required: boolean;
+  [key: string]: any;
 }
 
 export default function Input({
@@ -19,6 +20,7 @@ export default function Input({
   type,
   placeholder,
   required,
+  ...rest
 }: InputProps) {
   return (
     <div>
@@ -49,6 +51,7 @@ export default function Input({
           ></textarea>
         ) : (
           <input
+            {...rest}
             id={name}
             required={required}
             type={type}
@@ -60,7 +63,6 @@ export default function Input({
             )}
           />
         )}
-
         {type === "file" ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"

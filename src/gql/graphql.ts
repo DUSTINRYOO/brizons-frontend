@@ -15,6 +15,18 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type Briz = {
+  __typename?: 'Briz';
+  coverImg: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  id: Scalars['Float'];
+  metatags: Scalars['String'];
+  owner: User;
+  title: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type CreateAccountInput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -23,6 +35,20 @@ export type CreateAccountInput = {
 
 export type CreateAccountOutput = {
   __typename?: 'CreateAccountOutput';
+  error?: Maybe<Scalars['String']>;
+  ok: Scalars['Boolean'];
+};
+
+export type CreateBrizInput = {
+  coverImg: Scalars['String'];
+  description: Scalars['String'];
+  metatags: Scalars['String'];
+  parentBrizId?: InputMaybe<Scalars['Int']>;
+  title: Scalars['String'];
+};
+
+export type CreateBrizOutput = {
+  __typename?: 'CreateBrizOutput';
   error?: Maybe<Scalars['String']>;
   ok: Scalars['Boolean'];
 };
@@ -70,6 +96,7 @@ export type LoginOutput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createAccount: CreateAccountOutput;
+  createBriz: CreateBrizOutput;
   createExample: Scalars['Boolean'];
   editProfile: EditProfileOutput;
   login: LoginOutput;
@@ -80,6 +107,11 @@ export type Mutation = {
 
 export type MutationCreateAccountArgs = {
   input: CreateAccountInput;
+};
+
+
+export type MutationCreateBrizArgs = {
+  createBrizInput: CreateBrizInput;
 };
 
 
@@ -133,6 +165,7 @@ export type UpdateExampleInputType = {
 
 export type User = {
   __typename?: 'User';
+  brizs?: Maybe<Array<Briz>>;
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
   id: Scalars['Float'];

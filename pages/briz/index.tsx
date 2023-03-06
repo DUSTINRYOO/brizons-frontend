@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { gql, useQuery, useReactiveVar } from "@apollo/client";
+import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -10,7 +10,11 @@ import Link from "next/link";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
-import { CreateAccountInput } from "@/src/gql/graphql";
+import {
+  CreateAccountInput,
+  CreateBrizInput,
+  CreateBrizOutput,
+} from "@/src/gql/graphql";
 import { cls } from "@/libs/utils";
 
 const ME_QUERY = gql`
@@ -20,6 +24,14 @@ const ME_QUERY = gql`
       email
       username
       verified
+    }
+  }
+`;
+const CREATE_BRIZ_MUTATION = gql`
+  mutation createBrizMutation($createBrizInput: CreateBrizInput!) {
+    createBriz(input: $createBrizInput) {
+      ok
+      error
     }
   }
 `;
@@ -41,10 +53,15 @@ interface IGrid {
 }
 interface CreateBrizForm {
   title: string;
-  description?: string;
-  metatags?: string;
-  thumbUrl: string;
+  description: string;
+  metatags: string;
+  coverImg: string;
+  parentBrizId?: number;
 }
+interface createBrizMutation {
+  createBriz: CreateBrizOutput;
+}
+
 const Briz: NextPage = () => {
   const baseGrid = [...Array(24 * 14)];
   const router = useRouter();
@@ -55,7 +72,8 @@ const Briz: NextPage = () => {
     rowStart: -1,
     rowEnd: -1,
   });
-
+  const [imageUrl, setImageUrl] = useState("");
+  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const [dragged, setDragged] = useState<boolean>(false);
   const {
     register,
@@ -73,11 +91,51 @@ const Briz: NextPage = () => {
     });
     setDragged(false);
   };
-  const onSubmit = (data: any) => {
-    setDragged(false);
-    console.log("Submit");
+
+  const onCompleted = (data: createBrizMutation) => {
+    const {
+      createBriz: { ok, error },
+    } = data;
+    return console.log(ok);
   };
-  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+
+  const [
+    createBrizMutation,
+    {
+      data: createBrizMutationResult,
+      loading: createBrizMutationLoading,
+      error: createBrizMutationError,
+    },
+  ] = useMutation<createBrizMutation>(CREATE_BRIZ_MUTATION, {
+    onCompleted,
+  });
+  const onSubmit = async (data: CreateBrizInput) => {
+    setDragged(false);
+    const actualFile = data.coverImg[0];
+    const formBody = new FormData();
+    formBody.append("file", actualFile);
+    const { fileUrl: coverImg } = await (
+      await fetch("http://localhost:4000/uploads/", {
+        method: "POST",
+        body: formBody,
+      })
+    ).json();
+    setImageUrl(coverImg);
+    if (!loading) {
+      createBrizMutation({
+        variables: {
+          createBrizInput: {
+            title: data.title,
+            description: data.description,
+            metatags: data.metatags,
+            coverImg,
+            parentBrizId: 1,
+          },
+        },
+      });
+    }
+  };
+
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
@@ -184,10 +242,11 @@ const Briz: NextPage = () => {
                   >
                     <Input
                       label="Image"
-                      name="thumbUrl"
+                      name="coverImg"
                       type="file"
                       required
-                      register={register("thumbUrl")}
+                      accept="image/*"
+                      register={register("coverImg")}
                     />
 
                     <Input
