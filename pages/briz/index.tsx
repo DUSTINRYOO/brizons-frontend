@@ -62,6 +62,7 @@ const Briz: NextPage = () => {
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
+  const [gridOnOff, setGridOnOff] = useState<boolean>(true);
   const [imageUrl, setImageUrl] = useState("");
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const [dragged, setDragged] = useState<boolean>(false);
@@ -122,6 +123,12 @@ const Briz: NextPage = () => {
     }
   };
 
+  const gridOnOffVar = {
+    hidden: { backgroundColor: "rgba(255, 0, 0, 0)" },
+    visible: { backgroundColor: "rgba(255, 0, 0, 0.8)" },
+    exit: { backgroundColor: "rgba(255, 0, 0, 0)" },
+  };
+
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
@@ -134,13 +141,18 @@ const Briz: NextPage = () => {
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
         <div className=" relative mx-auto mt-0 h-auto max-w-6xl px-4">
-          <div className="fixed bottom-16 left-1/2 flex -translate-x-1/2 flex-row items-center justify-center rounded-2xl bg-gray-300 p-2">
+          <motion.div
+            className="fixed bottom-16 right-32 flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+            drag
+            dragElastic={0.15}
+            dragConstraints={{ top: 0, bottom: 0, right: 0, left: -600 }}
+          >
             <button
               onClick={() => {
                 console.log("Clicked Open AI");
               }}
               className={cls(
-                "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:scale-105 hover:bg-red-400"
+                "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-lg transition-all hover:bg-red-400 active:scale-105"
               )}
             >
               <svg
@@ -157,10 +169,10 @@ const Briz: NextPage = () => {
             </button>
             <button
               onClick={() => {
-                console.log("Grid");
+                setGridOnOff((prev) => !prev);
               }}
               className={cls(
-                "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:scale-105 hover:bg-red-400"
+                "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
               )}
             >
               <svg
@@ -175,66 +187,75 @@ const Briz: NextPage = () => {
                 />
               </svg>
             </button>
-          </div>
-          <div className="absolute left-1/2 z-[101] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
-            {baseGrid.map((id, i) => (
-              <div
-                draggable
-                onDragStart={() => {
-                  setGrid({
-                    ...grid,
-                    colStart: i % 24,
-                    rowStart: Math.floor(i / 24),
-                  });
-                }}
-                onDragOver={() => {
-                  setGrid({
-                    ...grid,
-                    colEnd: i % 24,
-                    rowEnd: Math.floor(i / 24),
-                  });
-                }}
-                onDragEnd={() => {
-                  setDragged(true);
-                }}
-                key={i}
-                className={cls(
-                  `h-full w-full rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
-                  i % 24 <= grid!.colEnd! % 24 &&
-                    i % 24 >= grid!.colStart! % 24 &&
-                    Math.floor(i / 24) <= grid!.rowEnd! &&
-                    Math.floor(i / 24) >= grid!.rowStart!
-                    ? "opacity-60"
-                    : "",
-                  grid!.colStart! > grid!.colEnd!
-                    ? i % 24 >= grid!.colEnd! % 24 &&
-                      i % 24 <= grid!.colStart! % 24 &&
-                      Math.floor(i / 24) <= grid!.rowEnd! &&
-                      Math.floor(i / 24) >= grid!.rowStart!
-                      ? "opacity-60"
-                      : ""
-                    : "",
-                  grid!.rowStart! > grid!.rowEnd!
-                    ? i % 24 <= grid!.colEnd! % 24 &&
-                      i % 24 >= grid!.colStart! % 24 &&
-                      Math.floor(i / 24) >= grid!.rowEnd! &&
-                      Math.floor(i / 24) <= grid!.rowStart!
-                      ? "opacity-60"
-                      : ""
-                    : "",
-                  grid!.rowStart! > grid!.rowEnd! &&
-                    grid!.colStart! > grid!.colEnd!
-                    ? i % 24 >= grid!.colEnd! % 24 &&
-                      i % 24 <= grid!.colStart! % 24 &&
-                      Math.floor(i / 24) >= grid!.rowEnd! &&
-                      Math.floor(i / 24) <= grid!.rowStart!
-                      ? "opacity-60"
-                      : ""
-                    : ""
-                )}
-              ></div>
-            ))}
-          </div>
+          </motion.div>
+          <AnimatePresence>
+            {gridOnOff ? (
+              <div className="absolute left-1/2 z-[101] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
+                {baseGrid.map((id, i) => (
+                  <motion.div
+                    draggable
+                    onDragStart={() => {
+                      setGrid({
+                        ...grid,
+                        colStart: i % 24,
+                        rowStart: Math.floor(i / 24),
+                      });
+                    }}
+                    onDragOver={() => {
+                      setGrid({
+                        ...grid,
+                        colEnd: i % 24,
+                        rowEnd: Math.floor(i / 24),
+                      });
+                    }}
+                    onDragEnd={() => {
+                      setDragged(true);
+                    }}
+                    key={i}
+                    variants={gridOnOffVar}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    transition={{ delay: i * 0.001 }}
+                    className={cls(
+                      `h-full w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
+                      i % 24 <= grid!.colEnd! % 24 &&
+                        i % 24 >= grid!.colStart! % 24 &&
+                        Math.floor(i / 24) <= grid!.rowEnd! &&
+                        Math.floor(i / 24) >= grid!.rowStart!
+                        ? "opacity-60"
+                        : "",
+                      grid!.colStart! > grid!.colEnd!
+                        ? i % 24 >= grid!.colEnd! % 24 &&
+                          i % 24 <= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) <= grid!.rowEnd! &&
+                          Math.floor(i / 24) >= grid!.rowStart!
+                          ? "opacity-60"
+                          : ""
+                        : "",
+                      grid!.rowStart! > grid!.rowEnd!
+                        ? i % 24 <= grid!.colEnd! % 24 &&
+                          i % 24 >= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) >= grid!.rowEnd! &&
+                          Math.floor(i / 24) <= grid!.rowStart!
+                          ? "opacity-60"
+                          : ""
+                        : "",
+                      grid!.rowStart! > grid!.rowEnd! &&
+                        grid!.colStart! > grid!.colEnd!
+                        ? i % 24 >= grid!.colEnd! % 24 &&
+                          i % 24 <= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) >= grid!.rowEnd! &&
+                          Math.floor(i / 24) <= grid!.rowStart!
+                          ? "opacity-60"
+                          : ""
+                        : ""
+                    )}
+                  ></motion.div>
+                ))}
+              </div>
+            ) : null}
+          </AnimatePresence>
           <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
             <div className=" col-start-[2] col-end-[8] row-start-[3] row-end-[6] rounded-xl bg-blue-500 text-center text-6xl font-semibold  text-white">
               Let's
