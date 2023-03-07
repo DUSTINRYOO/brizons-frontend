@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, transform } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -142,10 +142,17 @@ const Briz: NextPage = () => {
       <div className="h-auto w-full py-20 ">
         <div className=" relative mx-auto mt-0 h-auto max-w-6xl px-4">
           <motion.div
-            className="fixed bottom-16 right-32 flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+            className="fixed bottom-16 left-1/2 flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+            initial={{ x: 0, opacity: 0 }}
+            animate={{ x: -90, opacity: 1 }}
             drag
             dragElastic={0.15}
-            dragConstraints={{ top: 0, bottom: 0, right: 0, left: -600 }}
+            dragConstraints={{
+              top: 0,
+              bottom: 0,
+              right: 20,
+              left: -200,
+            }}
           >
             <button
               onClick={() => {
