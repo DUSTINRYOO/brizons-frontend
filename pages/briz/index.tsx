@@ -67,6 +67,7 @@ const Briz: NextPage = () => {
   const [grid, setGrid] = useState<IGrid>({});
   const [gridOnOff, setGridOnOff] = useState<boolean>(true);
   const [imageUrl, setImageUrl] = useState("");
+  const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const [dragged, setDragged] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
@@ -88,6 +89,7 @@ const Briz: NextPage = () => {
     setGrid({});
     setDragged(false);
     setOpenAiOnOff(false);
+    setOpenAI("Hello! What do you want to know?");
   };
 
   const onCompleted = (data: createBrizMutation) => {
@@ -147,7 +149,7 @@ const Briz: NextPage = () => {
         }),
       })
     ).json();
-    console.log(openAi);
+    setOpenAI(openAi);
   };
 
   const gridOnOffVar = {
@@ -389,11 +391,13 @@ const Briz: NextPage = () => {
                         "h-96 w-full rounded-xl border bg-red-100 px-3 py-2 placeholder-gray-400 shadow-sm"
                       )}
                     >
-                      <span className="text-md mb-1 block text-center font-semibold text-gray-700">
+                      <span className="text-md mb-1 block text-center font-bold text-gray-700">
                         Open AI
                       </span>
                       <hr className=" border-t-2 border-white"></hr>
-                      Hello! I'm OpenAI
+                      <p className="text-md mt-1 mb-1 block text-center font-semibold text-gray-700">
+                        {openAI}
+                      </p>
                     </div>
                     <Input
                       label="Prompt"
