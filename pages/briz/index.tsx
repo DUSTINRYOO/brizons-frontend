@@ -53,6 +53,9 @@ interface CreateBrizForm {
   coverImg: string;
   parentBrizId?: number;
 }
+interface OpenAiForm {
+  prompt: string;
+}
 interface createBrizMutation {
   createBriz: CreateBrizOutput;
 }
@@ -66,6 +69,7 @@ const Briz: NextPage = () => {
   const [imageUrl, setImageUrl] = useState("");
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const [dragged, setDragged] = useState<boolean>(false);
+  const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -73,9 +77,17 @@ const Briz: NextPage = () => {
   } = useForm<CreateBrizForm>({
     mode: "onChange",
   });
+  const {
+    register: registerOpenAi,
+    handleSubmit: handleSubmitOpenAi,
+    formState: { errors: errorsOpenAi },
+  } = useForm<OpenAiForm>({
+    mode: "onChange",
+  });
   const onOverlayClick = () => {
     setGrid({});
     setDragged(false);
+    setOpenAiOnOff(false);
   };
 
   const onCompleted = (data: createBrizMutation) => {
@@ -122,6 +134,21 @@ const Briz: NextPage = () => {
       });
     }
   };
+  const onSubmitOpenAi = async (data: OpenAiForm) => {
+    const prompt = data.prompt;
+    const { openAi } = await (
+      await fetch("http://localhost:4000/openai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+        }),
+      })
+    ).json();
+    console.log(openAi);
+  };
 
   const gridOnOffVar = {
     hidden: { backgroundColor: "rgba(255, 0, 0, 0)" },
@@ -156,7 +183,7 @@ const Briz: NextPage = () => {
           >
             <button
               onClick={() => {
-                console.log("Clicked Open AI");
+                setOpenAiOnOff((prev) => !prev);
               }}
               className={cls(
                 "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-lg transition-all hover:bg-red-400 active:scale-105"
@@ -329,6 +356,54 @@ const Briz: NextPage = () => {
                       register={register("metatags")}
                     />
                     <Button text={"Create a Briz"} />
+                  </form>
+                </div>
+              </motion.div>
+            </>
+          ) : null}{" "}
+        </AnimatePresence>
+        <AnimatePresence>
+          {openAiOnOff ? (
+            <>
+              <motion.div
+                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                onClick={onOverlayClick}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+              ></motion.div>
+              <motion.div
+                className=" absolute  left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <h3 className="text-center text-3xl font-bold">
+                  Ask Something
+                </h3>
+                <div className="mt-4 px-4 max-sm:px-0 ">
+                  <form
+                    className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+                    onSubmit={handleSubmitOpenAi(onSubmitOpenAi)}
+                  >
+                    <div
+                      className={cls(
+                        "h-96 w-full rounded-xl border bg-red-100 px-3 py-2 placeholder-gray-400 shadow-sm"
+                      )}
+                    >
+                      <span className="text-md mb-1 block text-center font-semibold text-gray-700">
+                        Open AI
+                      </span>
+                      <hr className=" border-t-2 border-white"></hr>
+                      Hello! I'm OpenAI
+                    </div>
+                    <Input
+                      label="Prompt"
+                      name="prompt"
+                      type="textarea"
+                      placeholder="Write a prompt"
+                      required
+                      register={registerOpenAi("prompt")}
+                    />
+                    <Button text={"Ask"} />
                   </form>
                 </div>
               </motion.div>
