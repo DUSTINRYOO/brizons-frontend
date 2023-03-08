@@ -20,6 +20,7 @@ export type Briz = {
   coverImg: Scalars['String'];
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
+  grid: Grid;
   id: Scalars['Float'];
   metatags: Scalars['String'];
   owner: User;
@@ -42,6 +43,7 @@ export type CreateAccountOutput = {
 export type CreateBrizInput = {
   coverImg: Scalars['String'];
   description: Scalars['String'];
+  grid: GridInputType;
   metatags: Scalars['String'];
   parentBrizId?: InputMaybe<Scalars['Int']>;
   title: Scalars['String'];
@@ -79,6 +81,35 @@ export type Example = {
   isGood: Scalars['Boolean'];
   name: Scalars['String'];
   title: Scalars['String'];
+};
+
+export type GetBrizInput = {
+  parentId?: InputMaybe<Scalars['Int']>;
+};
+
+export type GetBrizOutput = {
+  __typename?: 'GetBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  getBriz: Array<Briz>;
+  ok: Scalars['Boolean'];
+};
+
+export type Grid = {
+  __typename?: 'Grid';
+  colend: Scalars['Float'];
+  colstart: Scalars['Float'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['Float'];
+  rowend: Scalars['Float'];
+  rowstart: Scalars['Float'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type GridInputType = {
+  colend: Scalars['Float'];
+  colstart: Scalars['Float'];
+  rowend: Scalars['Float'];
+  rowstart: Scalars['Float'];
 };
 
 export type LoginInput = {
@@ -142,8 +173,14 @@ export type MutationVerifyEmailArgs = {
 export type Query = {
   __typename?: 'Query';
   examples: Array<Example>;
+  getBriz: GetBrizOutput;
   me: User;
   userProfile: UserProfileOutput;
+};
+
+
+export type QueryGetBrizArgs = {
+  getBrizInput: GetBrizInput;
 };
 
 

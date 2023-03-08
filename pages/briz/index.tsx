@@ -111,7 +111,6 @@ const Briz: NextPage = () => {
     onCompleted,
   });
   const onSubmit = async (data: CreateBrizForm) => {
-    setGrid({});
     setDragged(false);
     const actualFile = data.coverImg[0];
     const formBody = new FormData();
@@ -124,6 +123,7 @@ const Briz: NextPage = () => {
     ).json();
     setImageUrl(coverImg);
     if (!loading) {
+      console.log(grid);
       createBrizMutation({
         variables: {
           createBrizInput: {
@@ -131,10 +131,12 @@ const Briz: NextPage = () => {
             description: data.description,
             metatags: data.metatags,
             coverImg: coverImg,
+            grid: grid,
           },
         },
       });
     }
+    setGrid({});
   };
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
@@ -412,7 +414,7 @@ const Briz: NextPage = () => {
                 </div>
               </motion.div>
             </>
-          ) : null}{" "}
+          ) : null}
         </AnimatePresence>
       </div>
     </Layout>
