@@ -7,11 +7,12 @@ import Input from "../components/input";
 import bg from "public/homebg.png";
 import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
+
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
+import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {

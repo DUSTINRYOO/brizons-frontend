@@ -9,8 +9,13 @@ import { AnimatePresence, motion, transform } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
-import { CreateBrizOutput } from "@/src/gql/graphql";
+
 import { cls } from "@/libs/utils";
+import {
+  CreateBrizOutput,
+  GetBrizInput,
+  GetBrizOutput,
+} from "@/src/gql/graphql";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -22,6 +27,27 @@ const ME_QUERY = gql`
     }
   }
 `;
+
+const GRID_QUERY = gql`
+  query gridQuery($getBrizInput: GetBrizInput!) {
+    getBriz(getBrizInput: $getBrizInput) {
+      ok
+      error
+      getBriz {
+        coverImg
+        title
+        description
+        grid {
+          colStart
+          colEnd
+          rowStart
+          rowEnd
+        }
+      }
+    }
+  }
+`;
+
 const CREATE_BRIZ_MUTATION = gql`
   mutation createBrizMutation($createBrizInput: CreateBrizInput!) {
     createBriz(createBrizInput: $createBrizInput) {
@@ -60,6 +86,10 @@ interface createBrizMutation {
   createBriz: CreateBrizOutput;
 }
 
+interface getBrizQuery {
+  getBriz: GetBrizOutput;
+}
+
 const Briz: NextPage = () => {
   const baseGrid = [...Array(24 * 14)];
   const router = useRouter();
@@ -69,6 +99,11 @@ const Briz: NextPage = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+  const {
+    data: getGridData,
+    loading: getGridLoading,
+    error: getGridError,
+  } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
   const [dragged, setDragged] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const {
@@ -96,7 +131,6 @@ const Briz: NextPage = () => {
     const {
       createBriz: { ok, error },
     } = data;
-    console.log(error);
     return console.log(ok);
   };
 
@@ -123,7 +157,6 @@ const Briz: NextPage = () => {
     ).json();
     setImageUrl(coverImg);
     if (!loading) {
-      console.log(grid);
       createBrizMutation({
         variables: {
           createBrizInput: {
@@ -167,7 +200,10 @@ const Briz: NextPage = () => {
   if (loading) {
     return <div>Loading</div>;
   }
-  const open = true;
+  console.log(getGridData?.getBriz.getBriz);
+  getGridData?.getBriz.getBriz.map((briz) => {
+    console.log(briz);
+  });
   return (
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
@@ -295,15 +331,13 @@ const Briz: NextPage = () => {
             ) : null}
           </AnimatePresence>
           <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
-            <div className=" col-start-[2] col-end-[8] row-start-[3] row-end-[6] rounded-xl bg-blue-500 text-center text-6xl font-semibold  text-white">
-              Let's
-            </div>
-            <div className=" col-start-[6] col-end-[16] row-start-[4] row-end-[8] rounded-xl bg-yellow-500 text-center text-6xl font-semibold text-white ">
-              Get it!
-            </div>
-            <div className=" col-start-[13] col-end-[24] row-start-[6] row-end-[11] rounded-xl bg-red-500 text-center text-6xl font-semibold  text-white ">
-              Dustin!
-            </div>
+            <>
+              {getGridData?.getBriz.getBriz.map((briz) => {
+                <div className=" col-start-[6] col-end-[16] row-start-[4] row-end-[8] rounded-xl bg-yellow-500 text-center text-6xl font-semibold text-white ">
+                  Get it!
+                </div>;
+              })}
+            </>
           </div>
         </div>
         <AnimatePresence>

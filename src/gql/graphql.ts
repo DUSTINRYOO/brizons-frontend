@@ -96,20 +96,20 @@ export type GetBrizOutput = {
 
 export type Grid = {
   __typename?: 'Grid';
-  colend: Scalars['Float'];
-  colstart: Scalars['Float'];
+  colEnd: Scalars['Float'];
+  colStart: Scalars['Float'];
   createdAt: Scalars['DateTime'];
   id: Scalars['Float'];
-  rowend: Scalars['Float'];
-  rowstart: Scalars['Float'];
+  rowEnd: Scalars['Float'];
+  rowStart: Scalars['Float'];
   updatedAt: Scalars['DateTime'];
 };
 
 export type GridInputType = {
-  colend: Scalars['Float'];
-  colstart: Scalars['Float'];
-  rowend: Scalars['Float'];
-  rowstart: Scalars['Float'];
+  colEnd: Scalars['Float'];
+  colStart: Scalars['Float'];
+  rowEnd: Scalars['Float'];
+  rowStart: Scalars['Float'];
 };
 
 export type LoginInput = {

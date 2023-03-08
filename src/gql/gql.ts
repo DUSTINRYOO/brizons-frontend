@@ -2,7 +2,7 @@
 import * as types from "./graphql";
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 
-const document: any = [];
+const documents: any = [];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  *
@@ -18,7 +18,7 @@ const document: any = [];
 export function graphql(source: string): unknown;
 
 export function graphql(source: string) {
-  return (document as any)[source] ?? {};
+  return (documents as any)[source] ?? {};
 }
 
 export type DocumentType<TDocumentNode extends DocumentNode<any, any>> =
