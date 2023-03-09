@@ -16,6 +16,7 @@ import {
   GetBrizInput,
   GetBrizOutput,
 } from "@/src/gql/graphql";
+import Image from "next/image";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -34,6 +35,7 @@ const GRID_QUERY = gql`
       ok
       error
       getBriz {
+        id
         coverImg
         title
         description
@@ -334,14 +336,20 @@ const Briz: NextPage = () => {
                   <div
                     key={i}
                     className={cls(
-                      `col-end-2  rounded-xl bg-cover text-center text-6xl font-semibold text-white`
+                      `relative overflow-hidden rounded-xl bg-slate-100 object-scale-down text-center text-6xl font-semibold text-white`
                     )}
                     style={{
-                      backgroundImage: `url(${briz.coverImg})`,
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
-                  ></div>
+                  >
+                    <Image
+                      priority
+                      src={`${briz.coverImg}`}
+                      alt={"briz"}
+                      fill
+                    ></Image>
+                  </div>
                 );
               })}
             </>
