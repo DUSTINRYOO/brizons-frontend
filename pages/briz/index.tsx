@@ -13,6 +13,7 @@ import { cls } from "@/libs/utils";
 import { CreateBrizOutput, GetBrizOutput } from "@/src/gql/graphql";
 import Image from "next/image";
 import brizonslogo from "public/brizonslogo.png";
+import ThreeDotsWave from "@/components/loading";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -145,6 +146,7 @@ const Briz: NextPage = () => {
   });
   const onSubmit = async (data: CreateBrizForm) => {
     setDragged(false);
+    setBrizLoading(true);
     const actualFile = data.coverImg[0];
     const formBody = new FormData();
     formBody.append("file", actualFile);
@@ -202,7 +204,7 @@ const Briz: NextPage = () => {
   return (
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
-        <div className=" relative mx-auto mt-0 h-auto max-w-6xl px-4">
+        <div className=" relative mx-auto mt-0 h-auto max-w-7xl">
           <motion.div
             className="fixed bottom-16 left-1/2 flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
             initial={{ x: 0, opacity: 0 }}
@@ -259,7 +261,7 @@ const Briz: NextPage = () => {
           </motion.div>
           <AnimatePresence>
             {gridOnOff ? (
-              <div className="absolute left-1/2 z-[101] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
+              <div className="absolute left-1/2 z-[101] grid aspect-video w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
                     draggable
@@ -278,7 +280,6 @@ const Briz: NextPage = () => {
                       });
                     }}
                     onDragEnd={() => {
-                      console.log(grid);
                       setDragged(true);
                     }}
                     key={i}
@@ -292,14 +293,16 @@ const Briz: NextPage = () => {
                       (i % 24) + 2 <= grid!.colEnd! % 24 &&
                         (i % 24) + 1 >= grid!.colStart! % 24 &&
                         Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
-                        Math.floor(i / 24) + 1 >= grid!.rowStart!
+                        Math.floor(i / 24) + 1 >= grid!.rowStart! &&
+                        !brizLoading
                         ? "opacity-60"
                         : "",
                       grid!.colStart! + 1 > grid!.colEnd!
                         ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
                           (i % 24) + 1 <= grid!.colStart! % 24 &&
                           Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 >= grid!.rowStart!
+                          Math.floor(i / 24) + 1 >= grid!.rowStart! &&
+                          !brizLoading
                           ? "opacity-60"
                           : ""
                         : "",
@@ -307,7 +310,8 @@ const Briz: NextPage = () => {
                         ? (i % 24) + 2 <= grid!.colEnd! % 24 &&
                           (i % 24) + 1 >= grid!.colStart! % 24 &&
                           Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 <= grid!.rowStart!
+                          Math.floor(i / 24) + 1 <= grid!.rowStart! &&
+                          !brizLoading
                           ? "opacity-60"
                           : ""
                         : "",
@@ -316,7 +320,8 @@ const Briz: NextPage = () => {
                         ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
                           (i % 24) + 1 <= grid!.colStart! % 24 &&
                           Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 <= grid!.rowStart!
+                          Math.floor(i / 24) + 1 <= grid!.rowStart! &&
+                          !brizLoading
                           ? "opacity-60"
                           : ""
                         : ""
@@ -326,15 +331,14 @@ const Briz: NextPage = () => {
               </div>
             ) : null}
           </AnimatePresence>
-          <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
+          <div className="absolute left-1/2 z-[100] grid aspect-video w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
             <>
               {getGridData?.getBriz.getBriz.map((briz, i) => {
                 return (
                   <div
                     key={i}
                     className={cls(
-                      `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`,
-                      brizLoading ? "bg-red-300" : ""
+                      `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
@@ -342,17 +346,18 @@ const Briz: NextPage = () => {
                     }}
                   >
                     {brizLoading ? (
-                      <Image src={brizonslogo} alt="Brizons" fill />
-                    ) : null}
-                    <Image
-                      priority
-                      src={`${briz.coverImg}`}
-                      alt={`${briz.title}-${briz.description}`}
-                      fill
-                      onLoad={() => {
-                        setBrizLoading(true);
-                      }}
-                    ></Image>
+                      <ThreeDotsWave />
+                    ) : (
+                      <Image
+                        priority
+                        src={`${briz.coverImg}`}
+                        alt={`${briz.title}-${briz.description}`}
+                        fill
+                        onLoadingComplete={() => {
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    )}
                   </div>
                 );
               })}
