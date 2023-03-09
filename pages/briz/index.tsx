@@ -200,10 +200,6 @@ const Briz: NextPage = () => {
   if (loading) {
     return <div>Loading</div>;
   }
-  console.log(getGridData?.getBriz.getBriz);
-  getGridData?.getBriz.getBriz.map((briz) => {
-    console.log(briz);
-  });
   return (
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
@@ -271,18 +267,19 @@ const Briz: NextPage = () => {
                     onDragStart={() => {
                       setGrid({
                         ...grid,
-                        colStart: i % 24,
-                        rowStart: Math.floor(i / 24),
+                        colStart: (i % 24) + 1,
+                        rowStart: Math.floor(i / 24) + 1,
                       });
                     }}
                     onDragOver={() => {
                       setGrid({
                         ...grid,
-                        colEnd: i % 24,
-                        rowEnd: Math.floor(i / 24),
+                        colEnd: (i % 24) + 2,
+                        rowEnd: Math.floor(i / 24) + 2,
                       });
                     }}
                     onDragEnd={() => {
+                      console.log(grid);
                       setDragged(true);
                     }}
                     key={i}
@@ -293,34 +290,34 @@ const Briz: NextPage = () => {
                     transition={{ delay: i * 0.001 }}
                     className={cls(
                       `h-full w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
-                      i % 24 <= grid!.colEnd! % 24 &&
-                        i % 24 >= grid!.colStart! % 24 &&
-                        Math.floor(i / 24) <= grid!.rowEnd! &&
-                        Math.floor(i / 24) >= grid!.rowStart!
+                      (i % 24) + 2 <= grid!.colEnd! % 24 &&
+                        (i % 24) + 1 >= grid!.colStart! % 24 &&
+                        Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
+                        Math.floor(i / 24) + 1 >= grid!.rowStart!
                         ? "opacity-60"
                         : "",
-                      grid!.colStart! > grid!.colEnd!
-                        ? i % 24 >= grid!.colEnd! % 24 &&
-                          i % 24 <= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) <= grid!.rowEnd! &&
-                          Math.floor(i / 24) >= grid!.rowStart!
+                      grid!.colStart! + 1 > grid!.colEnd!
+                        ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
+                          (i % 24) + 1 <= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
+                          Math.floor(i / 24) + 1 >= grid!.rowStart!
                           ? "opacity-60"
                           : ""
                         : "",
-                      grid!.rowStart! > grid!.rowEnd!
-                        ? i % 24 <= grid!.colEnd! % 24 &&
-                          i % 24 >= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) >= grid!.rowEnd! &&
-                          Math.floor(i / 24) <= grid!.rowStart!
+                      grid!.rowStart! + 1 > grid!.rowEnd!
+                        ? (i % 24) + 2 <= grid!.colEnd! % 24 &&
+                          (i % 24) + 1 >= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
+                          Math.floor(i / 24) + 1 <= grid!.rowStart!
                           ? "opacity-60"
                           : ""
                         : "",
-                      grid!.rowStart! > grid!.rowEnd! &&
-                        grid!.colStart! > grid!.colEnd!
-                        ? i % 24 >= grid!.colEnd! % 24 &&
-                          i % 24 <= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) >= grid!.rowEnd! &&
-                          Math.floor(i / 24) <= grid!.rowStart!
+                      grid!.rowStart! + 1 > grid!.rowEnd! &&
+                        grid!.colStart! + 1 > grid!.colEnd!
+                        ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
+                          (i % 24) + 1 <= grid!.colStart! % 24 &&
+                          Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
+                          Math.floor(i / 24) + 1 <= grid!.rowStart!
                           ? "opacity-60"
                           : ""
                         : ""
@@ -332,10 +329,20 @@ const Briz: NextPage = () => {
           </AnimatePresence>
           <div className="absolute left-1/2 z-[100] grid aspect-video w-full -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
             <>
-              {getGridData?.getBriz.getBriz.map((briz) => {
-                <div className=" col-start-[6] col-end-[16] row-start-[4] row-end-[8] rounded-xl bg-yellow-500 text-center text-6xl font-semibold text-white ">
-                  Get it!
-                </div>;
+              {getGridData?.getBriz.getBriz.map((briz, i) => {
+                return (
+                  <div
+                    key={i}
+                    className={cls(
+                      `col-end-2  rounded-xl bg-cover text-center text-6xl font-semibold text-white`
+                    )}
+                    style={{
+                      backgroundImage: `url(${briz.coverImg})`,
+                      gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
+                      gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                    }}
+                  ></div>
+                );
               })}
             </>
           </div>
