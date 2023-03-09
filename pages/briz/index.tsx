@@ -71,6 +71,12 @@ interface IGrid {
   rowStart?: number;
   rowEnd?: number;
 }
+interface IDragIndex {
+  colStartIndex?: number;
+  colEndIndex?: number;
+  rowStartIndex?: number;
+  rowEndIndex?: number;
+}
 interface CreateBrizForm {
   title: string;
   description: string;
@@ -94,6 +100,7 @@ const Briz: NextPage = () => {
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
+  const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [gridOnOff, setGridOnOff] = useState<boolean>(true);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
@@ -122,6 +129,7 @@ const Briz: NextPage = () => {
   });
   const onOverlayClick = () => {
     setGrid({});
+    setDragIndex({});
     setDragged(false);
     setOpenAiOnOff(false);
     setOpenAI("Hello! What do you want to know?");
@@ -200,7 +208,6 @@ const Briz: NextPage = () => {
   if (loading) {
     return <div>Loading</div>;
   }
-  console.log(getGridData?.getBriz.getBriz);
   return (
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
@@ -266,20 +273,82 @@ const Briz: NextPage = () => {
                   <motion.div
                     draggable
                     onDragStart={() => {
-                      setGrid({
-                        ...grid,
-                        colStart: (i % 24) + 1,
-                        rowStart: Math.floor(i / 24) + 1,
+                      setDragIndex({
+                        ...dragIndex,
+                        colStartIndex: i % 24,
+                        rowStartIndex: Math.floor(i / 24),
                       });
                     }}
                     onDragOver={() => {
-                      setGrid({
-                        ...grid,
-                        colEnd: (i % 24) + 2,
-                        rowEnd: Math.floor(i / 24) + 2,
+                      console.log(dragIndex);
+                      setDragIndex({
+                        ...dragIndex,
+                        colEndIndex: i % 24,
+                        rowEndIndex: Math.floor(i / 24),
                       });
+                      if (
+                        dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
+                      ) {
+                        console.log(1);
+                        setGrid({
+                          colStart: dragIndex.colStartIndex! + 1,
+                          rowStart: dragIndex.rowStartIndex! + 1,
+                          colEnd: dragIndex.colEndIndex! + 2,
+                          rowEnd: dragIndex.rowEndIndex! + 2,
+                        });
+                      }
+                      if (
+                        dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
+                      ) {
+                        console.log(2);
+                        setGrid({
+                          colStart: dragIndex.colEndIndex! + 1,
+                          rowStart: dragIndex.rowStartIndex! + 1,
+                          colEnd: dragIndex.colStartIndex! + 2,
+                          rowEnd: dragIndex.rowEndIndex! + 2,
+                        });
+                      }
+                      if (
+                        dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
+                      ) {
+                        console.log(3);
+                        setGrid({
+                          colStart: dragIndex.colStartIndex! + 1,
+                          rowStart: dragIndex.rowEndIndex! + 1,
+                          colEnd: dragIndex.colEndIndex! + 2,
+                          rowEnd: dragIndex.rowStartIndex! + 2,
+                        });
+                      }
+                      if (
+                        dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
+                      ) {
+                        console.log(4);
+                        setGrid({
+                          colStart: dragIndex.colEndIndex! + 1,
+                          rowStart: dragIndex.rowEndIndex! + 1,
+                          colEnd: dragIndex.colStartIndex! + 2,
+                          rowEnd: dragIndex.rowStartIndex! + 2,
+                        });
+                      }
+                      if (
+                        dragIndex.colStartIndex! === dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! === dragIndex.rowEndIndex!
+                      ) {
+                        console.log(4);
+                        setGrid({
+                          colStart: dragIndex.colEndIndex! + 1,
+                          rowStart: dragIndex.rowEndIndex! + 1,
+                          colEnd: dragIndex.colStartIndex! + 2,
+                          rowEnd: dragIndex.rowStartIndex! + 2,
+                        });
+                      }
                     }}
                     onDragEnd={() => {
+                      console.log(grid);
                       setDragged(true);
                     }}
                     key={i}
@@ -290,37 +359,37 @@ const Briz: NextPage = () => {
                     transition={{ delay: i * 0.001 }}
                     className={cls(
                       `h-full w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
-                      (i % 24) + 2 <= grid!.colEnd! % 24 &&
-                        (i % 24) + 1 >= grid!.colStart! % 24 &&
-                        Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
-                        Math.floor(i / 24) + 1 >= grid!.rowStart! &&
+                      i % 24 <= dragIndex!.colEndIndex! % 24 &&
+                        i % 24 >= dragIndex!.colStartIndex! % 24 &&
+                        Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
+                        Math.floor(i / 24) >= dragIndex!.rowStartIndex! &&
                         !brizLoading
                         ? "opacity-60"
                         : "",
-                      grid!.colStart! + 1 > grid!.colEnd!
-                        ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
-                          (i % 24) + 1 <= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) + 2 <= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 >= grid!.rowStart! &&
+                      dragIndex!.colStartIndex! > dragIndex!.colEndIndex!
+                        ? i % 24 >= dragIndex!.colEndIndex! % 24 &&
+                          i % 24 <= dragIndex!.colStartIndex! % 24 &&
+                          Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
+                          Math.floor(i / 24) >= dragIndex!.rowStartIndex! &&
                           !brizLoading
                           ? "opacity-60"
                           : ""
                         : "",
-                      grid!.rowStart! + 1 > grid!.rowEnd!
-                        ? (i % 24) + 2 <= grid!.colEnd! % 24 &&
-                          (i % 24) + 1 >= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 <= grid!.rowStart! &&
+                      dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex!
+                        ? i % 24 <= dragIndex!.colEndIndex! % 24 &&
+                          i % 24 >= dragIndex!.colStartIndex! % 24 &&
+                          Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
+                          Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
                           ? "opacity-60"
                           : ""
                         : "",
-                      grid!.rowStart! + 1 > grid!.rowEnd! &&
-                        grid!.colStart! + 1 > grid!.colEnd!
-                        ? (i % 24) + 2 >= grid!.colEnd! % 24 &&
-                          (i % 24) + 1 <= grid!.colStart! % 24 &&
-                          Math.floor(i / 24) + 2 >= grid!.rowEnd! &&
-                          Math.floor(i / 24) + 1 <= grid!.rowStart! &&
+                      dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex! &&
+                        dragIndex!.colStartIndex! > dragIndex!.colEndIndex!
+                        ? i % 24 >= dragIndex!.colEndIndex! % 24 &&
+                          i % 24 <= dragIndex!.colStartIndex! % 24 &&
+                          Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
+                          Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
                           ? "opacity-60"
                           : ""
@@ -345,19 +414,16 @@ const Briz: NextPage = () => {
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
                   >
-                    {brizLoading ? (
-                      <ThreeDotsWave />
-                    ) : (
-                      <Image
-                        priority
-                        src={`${briz.coverImg}`}
-                        alt={`${briz.title}-${briz.description}`}
-                        fill
-                        onLoadingComplete={() => {
-                          setBrizLoading(false);
-                        }}
-                      ></Image>
-                    )}
+                    {brizLoading ? <ThreeDotsWave /> : null}
+                    <Image
+                      priority
+                      src={`${briz.coverImg}`}
+                      alt={`${briz.title}-${briz.description}`}
+                      fill
+                      onLoadingComplete={() => {
+                        setBrizLoading(false);
+                      }}
+                    ></Image>
                   </div>
                 );
               })}
