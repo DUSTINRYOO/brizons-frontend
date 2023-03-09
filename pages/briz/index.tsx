@@ -178,7 +178,6 @@ const Briz: NextPage = () => {
         },
       });
     }
-    setGrid({});
   };
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
@@ -281,7 +280,6 @@ const Briz: NextPage = () => {
                       });
                     }}
                     onDragOver={() => {
-                      console.log(dragIndex);
                       setDragIndex({
                         ...dragIndex,
                         colEndIndex: i % 24,
@@ -291,7 +289,6 @@ const Briz: NextPage = () => {
                         dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
                         dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
                       ) {
-                        console.log(1);
                         setGrid({
                           colStart: dragIndex.colStartIndex! + 1,
                           rowStart: dragIndex.rowStartIndex! + 1,
@@ -303,7 +300,6 @@ const Briz: NextPage = () => {
                         dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
                         dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
                       ) {
-                        console.log(2);
                         setGrid({
                           colStart: dragIndex.colEndIndex! + 1,
                           rowStart: dragIndex.rowStartIndex! + 1,
@@ -315,7 +311,6 @@ const Briz: NextPage = () => {
                         dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
                         dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
                       ) {
-                        console.log(3);
                         setGrid({
                           colStart: dragIndex.colStartIndex! + 1,
                           rowStart: dragIndex.rowEndIndex! + 1,
@@ -327,7 +322,6 @@ const Briz: NextPage = () => {
                         dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
                         dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
                       ) {
-                        console.log(4);
                         setGrid({
                           colStart: dragIndex.colEndIndex! + 1,
                           rowStart: dragIndex.rowEndIndex! + 1,
@@ -339,17 +333,15 @@ const Briz: NextPage = () => {
                         dragIndex.colStartIndex! === dragIndex.colEndIndex! &&
                         dragIndex.rowStartIndex! === dragIndex.rowEndIndex!
                       ) {
-                        console.log(4);
                         setGrid({
-                          colStart: dragIndex.colEndIndex! + 1,
-                          rowStart: dragIndex.rowEndIndex! + 1,
-                          colEnd: dragIndex.colStartIndex! + 2,
-                          rowEnd: dragIndex.rowStartIndex! + 2,
+                          colStart: dragIndex.colStartIndex! + 1,
+                          rowStart: dragIndex.rowStartIndex! + 1,
+                          colEnd: dragIndex.colEndIndex! + 2,
+                          rowEnd: dragIndex.rowEndIndex! + 2,
                         });
                       }
                     }}
                     onDragEnd={() => {
-                      console.log(grid);
                       setDragged(true);
                     }}
                     key={i}
@@ -405,14 +397,14 @@ const Briz: NextPage = () => {
             <>
               <div
                 className={cls(
-                  `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`
+                  `relative rounded-xl`,
+                  brizLoading ? "bg-red-100" : ""
                 )}
                 style={{
                   gridColumn: `${grid.colStart}/${grid.colEnd}`,
                   gridRow: `${grid.rowStart}/${grid.rowEnd}`,
                 }}
               >
-                {" "}
                 {brizLoading ? <ThreeDotsWave /> : null}
               </div>
               {getGridData?.getBriz.getBriz.map((briz, i) => {
@@ -420,20 +412,20 @@ const Briz: NextPage = () => {
                   <div
                     key={i}
                     className={cls(
-                      `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`
+                      `relative overflow-hidden rounded-xl object-scale-down text-center text-6xl font-semibold text-white`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
                   >
-                    {brizLoading ? <ThreeDotsWave /> : null}
                     <Image
                       priority
                       src={`${briz.coverImg}`}
                       alt={`${briz.title}-${briz.description}`}
                       fill
                       onLoadingComplete={() => {
+                        setGrid({});
                         setBrizLoading(false);
                       }}
                     ></Image>
