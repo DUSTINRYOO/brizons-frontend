@@ -5,18 +5,14 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, motion, transform } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
-
 import { cls } from "@/libs/utils";
-import {
-  CreateBrizOutput,
-  GetBrizInput,
-  GetBrizOutput,
-} from "@/src/gql/graphql";
+import { CreateBrizOutput, GetBrizOutput } from "@/src/gql/graphql";
 import Image from "next/image";
+import brizonslogo from "public/brizonslogo.png";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -98,13 +94,14 @@ const Briz: NextPage = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [gridOnOff, setGridOnOff] = useState<boolean>(true);
-  const [imageUrl, setImageUrl] = useState("");
+  const [brizLoading, setBrizLoading] = useState<boolean>(false);
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
   const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const {
     data: getGridData,
     loading: getGridLoading,
     error: getGridError,
+    refetch: getGridRefetch,
   } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
   const [dragged, setDragged] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
@@ -133,7 +130,7 @@ const Briz: NextPage = () => {
     const {
       createBriz: { ok, error },
     } = data;
-    return console.log(ok);
+    return getGridRefetch();
   };
 
   const [
@@ -157,7 +154,6 @@ const Briz: NextPage = () => {
         body: formBody,
       })
     ).json();
-    setImageUrl(coverImg);
     if (!loading) {
       createBrizMutation({
         variables: {
@@ -202,6 +198,7 @@ const Briz: NextPage = () => {
   if (loading) {
     return <div>Loading</div>;
   }
+  console.log(getGridData?.getBriz.getBriz);
   return (
     <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
@@ -336,18 +333,25 @@ const Briz: NextPage = () => {
                   <div
                     key={i}
                     className={cls(
-                      `relative overflow-hidden rounded-xl bg-slate-100 object-scale-down text-center text-6xl font-semibold text-white`
+                      `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`,
+                      brizLoading ? "bg-red-300" : ""
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
                   >
+                    {brizLoading ? (
+                      <Image src={brizonslogo} alt="Brizons" fill />
+                    ) : null}
                     <Image
                       priority
                       src={`${briz.coverImg}`}
-                      alt={"briz"}
+                      alt={`${briz.title}-${briz.description}`}
                       fill
+                      onLoad={() => {
+                        setBrizLoading(true);
+                      }}
                     ></Image>
                   </div>
                 );
