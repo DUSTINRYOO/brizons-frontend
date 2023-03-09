@@ -164,6 +164,7 @@ const Briz: NextPage = () => {
         body: formBody,
       })
     ).json();
+    setDragIndex({});
     if (!loading) {
       createBrizMutation({
         variables: {
@@ -402,6 +403,18 @@ const Briz: NextPage = () => {
           </AnimatePresence>
           <div className="absolute left-1/2 z-[100] grid aspect-video w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
             <>
+              <div
+                className={cls(
+                  `bject-scale-down relative overflow-hidden rounded-xl text-center text-6xl font-semibold text-white`
+                )}
+                style={{
+                  gridColumn: `${grid.colStart}/${grid.colEnd}`,
+                  gridRow: `${grid.rowStart}/${grid.rowEnd}`,
+                }}
+              >
+                {" "}
+                {brizLoading ? <ThreeDotsWave /> : null}
+              </div>
               {getGridData?.getBriz.getBriz.map((briz, i) => {
                 return (
                   <div
