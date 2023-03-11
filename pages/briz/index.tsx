@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, clamp, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -98,7 +98,8 @@ interface getBrizQuery {
 }
 
 const Briz: NextPage = () => {
-  const baseGrid = [...Array(24 * 14)];
+  const number1 = 24 * 16;
+  const baseGrid = [...Array(number1)];
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
@@ -136,6 +137,14 @@ const Briz: NextPage = () => {
   } = useForm<OpenAiForm>({
     mode: "onChange",
   });
+  const maxGridRow = () => {
+    const gridRow: Array<number> = [];
+    getBrizData?.getBriz.getBriz.map((briz, i) => {
+      gridRow.push(briz.grid.rowEnd);
+    });
+    console.log(Math.max(...gridRow));
+  };
+
   const onOverlayClick = () => {
     setGrid({});
     setDragIndex({});
@@ -434,7 +443,7 @@ const Briz: NextPage = () => {
                   <motion.div
                     key={i}
                     className={cls(
-                      `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down`
+                      `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down transition-all hover:scale-105`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
@@ -453,11 +462,11 @@ const Briz: NextPage = () => {
                         }}
                       ></Image>
                     ) : (
-                      <div className="text-4xl font-semibold text-black ">
+                      <div className=" font-semibold text-black transition-all hover:scale-105">
                         {briz.text ? (
-                          <span>{`${briz.text}`}</span>
+                          <p style={{ fontSize: "4vw" }}>{`${briz.text}`}</p>
                         ) : (
-                          <span>{`${brizText}`}</span>
+                          <p>{`${brizText}`}</p>
                         )}
                       </div>
                     )}
