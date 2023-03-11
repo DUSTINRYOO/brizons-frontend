@@ -5,14 +5,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, clamp, motion } from "framer-motion";
+import { AnimatePresence, useScroll, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import { cls } from "@/libs/utils";
 import { CreateBrizOutput, GetBrizOutput } from "@/src/gql/graphql";
 import Image from "next/image";
-import brizonslogo from "public/brizonslogo.png";
 import ThreeDotsWave from "@/components/loading";
 
 const ME_QUERY = gql`
@@ -98,6 +97,7 @@ interface getBrizQuery {
 }
 
 const Briz: NextPage = () => {
+  const { scrollY } = useScroll();
   const [gridRowNumber, setGridRowNumber] = useState<number>(14);
   const baseGrid = [...Array(gridRowNumber * 24)];
   const router = useRouter();
@@ -459,7 +459,7 @@ const Briz: NextPage = () => {
                     <motion.div
                       key={i}
                       layoutId={briz.id + ""}
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, zIndex: 101 }}
                       transition={{
                         duration: 0.3,
                       }}
@@ -488,11 +488,13 @@ const Briz: NextPage = () => {
                       ) : (
                         <motion.div className=" font-semibold text-black ">
                           {briz.text ? (
-                            <p
+                            <motion.span
                               style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                            >{`${briz.text}`}</p>
+                            >{`${briz.text}`}</motion.span>
                           ) : (
-                            <p>{`${brizText}`}</p>
+                            <motion.span
+                              style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                            >{`${brizText}`}</motion.span>
                           )}
                         </motion.div>
                       )}
@@ -514,13 +516,44 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 layoutId={brizClicked + ""}
               >
-                <h3 className="text-center text-3xl font-bold">New Briz</h3>
-                <div className="mt-4 px-4 max-sm:px-0 "></div>
+                {getBrizData?.getBriz.getBriz.map((briz, i) => {
+                  if (briz.id === brizClicked) {
+                    return (
+                      <motion.div key={i}>
+                        <motion.span
+                          className="block text-center text-3xl font-bold"
+                          style={{ textShadow: "#ff0000 0px 2px 20px" }}
+                        >
+                          {briz.title}
+                        </motion.span>
+                        <motion.div className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg">
+                          <Image
+                            priority
+                            src={`${briz.coverImg}`}
+                            alt={`${briz.title}-${briz.description}`}
+                            fill
+                            style={{
+                              objectFit: "contain",
+                            }}
+                            onLoadingComplete={() => {
+                              setGrid({});
+                              setBrizLoading(false);
+                            }}
+                          ></Image>
+                        </motion.div>
+                        <motion.span className="block text-center text-2xl font-semibold">
+                          {briz.description}
+                        </motion.span>
+                      </motion.div>
+                    );
+                  }
+                })}
               </motion.div>
             </>
           ) : null}
@@ -535,7 +568,8 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
@@ -638,7 +672,8 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[115] mx-auto max-w-md rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
