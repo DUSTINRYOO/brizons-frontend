@@ -10,12 +10,12 @@ export default function App({ Component, pageProps }: AppProps) {
   const apolloClient = useApollo(pageProps.initialApolloState);
 
   return (
-    <ApolloProvider client={apolloClient}>
-      <HelmetProvider>
+    <HelmetProvider>
+      <ApolloProvider client={apolloClient}>
         <div className="bg-white-400 mx-auto  w-full">
           <Component {...pageProps} />
         </div>
-      </HelmetProvider>
-    </ApolloProvider>
+      </ApolloProvider>
+    </HelmetProvider>
   );
 }

@@ -10,6 +10,7 @@ interface InputProps {
   placeholder?: string;
   register: UseFormRegisterReturn;
   required: boolean;
+  tab?: boolean;
   [key: string]: any;
 }
 
@@ -19,13 +20,17 @@ export default function Input({
   register,
   type,
   placeholder,
+  tab,
   required,
   ...rest
 }: InputProps) {
   return (
     <div>
       <label
-        className="text-md mb-1 block font-semibold text-gray-700"
+        className={cls(
+          "text-md mb-1 block font-semibold text-gray-700",
+          tab ? "hidden" : ""
+        )}
         htmlFor={name}
       >
         {label}
@@ -33,8 +38,8 @@ export default function Input({
       <div
         className={cls(
           "relative flex items-center  rounded-md shadow-sm",
-          type === "file"
-            ? "aspect-video w-full items-center justify-center rounded-xl bg-red-50 transition-all hover:bg-red-100 active:scale-105 active:bg-red-200"
+          tab && type === "file"
+            ? "aspect-video w-full items-center justify-center rounded-xl bg-red-50 transition-transform  hover:bg-red-100 active:scale-105 active:bg-red-200"
             : ""
         )}
       >
@@ -59,11 +64,16 @@ export default function Input({
             {...register}
             className={cls(
               "w-full appearance-none rounded-xl border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-red-500 focus:outline-none focus:ring-red-500",
-              type === "file" ? "absolute top-0 aspect-video opacity-0" : ""
+              tab && type === "file"
+                ? "absolute top-0 aspect-video opacity-0"
+                : "",
+              tab
+                ? " ransition-all aspect-video border-none bg-red-50 text-center text-xl font-semibold placeholder:font-semibold placeholder:text-gray-700 hover:bg-red-100 "
+                : ""
             )}
           />
         )}
-        {type === "file" ? (
+        {tab && type === "file" ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="50"

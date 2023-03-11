@@ -17,13 +17,14 @@ export type Scalars = {
 
 export type Briz = {
   __typename?: 'Briz';
-  coverImg: Scalars['String'];
+  coverImg?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
   grid: Grid;
   id: Scalars['Float'];
   metatags: Scalars['String'];
   owner: User;
+  text?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -41,11 +42,12 @@ export type CreateAccountOutput = {
 };
 
 export type CreateBrizInput = {
-  coverImg: Scalars['String'];
+  coverImg?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   grid: GridInputType;
   metatags: Scalars['String'];
   parentBrizId?: InputMaybe<Scalars['Int']>;
+  text?: InputMaybe<Scalars['String']>;
   title: Scalars['String'];
 };
 

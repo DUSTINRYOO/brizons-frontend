@@ -33,6 +33,7 @@ const GRID_QUERY = gql`
       error
       getBriz {
         id
+        text
         coverImg
         title
         description
@@ -79,6 +80,7 @@ interface IDragIndex {
 }
 interface CreateBrizForm {
   title: string;
+  text: string;
   description: string;
   metatags: string;
   coverImg: string;
@@ -101,21 +103,27 @@ const Briz: NextPage = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
-  const [gridOnOff, setGridOnOff] = useState<boolean>(true);
+  const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
+  const [inputToggle, setInputToggle] = useState<boolean>(false);
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
-  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const {
-    data: getGridData,
-    loading: getGridLoading,
-    error: getGridError,
-    refetch: getGridRefetch,
+    data: meData,
+    loading: meLoading,
+    error: meQuery,
+  } = useQuery<meQuery>(ME_QUERY);
+  const {
+    data: getBrizData,
+    loading: getBrizLoading,
+    error: getBrizError,
+    refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
   const [dragged, setDragged] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors },
   } = useForm<CreateBrizForm>({
     mode: "onChange",
@@ -139,9 +147,8 @@ const Briz: NextPage = () => {
     const {
       createBriz: { ok, error },
     } = data;
-    return getGridRefetch();
+    return getBrizRefetch();
   };
-
   const [
     createBrizMutation,
     {
@@ -154,21 +161,33 @@ const Briz: NextPage = () => {
   });
   const onSubmit = async (data: CreateBrizForm) => {
     setDragged(false);
+    setGridOnOff(false);
     setBrizLoading(true);
-    const actualFile = data.coverImg[0];
-    const formBody = new FormData();
-    formBody.append("file", actualFile);
-    const { fileUrl: coverImg } = await (
-      await fetch("http://localhost:4000/uploads", {
-        method: "POST",
-        body: formBody,
-      })
-    ).json();
+    let coverImg = "null";
+    let text = null;
+    if (data.coverImg) {
+      if (data.coverImg.length !== 0) {
+        const actualFile = data.coverImg[0];
+        const formBody = new FormData();
+        formBody.append("file", actualFile);
+        const { fileUrl: fetchCoverImg } = await (
+          await fetch("http://localhost:4000/uploads", {
+            method: "POST",
+            body: formBody,
+          })
+        ).json();
+        coverImg = fetchCoverImg;
+      }
+    }
+    if (data.text) {
+      text = data.text;
+    }
     setDragIndex({});
-    if (!loading) {
+    if (!meLoading) {
       createBrizMutation({
         variables: {
           createBrizInput: {
+            text,
             title: data.title,
             description: data.description,
             metatags: data.metatags,
@@ -205,11 +224,11 @@ const Briz: NextPage = () => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
   }, [isLoggedIn]);
-  if (loading) {
+  if (meLoading) {
     return <div>Loading</div>;
   }
   return (
-    <Layout title={`${data?.me.username}'s Briz`} hasTabBar>
+    <Layout title={`Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
         <div className=" relative mx-auto mt-0 h-auto max-w-7xl">
           <motion.div
@@ -398,7 +417,7 @@ const Briz: NextPage = () => {
               <div
                 className={cls(
                   `relative rounded-xl`,
-                  brizLoading ? "bg-red-100" : ""
+                  brizLoading ? "bg-red-50" : ""
                 )}
                 style={{
                   gridColumn: `${grid.colStart}/${grid.colEnd}`,
@@ -407,29 +426,33 @@ const Briz: NextPage = () => {
               >
                 {brizLoading ? <ThreeDotsWave /> : null}
               </div>
-              {getGridData?.getBriz.getBriz.map((briz, i) => {
+              {getBrizData?.getBriz.getBriz.map((briz, i) => {
                 return (
-                  <div
+                  <motion.div
                     key={i}
                     className={cls(
-                      `relative overflow-hidden rounded-xl object-scale-down text-center text-6xl font-semibold text-white`
+                      `relative overflow-hidden rounded-xl object-scale-down text-center text-6xl font-semibold text-white `
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
                   >
-                    <Image
-                      priority
-                      src={`${briz.coverImg}`}
-                      alt={`${briz.title}-${briz.description}`}
-                      fill
-                      onLoadingComplete={() => {
-                        setGrid({});
-                        setBrizLoading(false);
-                      }}
-                    ></Image>
-                  </div>
+                    {briz.coverImg !== "null" ? (
+                      <Image
+                        priority
+                        src={`${briz.coverImg}`}
+                        alt={`${briz.title}-${briz.description}`}
+                        fill
+                        onLoadingComplete={() => {
+                          setGrid({});
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    ) : (
+                      <span>{`${briz.text}`}</span>
+                    )}
+                  </motion.div>
                 );
               })}
             </>
@@ -455,15 +478,57 @@ const Briz: NextPage = () => {
                     className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
                     onSubmit={handleSubmit(onSubmit)}
                   >
-                    <Input
-                      label="Image"
-                      name="coverImg"
-                      type="file"
-                      required
-                      accept="image/*"
-                      register={register("coverImg")}
-                    />
-
+                    <div>
+                      <button
+                        className={cls(
+                          "text-md mr-1 rounded-lg  px-2 py-1 font-bold ",
+                          inputToggle
+                            ? "bg-white text-gray-500"
+                            : "bg-red-500 text-white"
+                        )}
+                        onClick={() => {
+                          setInputToggle(false);
+                          resetField("text");
+                        }}
+                      >
+                        Image
+                      </button>
+                      <button
+                        className={cls(
+                          "text-md mr-1 rounded-lg px-2 py-1 font-bold ",
+                          inputToggle
+                            ? "bg-red-500 text-white"
+                            : "bg-white text-gray-500"
+                        )}
+                        onClick={() => {
+                          setInputToggle(true);
+                          resetField("coverImg");
+                        }}
+                      >
+                        Text
+                      </button>
+                    </div>
+                    {!inputToggle ? (
+                      <Input
+                        label="Image"
+                        name="coverImg"
+                        type="file"
+                        required
+                        tab
+                        accept="image/*"
+                        register={register("coverImg")}
+                      />
+                    ) : (
+                      <Input
+                        tab
+                        label="Text"
+                        name="text"
+                        type="text"
+                        placeholder="Write anything"
+                        required
+                        register={register("text")}
+                      />
+                    )}
                     <Input
                       label="Title"
                       name="title"
@@ -473,14 +538,6 @@ const Briz: NextPage = () => {
                       register={register("title")}
                     />
                     <Input
-                      label="Description"
-                      name="description"
-                      type="textarea"
-                      placeholder="Write a description"
-                      required
-                      register={register("description")}
-                    />
-                    <Input
                       label="Tags"
                       name="metatags"
                       type="text"
@@ -488,6 +545,15 @@ const Briz: NextPage = () => {
                       required
                       register={register("metatags")}
                     />
+                    <Input
+                      label="Description"
+                      name="description"
+                      type="textarea"
+                      placeholder="Write a description"
+                      required
+                      register={register("description")}
+                    />
+
                     <Button text={"Create a Briz"} />
                   </form>
                 </div>
