@@ -106,6 +106,7 @@ const Briz: NextPage = () => {
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [brizText, setBrizText] = useState<string>();
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
+  const [brizClicked, setBrizClicked] = useState<number>();
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
   const [inputToggle, setInputToggle] = useState<boolean>(false);
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
@@ -155,8 +156,12 @@ const Briz: NextPage = () => {
     setGrid({});
     setDragIndex({});
     setDragged(false);
+    setBrizClicked(undefined);
     setOpenAiOnOff(false);
     setOpenAI("Hello! What do you want to know?");
+  };
+  const onBrizClick = (brizId: number) => {
+    setBrizClicked(brizId);
   };
 
   const onCompleted = (data: createBrizMutation) => {
@@ -247,8 +252,8 @@ const Briz: NextPage = () => {
   }
   return (
     <Layout title={`Briz`} hasTabBar>
-      <div className="h-auto w-full py-20 ">
-        <div className="relative mx-auto mt-0 h-auto max-w-7xl">
+      <motion.div className="h-auto w-full py-20 ">
+        <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           <motion.div
             className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
             initial={{ x: 0, opacity: 0 }}
@@ -430,64 +435,96 @@ const Briz: NextPage = () => {
               </div>
             ) : null}
           </AnimatePresence>
-          <div
-            className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
-            style={{ gridTemplateRows: `repeat(${gridRowNumber + 1},1fr)` }}
-          >
+          <AnimatePresence>
+            <motion.div
+              className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
+              style={{ gridTemplateRows: `repeat(${gridRowNumber + 1},1fr)` }}
+            >
+              <>
+                <motion.div className="aspect-square w-full"></motion.div>
+                <motion.div
+                  className={cls(
+                    `relative rounded-xl`,
+                    brizLoading ? "bg-red-50" : ""
+                  )}
+                  style={{
+                    gridColumn: `${grid.colStart}/${grid.colEnd}`,
+                    gridRow: `${grid.rowStart}/${grid.rowEnd}`,
+                  }}
+                >
+                  {brizLoading ? <ThreeDotsWave /> : null}
+                </motion.div>
+                {getBrizData?.getBriz.getBriz.map((briz, i) => {
+                  return (
+                    <motion.div
+                      key={i}
+                      layoutId={briz.id + ""}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{
+                        duration: 0.3,
+                      }}
+                      className={cls(
+                        `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
+                      )}
+                      style={{
+                        gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
+                        gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                      }}
+                    >
+                      {briz.coverImg !== "null" ? (
+                        <Image
+                          onClick={() => {
+                            onBrizClick(briz.id);
+                          }}
+                          priority
+                          src={`${briz.coverImg}`}
+                          alt={`${briz.title}-${briz.description}`}
+                          fill
+                          onLoadingComplete={() => {
+                            setGrid({});
+                            setBrizLoading(false);
+                          }}
+                        ></Image>
+                      ) : (
+                        <motion.div className=" font-semibold text-black ">
+                          {briz.text ? (
+                            <p
+                              style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                            >{`${briz.text}`}</p>
+                          ) : (
+                            <p>{`${brizText}`}</p>
+                          )}
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+        <AnimatePresence>
+          {brizClicked ? (
             <>
-              <div className="aspect-square w-full"></div>
-              <div
-                className={cls(
-                  `relative rounded-xl`,
-                  brizLoading ? "bg-red-50" : ""
-                )}
-                style={{
-                  gridColumn: `${grid.colStart}/${grid.colEnd}`,
-                  gridRow: `${grid.rowStart}/${grid.rowEnd}`,
-                }}
+              <motion.div
+                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 "
+                initial={{ opacity: 0 }}
+                onClick={onOverlayClick}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+              ></motion.div>
+              <motion.div
+                className=" absolute left-1/2 z-[115] mt-[-10px] max-w-lg -translate-x-1/2 rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                layoutId={brizClicked + ""}
               >
-                {brizLoading ? <ThreeDotsWave /> : null}
-              </div>
-              {getBrizData?.getBriz.getBriz.map((briz, i) => {
-                return (
-                  <motion.div
-                    key={i}
-                    className={cls(
-                      `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down transition-all hover:scale-105`
-                    )}
-                    style={{
-                      gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
-                      gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
-                    }}
-                  >
-                    {briz.coverImg !== "null" ? (
-                      <Image
-                        priority
-                        src={`${briz.coverImg}`}
-                        alt={`${briz.title}-${briz.description}`}
-                        fill
-                        onLoadingComplete={() => {
-                          setGrid({});
-                          setBrizLoading(false);
-                        }}
-                      ></Image>
-                    ) : (
-                      <div className=" font-semibold text-black transition-all hover:scale-105">
-                        {briz.text ? (
-                          <p
-                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                          >{`${briz.text}`}</p>
-                        ) : (
-                          <p>{`${brizText}`}</p>
-                        )}
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
+                <h3 className="text-center text-3xl font-bold">New Briz</h3>
+                <div className="mt-4 px-4 max-sm:px-0 "></div>
+              </motion.div>
             </>
-          </div>
-        </div>
+          ) : null}
+        </AnimatePresence>
         <AnimatePresence>
           {dragged ? (
             <>
@@ -641,7 +678,7 @@ const Briz: NextPage = () => {
             </>
           ) : null}
         </AnimatePresence>
-      </div>
+      </motion.div>
     </Layout>
   );
 };
