@@ -103,6 +103,7 @@ const Briz: NextPage = () => {
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
+  const [brizText, setBrizText] = useState<string>();
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
   const [inputToggle, setInputToggle] = useState<boolean>(false);
@@ -181,6 +182,8 @@ const Briz: NextPage = () => {
     }
     if (data.text) {
       text = data.text;
+      setBrizText(text);
+      setBrizLoading(false);
     }
     setDragIndex({});
     if (!meLoading) {
@@ -431,7 +434,7 @@ const Briz: NextPage = () => {
                   <motion.div
                     key={i}
                     className={cls(
-                      `relative overflow-hidden rounded-xl object-scale-down text-center text-6xl font-semibold text-white `
+                      `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
@@ -450,7 +453,13 @@ const Briz: NextPage = () => {
                         }}
                       ></Image>
                     ) : (
-                      <span>{`${briz.text}`}</span>
+                      <div className="text-4xl font-semibold text-black ">
+                        {briz.text ? (
+                          <span>{`${briz.text}`}</span>
+                        ) : (
+                          <span>{`${brizText}`}</span>
+                        )}
+                      </div>
                     )}
                   </motion.div>
                 );
