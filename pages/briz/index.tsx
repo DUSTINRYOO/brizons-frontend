@@ -98,8 +98,8 @@ interface getBrizQuery {
 }
 
 const Briz: NextPage = () => {
-  const number1 = 24 * 16;
-  const baseGrid = [...Array(number1)];
+  const [gridRowNumber, setGridRowNumber] = useState<number>(14);
+  const baseGrid = [...Array(gridRowNumber * 24)];
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
@@ -120,6 +120,19 @@ const Briz: NextPage = () => {
     error: getBrizError,
     refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
+  useEffect(() => {
+    if (
+      !getBrizError &&
+      !getBrizLoading &&
+      getBrizData?.getBriz.getBriz.length !== 0
+    ) {
+      const gridRow: Array<number> = [];
+      getBrizData?.getBriz.getBriz.map((briz, i) => {
+        gridRow.push(briz.grid.rowEnd);
+      });
+      setGridRowNumber(Math.max(...gridRow) + 13);
+    }
+  }, [getBrizData, getBrizError, getBrizLoading]);
   const [dragged, setDragged] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const {
@@ -137,13 +150,6 @@ const Briz: NextPage = () => {
   } = useForm<OpenAiForm>({
     mode: "onChange",
   });
-  const maxGridRow = () => {
-    const gridRow: Array<number> = [];
-    getBrizData?.getBriz.getBriz.map((briz, i) => {
-      gridRow.push(briz.grid.rowEnd);
-    });
-    console.log(Math.max(...gridRow));
-  };
 
   const onOverlayClick = () => {
     setGrid({});
@@ -242,9 +248,9 @@ const Briz: NextPage = () => {
   return (
     <Layout title={`Briz`} hasTabBar>
       <div className="h-auto w-full py-20 ">
-        <div className=" relative mx-auto mt-0 h-auto max-w-7xl">
+        <div className="relative mx-auto mt-0 h-auto max-w-7xl">
           <motion.div
-            className="fixed bottom-16 left-1/2 flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+            className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
             initial={{ x: 0, opacity: 0 }}
             animate={{ x: -90, opacity: 1 }}
             drag
@@ -299,7 +305,7 @@ const Briz: NextPage = () => {
           </motion.div>
           <AnimatePresence>
             {gridOnOff ? (
-              <div className="absolute left-1/2 z-[101] grid aspect-video w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))] ">
+              <div className="absolute left-1/2 z-[101] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
                     draggable
@@ -382,7 +388,7 @@ const Briz: NextPage = () => {
                     exit="exit"
                     transition={{ delay: i * 0.001 }}
                     className={cls(
-                      `h-full w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
+                      `aspect-square w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
                       i % 24 <= dragIndex!.colEndIndex! % 24 &&
                         i % 24 >= dragIndex!.colStartIndex! % 24 &&
                         Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
@@ -424,8 +430,12 @@ const Briz: NextPage = () => {
               </div>
             ) : null}
           </AnimatePresence>
-          <div className="absolute left-1/2 z-[100] grid aspect-video w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_minmax(0,_1fr))] grid-rows-[repeat(14,_minmax(0,_1fr))]">
+          <div
+            className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
+            style={{ gridTemplateRows: `repeat(${gridRowNumber + 1},1fr)` }}
+          >
             <>
+              <div className="aspect-square w-full"></div>
               <div
                 className={cls(
                   `relative rounded-xl`,
@@ -464,7 +474,9 @@ const Briz: NextPage = () => {
                     ) : (
                       <div className=" font-semibold text-black transition-all hover:scale-105">
                         {briz.text ? (
-                          <p style={{ fontSize: "4vw" }}>{`${briz.text}`}</p>
+                          <p
+                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                          >{`${briz.text}`}</p>
                         ) : (
                           <p>{`${brizText}`}</p>
                         )}
