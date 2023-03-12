@@ -10,7 +10,11 @@ import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import { cls } from "@/libs/utils";
-import { CreateBrizOutput, GetBrizOutput } from "@/src/gql/graphql";
+import {
+  CreateBrizOutput,
+  DeleteBrizOutput,
+  GetBrizOutput,
+} from "@/src/gql/graphql";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
 
@@ -55,6 +59,15 @@ const CREATE_BRIZ_MUTATION = gql`
     }
   }
 `;
+
+const DELETE_BRIZ_MUTATION = gql`
+  mutation deleteBrizMutation($deleteBrizInput: DeleteBrizInput!) {
+    deleteBriz(deleteBrizInput: $deleteBrizInput) {
+      ok
+      error
+    }
+  }
+`;
 type meQueryList = {
   id: string;
   email: string;
@@ -88,8 +101,12 @@ interface CreateBrizForm {
 interface OpenAiForm {
   prompt: string;
 }
+
 interface createBrizMutation {
   createBriz: CreateBrizOutput;
+}
+interface deleteBrizMutation {
+  deleteBriz: DeleteBrizOutput;
 }
 
 interface getBrizQuery {
@@ -164,12 +181,6 @@ const Briz: NextPage = () => {
     setBrizClicked(brizId);
   };
 
-  const onCompleted = (data: createBrizMutation) => {
-    const {
-      createBriz: { ok, error },
-    } = data;
-    return getBrizRefetch();
-  };
   const [
     createBrizMutation,
     {
@@ -178,8 +189,40 @@ const Briz: NextPage = () => {
       error: createBrizMutationError,
     },
   ] = useMutation<createBrizMutation>(CREATE_BRIZ_MUTATION, {
-    onCompleted,
+    onCompleted(data: createBrizMutation) {
+      const {
+        createBriz: { ok, error },
+      } = data;
+      return getBrizRefetch();
+    },
   });
+  const [
+    deleteBrizMutation,
+    {
+      data: deleteBrizMutationResult,
+      loading: deleteBrizMutationLoading,
+      error: deleteBrizMutationError,
+    },
+  ] = useMutation<deleteBrizMutation>(DELETE_BRIZ_MUTATION, {
+    onCompleted(data: deleteBrizMutation) {
+      console.log("deleted");
+      const {
+        deleteBriz: { ok, error },
+      } = data;
+      return getBrizRefetch();
+    },
+  });
+  const onClickDelete = async (brizId: number) => {
+    if (!meLoading) {
+      deleteBrizMutation({
+        variables: {
+          deleteBrizInput: {
+            brizId,
+          },
+        },
+      });
+    }
+  };
   const onSubmit = async (data: CreateBrizForm) => {
     setDragged(false);
     setGridOnOff(false);
@@ -459,18 +502,48 @@ const Briz: NextPage = () => {
                     <motion.div
                       key={i}
                       layoutId={briz.id + ""}
-                      whileHover={{ scale: 1.05, zIndex: 101 }}
+                      whileHover="hover1"
+                      initial=""
+                      variants={{ hover1: { scale: 1.05, zIndex: 101 } }}
                       transition={{
                         duration: 0.3,
                       }}
                       className={cls(
-                        `relative flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
+                        `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
                       )}
                       style={{
                         gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                         gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                       }}
                     >
+                      <motion.div
+                        className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-red-200 px-1 text-black opacity-0 "
+                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
+                        variants={{
+                          hover1: {
+                            opacity: 0.8,
+                          },
+                        }}
+                        onClick={() => {
+                          onClickDelete(briz.id);
+                        }}
+                      >
+                        <span>✖︎</span>
+                      </motion.div>
+                      <motion.div
+                        className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-red-100 px-1 text-black opacity-0"
+                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
+                        variants={{
+                          hover1: {
+                            opacity: 0.6,
+                          },
+                        }}
+                        onClick={() => {
+                          console.log("clicked", briz.id);
+                        }}
+                      >
+                        <span>✎</span>
+                      </motion.div>
                       {briz.coverImg !== "null" ? (
                         <Image
                           onClick={() => {
@@ -486,7 +559,7 @@ const Briz: NextPage = () => {
                           }}
                         ></Image>
                       ) : (
-                        <motion.div className=" font-semibold text-black ">
+                        <motion.div className=" relative font-semibold text-black ">
                           {briz.text ? (
                             <motion.span
                               style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
@@ -547,7 +620,7 @@ const Briz: NextPage = () => {
                             }}
                           ></Image>
                         </motion.div>
-                        <motion.span className="block text-center text-2xl font-semibold">
+                        <motion.span className="block text-center text-xl font-medium">
                           {briz.description}
                         </motion.span>
                       </motion.div>

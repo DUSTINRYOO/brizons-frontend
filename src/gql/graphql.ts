@@ -17,7 +17,7 @@ export type Scalars = {
 
 export type Briz = {
   __typename?: 'Briz';
-  coverImg?: Maybe<Scalars['String']>;
+  coverImg: Scalars['String'];
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
   grid: Grid;
@@ -42,7 +42,7 @@ export type CreateAccountOutput = {
 };
 
 export type CreateBrizInput = {
-  coverImg?: InputMaybe<Scalars['String']>;
+  coverImg: Scalars['String'];
   description: Scalars['String'];
   grid: GridInputType;
   metatags: Scalars['String'];
@@ -62,6 +62,16 @@ export type CreateExampleDto = {
   isGood?: Scalars['Boolean'];
   name: Scalars['String'];
   title: Scalars['String'];
+};
+
+export type DeleteBrizInput = {
+  brizId: Scalars['Float'];
+};
+
+export type DeleteBrizOutput = {
+  __typename?: 'DeleteBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  ok: Scalars['Boolean'];
 };
 
 export type EditProfileInput = {
@@ -131,6 +141,7 @@ export type Mutation = {
   createAccount: CreateAccountOutput;
   createBriz: CreateBrizOutput;
   createExample: Scalars['Boolean'];
+  deleteBriz: DeleteBrizOutput;
   editProfile: EditProfileOutput;
   login: LoginOutput;
   updateExample: Scalars['Boolean'];
@@ -150,6 +161,11 @@ export type MutationCreateBrizArgs = {
 
 export type MutationCreateExampleArgs = {
   input: CreateExampleDto;
+};
+
+
+export type MutationDeleteBrizArgs = {
+  deleteBrizInput: DeleteBrizInput;
 };
 
 
