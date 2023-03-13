@@ -151,7 +151,8 @@ const Briz: NextPage = () => {
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [brizText, setBrizText] = useState<string>();
-  const [brizClicked, setBrizClicked] = useState<number>();
+  const [brizMouseOn, setBrizMouseOn] = useState<number>();
+  const [brizClicked, setBrizClicked] = useState<boolean>();
   const [editClicked, setEditClicked] = useState<number>();
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
@@ -189,6 +190,7 @@ const Briz: NextPage = () => {
     register,
     handleSubmit,
     resetField,
+    reset,
     formState: { errors },
   } = useForm<CreateBrizForm>({
     mode: "onChange",
@@ -200,6 +202,7 @@ const Briz: NextPage = () => {
     resetField: resetFieldEditBriz,
     formState: { errors: errorsEditBriz },
     setValue: setValueEditBriz,
+    reset: resetEditBriz,
   } = useForm<EditBrizForm>({
     mode: "onChange",
     defaultValues: {
@@ -231,6 +234,7 @@ const Briz: NextPage = () => {
       const {
         createBriz: { ok, error },
       } = data;
+      reset();
       return getBrizRefetch();
     },
   });
@@ -247,6 +251,7 @@ const Briz: NextPage = () => {
       const {
         editBriz: { ok, error },
       } = data;
+      resetEditBriz();
       return getBrizRefetch();
     },
   });
@@ -260,7 +265,6 @@ const Briz: NextPage = () => {
     },
   ] = useMutation<deleteBrizMutation>(DELETE_BRIZ_MUTATION, {
     onCompleted(data: deleteBrizMutation) {
-      console.log("deleted");
       const {
         deleteBriz: { ok, error },
       } = data;
@@ -272,7 +276,7 @@ const Briz: NextPage = () => {
     setGrid({});
     setDragIndex({});
     setDragged(false);
-    setBrizClicked(undefined);
+    setBrizClicked(false);
     setEditClicked(undefined);
     setOpenAiOnOff(false);
     setOpenAI("Hello! What do you want to know?");
@@ -435,7 +439,7 @@ const Briz: NextPage = () => {
             </button>
           </motion.div>
           <AnimatePresence>
-            {gridOnOff ? (
+            {gridOnOff && !brizLoading ? (
               <div className="absolute left-1/2 z-[101] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
@@ -585,88 +589,89 @@ const Briz: NextPage = () => {
                 >
                   {brizLoading ? <ThreeDotsWave /> : null}
                 </motion.div>
-                {getBrizData?.getBriz.getBriz.map((briz, i) => {
-                  return (
+                {getBrizData?.getBriz.getBriz.map((briz, i) => (
+                  <motion.div
+                    key={i}
+                    layoutId={briz.id + ""}
+                    whileHover="hoverBox"
+                    initial=""
+                    variants={{ hoverBox: { scale: 1.05, zIndex: 101 } }}
+                    transition={{
+                      duration: 0.3,
+                    }}
+                    className={cls(
+                      `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
+                    )}
+                    style={{
+                      gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
+                      gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                    }}
+                  >
                     <motion.div
-                      key={i}
-                      layoutId={briz.id + ""}
-                      whileHover="hoverBox"
-                      initial=""
-                      variants={{ hoverBox: { scale: 1.05, zIndex: 101 } }}
-                      transition={{
-                        duration: 0.3,
+                      className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200 "
+                      style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
+                      variants={{
+                        hoverBox: {
+                          opacity: 0.8,
+                        },
                       }}
-                      className={cls(
-                        `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
-                      )}
-                      style={{
-                        gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
-                        gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                      onClick={() => {
+                        onClickDelete(briz.id);
                       }}
                     >
-                      <motion.div
-                        className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200 "
-                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
-                        variants={{
-                          hoverBox: {
-                            opacity: 0.8,
-                          },
-                        }}
-                        onClick={() => {
-                          onClickDelete(briz.id);
-                        }}
-                      >
-                        <span>✖︎</span>
-                      </motion.div>
-                      <motion.div
-                        className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200"
-                        style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
-                        variants={{
-                          hoverBox: {
-                            opacity: 0.8,
-                          },
-                        }}
-                        onClick={() => {
-                          setEditClicked(briz.id);
-                          setValueEditBriz("editBriz", {
-                            title: briz.title,
-                            description: briz.description,
-                            metatags: briz.metatags,
-                          });
-                        }}
-                      >
-                        <span>✎</span>
-                      </motion.div>
-                      {briz.coverImg !== "null" ? (
-                        <Image
-                          onClick={() => {
-                            setBrizClicked(briz.id);
-                          }}
-                          priority
-                          src={`${briz.coverImg}`}
-                          alt={`${briz.title}-${briz.description}`}
-                          fill
-                          onLoadingComplete={() => {
-                            setGrid({});
-                            setBrizLoading(false);
-                          }}
-                        ></Image>
-                      ) : (
-                        <motion.div className=" relative font-semibold text-black ">
-                          {briz.text ? (
-                            <motion.span
-                              style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                            >{`${briz.text}`}</motion.span>
-                          ) : (
-                            <motion.span
-                              style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                            >{`${brizText}`}</motion.span>
-                          )}
-                        </motion.div>
-                      )}
+                      <span>✖︎</span>
                     </motion.div>
-                  );
-                })}
+                    <motion.div
+                      className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200"
+                      style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
+                      variants={{
+                        hoverBox: {
+                          opacity: 0.8,
+                        },
+                      }}
+                      onClick={() => {
+                        setEditClicked(briz.id);
+                        setValueEditBriz("editBriz", {
+                          title: briz.title,
+                          description: briz.description,
+                          metatags: briz.metatags,
+                        });
+                      }}
+                    >
+                      <span>✎</span>
+                    </motion.div>
+                    {briz.coverImg !== "null" ? (
+                      <Image
+                        onMouseOver={() => {
+                          setBrizMouseOn(briz.id);
+                        }}
+                        onClick={() => {
+                          setBrizClicked(true);
+                        }}
+                        priority
+                        src={`${briz.coverImg}`}
+                        alt={`${briz.title}-${briz.description}`}
+                        fill
+                        onLoadingComplete={() => {
+                          setGrid({});
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    ) : (
+                      <motion.div className=" relative font-semibold text-black ">
+                        {briz.text ? (
+                          <motion.span
+                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                          >{`${briz.text}`}</motion.span>
+                        ) : (
+                          <motion.span
+                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                          >{`${brizText}`}</motion.span>
+                        )}
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))}
               </>
             </motion.div>
           </AnimatePresence>
@@ -686,10 +691,10 @@ const Briz: NextPage = () => {
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                layoutId={brizClicked + ""}
+                layoutId={brizMouseOn + ""}
               >
                 {getBrizData?.getBriz.getBriz.map((briz, i) => {
-                  if (briz.id === brizClicked) {
+                  if (briz.id === brizMouseOn) {
                     return (
                       <motion.div key={i}>
                         <motion.span
