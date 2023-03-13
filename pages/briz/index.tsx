@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, useScroll, motion } from "framer-motion";
+import { AnimatePresence, useScroll, motion, LayoutGroup } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -184,6 +184,7 @@ const Briz: NextPage = () => {
       });
       setGridRowNumber(Math.max(...gridRow) + 13);
     }
+    setGridRowNumber(14);
   }, [getBrizData, getBrizError, getBrizLoading]);
 
   const {
@@ -368,8 +369,8 @@ const Briz: NextPage = () => {
   };
 
   const gridOnOffVar = {
-    hidden: { backgroundColor: "rgba(255, 0, 0, 0)" },
-    visible: { backgroundColor: "rgba(255, 0, 0, 0.8)" },
+    hidden: { backgroundColor: "rgba(255, 0, 0,0)" },
+    visible: { backgroundColor: "rgba(0, 0, 0, 0.3)" },
     exit: { backgroundColor: "rgba(255, 0, 0, 0)" },
   };
 
@@ -523,13 +524,13 @@ const Briz: NextPage = () => {
                     exit="exit"
                     transition={{ delay: i * 0.001 }}
                     className={cls(
-                      `aspect-square w-full scale-95 rounded-md bg-red-500 opacity-10 transition-all hover:opacity-40 active:scale-100  active:bg-red-500 active:opacity-60`,
+                      `aspect-square w-full scale-95 rounded-md opacity-10 transition-all hover:opacity-40 active:scale-100`,
                       i % 24 <= dragIndex!.colEndIndex! % 24 &&
                         i % 24 >= dragIndex!.colStartIndex! % 24 &&
                         Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
                         Math.floor(i / 24) >= dragIndex!.rowStartIndex! &&
                         !brizLoading
-                        ? "opacity-60"
+                        ? "scale-100 opacity-40"
                         : "",
                       dragIndex!.colStartIndex! > dragIndex!.colEndIndex!
                         ? i % 24 >= dragIndex!.colEndIndex! % 24 &&
@@ -537,7 +538,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) >= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "opacity-60"
+                          ? "scale-100 opacity-40"
                           : ""
                         : "",
                       dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex!
@@ -546,7 +547,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "opacity-60"
+                          ? "scale-100 opacity-40"
                           : ""
                         : "",
                       dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex! &&
@@ -556,7 +557,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "opacity-60"
+                          ? "scale-100 opacity-40"
                           : ""
                         : ""
                     )}
@@ -580,7 +581,7 @@ const Briz: NextPage = () => {
                 <motion.div
                   className={cls(
                     `relative rounded-xl`,
-                    brizLoading ? "bg-white shadow-lg" : ""
+                    brizLoading ? "bg-gray-50 opacity-50 shadow-lg" : ""
                   )}
                   style={{
                     gridColumn: `${grid.colStart}/${grid.colEnd}`,
@@ -589,12 +590,12 @@ const Briz: NextPage = () => {
                 >
                   {brizLoading ? <ThreeDotsWave /> : null}
                 </motion.div>
-                {getBrizData?.getBriz.getBriz.map((briz, i) => (
+                {getBrizData?.getBriz.getBriz.map((briz) => (
                   <motion.div
-                    key={i}
+                    layout
+                    key={briz.id}
                     layoutId={briz.id + ""}
                     whileHover="hoverBox"
-                    initial=""
                     variants={{ hoverBox: { scale: 1.05, zIndex: 101 } }}
                     transition={{
                       duration: 0.3,
@@ -687,6 +688,7 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
+                layout
                 className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
