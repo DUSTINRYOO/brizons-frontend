@@ -74,6 +74,23 @@ export type DeleteBrizOutput = {
   ok: Scalars['Boolean'];
 };
 
+export type EditBrizInput = {
+  brizId: Scalars['Float'];
+  coverImg?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  grid?: InputMaybe<GridInputType>;
+  metatags?: InputMaybe<Scalars['String']>;
+  parentBrizId?: InputMaybe<Scalars['Int']>;
+  text?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']>;
+};
+
+export type EditBrizOutput = {
+  __typename?: 'EditBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  ok: Scalars['Boolean'];
+};
+
 export type EditProfileInput = {
   email?: InputMaybe<Scalars['String']>;
   password?: InputMaybe<Scalars['String']>;
@@ -142,6 +159,7 @@ export type Mutation = {
   createBriz: CreateBrizOutput;
   createExample: Scalars['Boolean'];
   deleteBriz: DeleteBrizOutput;
+  editBriz: EditBrizOutput;
   editProfile: EditProfileOutput;
   login: LoginOutput;
   updateExample: Scalars['Boolean'];
@@ -166,6 +184,11 @@ export type MutationCreateExampleArgs = {
 
 export type MutationDeleteBrizArgs = {
   deleteBrizInput: DeleteBrizInput;
+};
+
+
+export type MutationEditBrizArgs = {
+  editBrizInput: EditBrizInput;
 };
 
 

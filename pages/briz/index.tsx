@@ -60,6 +60,15 @@ const CREATE_BRIZ_MUTATION = gql`
   }
 `;
 
+const EDIT_BRIZ_MUTATION = gql`
+  mutation createBrizMutation($createBrizInput: CreateBrizInput!) {
+    createBriz(createBrizInput: $createBrizInput) {
+      ok
+      error
+    }
+  }
+`;
+
 const DELETE_BRIZ_MUTATION = gql`
   mutation deleteBrizMutation($deleteBrizInput: DeleteBrizInput!) {
     deleteBriz(deleteBrizInput: $deleteBrizInput) {
@@ -481,14 +490,16 @@ const Briz: NextPage = () => {
           <AnimatePresence>
             <motion.div
               className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
-              style={{ gridTemplateRows: `repeat(${gridRowNumber + 1},1fr)` }}
+              style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
             >
               <>
-                <motion.div className="aspect-square w-full"></motion.div>
+                {baseGrid.map((id, i) => (
+                  <motion.div className="z-[-10000] aspect-square w-full"></motion.div>
+                ))}
                 <motion.div
                   className={cls(
                     `relative rounded-xl`,
-                    brizLoading ? "bg-red-50" : ""
+                    brizLoading ? "bg-white shadow-lg" : ""
                   )}
                   style={{
                     gridColumn: `${grid.colStart}/${grid.colEnd}`,
@@ -502,9 +513,9 @@ const Briz: NextPage = () => {
                     <motion.div
                       key={i}
                       layoutId={briz.id + ""}
-                      whileHover="hover1"
+                      whileHover="hoverBox"
                       initial=""
-                      variants={{ hover1: { scale: 1.05, zIndex: 101 } }}
+                      variants={{ hoverBox: { scale: 1.05, zIndex: 101 } }}
                       transition={{
                         duration: 0.3,
                       }}
@@ -517,10 +528,10 @@ const Briz: NextPage = () => {
                       }}
                     >
                       <motion.div
-                        className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-red-200 px-1 text-black opacity-0 "
+                        className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200 "
                         style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
                         variants={{
-                          hover1: {
+                          hoverBox: {
                             opacity: 0.8,
                           },
                         }}
@@ -531,11 +542,11 @@ const Briz: NextPage = () => {
                         <span>✖︎</span>
                       </motion.div>
                       <motion.div
-                        className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-red-100 px-1 text-black opacity-0"
-                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
+                        className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200"
+                        style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
                         variants={{
-                          hover1: {
-                            opacity: 0.6,
+                          hoverBox: {
+                            opacity: 0.8,
                           },
                         }}
                         onClick={() => {
