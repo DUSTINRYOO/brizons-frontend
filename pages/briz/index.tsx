@@ -13,10 +13,13 @@ import { cls } from "@/libs/utils";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
+  EditBrizOutput,
   GetBrizOutput,
 } from "@/src/gql/graphql";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
+import { title } from "process";
+import { data } from "autoprefixer";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -40,6 +43,7 @@ const GRID_QUERY = gql`
         coverImg
         title
         description
+        metatags
         grid {
           colStart
           colEnd
@@ -61,8 +65,8 @@ const CREATE_BRIZ_MUTATION = gql`
 `;
 
 const EDIT_BRIZ_MUTATION = gql`
-  mutation createBrizMutation($createBrizInput: CreateBrizInput!) {
-    createBriz(createBrizInput: $createBrizInput) {
+  mutation editBrizMutation($editBrizInput: EditBrizInput!) {
+    editBriz(editBrizInput: $editBrizInput) {
       ok
       error
     }
@@ -107,6 +111,17 @@ interface CreateBrizForm {
   coverImg: string;
   parentBrizId?: number;
 }
+
+interface EditBrizInputForm {
+  title: string;
+  description: string;
+  metatags: string;
+}
+
+interface EditBrizForm {
+  editBriz: EditBrizInputForm;
+}
+
 interface OpenAiForm {
   prompt: string;
 }
@@ -114,6 +129,11 @@ interface OpenAiForm {
 interface createBrizMutation {
   createBriz: CreateBrizOutput;
 }
+
+interface editBrizMutation {
+  editBriz: EditBrizOutput;
+}
+
 interface deleteBrizMutation {
   deleteBriz: DeleteBrizOutput;
 }
@@ -131,9 +151,12 @@ const Briz: NextPage = () => {
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [brizText, setBrizText] = useState<string>();
-  const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [brizClicked, setBrizClicked] = useState<number>();
+  const [editClicked, setEditClicked] = useState<number>();
+  const [dragged, setDragged] = useState<boolean>(false);
+  const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
+  const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const [inputToggle, setInputToggle] = useState<boolean>(false);
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
   const {
@@ -147,6 +170,7 @@ const Briz: NextPage = () => {
     error: getBrizError,
     refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
+
   useEffect(() => {
     if (
       !getBrizError &&
@@ -160,8 +184,7 @@ const Briz: NextPage = () => {
       setGridRowNumber(Math.max(...gridRow) + 13);
     }
   }, [getBrizData, getBrizError, getBrizLoading]);
-  const [dragged, setDragged] = useState<boolean>(false);
-  const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -170,6 +193,24 @@ const Briz: NextPage = () => {
   } = useForm<CreateBrizForm>({
     mode: "onChange",
   });
+
+  const {
+    register: registerEditBriz,
+    handleSubmit: handleSubmitEditBriz,
+    resetField: resetFieldEditBriz,
+    formState: { errors: errorsEditBriz },
+    setValue: setValueEditBriz,
+  } = useForm<EditBrizForm>({
+    mode: "onChange",
+    defaultValues: {
+      editBriz: {
+        title: "",
+        description: "",
+        metatags: "",
+      },
+    },
+  });
+
   const {
     register: registerOpenAi,
     handleSubmit: handleSubmitOpenAi,
@@ -177,18 +218,6 @@ const Briz: NextPage = () => {
   } = useForm<OpenAiForm>({
     mode: "onChange",
   });
-
-  const onOverlayClick = () => {
-    setGrid({});
-    setDragIndex({});
-    setDragged(false);
-    setBrizClicked(undefined);
-    setOpenAiOnOff(false);
-    setOpenAI("Hello! What do you want to know?");
-  };
-  const onBrizClick = (brizId: number) => {
-    setBrizClicked(brizId);
-  };
 
   const [
     createBrizMutation,
@@ -205,6 +234,23 @@ const Briz: NextPage = () => {
       return getBrizRefetch();
     },
   });
+
+  const [
+    editBrizMutation,
+    {
+      data: editBrizMutationResult,
+      loading: editBrizMutationLoading,
+      error: editBrizMutationError,
+    },
+  ] = useMutation<editBrizMutation>(EDIT_BRIZ_MUTATION, {
+    onCompleted(data: editBrizMutation) {
+      const {
+        editBriz: { ok, error },
+      } = data;
+      return getBrizRefetch();
+    },
+  });
+
   const [
     deleteBrizMutation,
     {
@@ -221,6 +267,17 @@ const Briz: NextPage = () => {
       return getBrizRefetch();
     },
   });
+
+  const onOverlayClick = () => {
+    setGrid({});
+    setDragIndex({});
+    setDragged(false);
+    setBrizClicked(undefined);
+    setEditClicked(undefined);
+    setOpenAiOnOff(false);
+    setOpenAI("Hello! What do you want to know?");
+  };
+
   const onClickDelete = async (brizId: number) => {
     if (!meLoading) {
       deleteBrizMutation({
@@ -232,7 +289,7 @@ const Briz: NextPage = () => {
       });
     }
   };
-  const onSubmit = async (data: CreateBrizForm) => {
+  const onSubmitCreate = async (data: CreateBrizForm) => {
     setDragged(false);
     setGridOnOff(false);
     setBrizLoading(true);
@@ -273,6 +330,23 @@ const Briz: NextPage = () => {
       });
     }
   };
+
+  const onSubmitEdit = async (data: EditBrizForm) => {
+    if (!meLoading) {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId: editClicked,
+            title: data.editBriz.title,
+            description: data.editBriz.description,
+            metatags: data.editBriz.metatags,
+          },
+        },
+      });
+    }
+    setEditClicked(undefined);
+  };
+
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
     const { openAi } = await (
@@ -494,7 +568,10 @@ const Briz: NextPage = () => {
             >
               <>
                 {baseGrid.map((id, i) => (
-                  <motion.div className="z-[-10000] aspect-square w-full"></motion.div>
+                  <motion.div
+                    key={i}
+                    className="z-[-10000] aspect-square w-full"
+                  ></motion.div>
                 ))}
                 <motion.div
                   className={cls(
@@ -550,7 +627,12 @@ const Briz: NextPage = () => {
                           },
                         }}
                         onClick={() => {
-                          console.log("clicked", briz.id);
+                          setEditClicked(briz.id);
+                          setValueEditBriz("editBriz", {
+                            title: briz.title,
+                            description: briz.description,
+                            metatags: briz.metatags,
+                          });
                         }}
                       >
                         <span>✎</span>
@@ -558,7 +640,7 @@ const Briz: NextPage = () => {
                       {briz.coverImg !== "null" ? (
                         <Image
                           onClick={() => {
-                            onBrizClick(briz.id);
+                            setBrizClicked(briz.id);
                           }}
                           priority
                           src={`${briz.coverImg}`}
@@ -661,7 +743,7 @@ const Briz: NextPage = () => {
                 <div className="mt-4 px-4 max-sm:px-0 ">
                   <form
                     className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(onSubmitCreate)}
                   >
                     <div>
                       <button
@@ -740,6 +822,58 @@ const Briz: NextPage = () => {
                     />
 
                     <Button text={"Create a Briz"} />
+                  </form>
+                </div>
+              </motion.div>
+            </>
+          ) : null}{" "}
+        </AnimatePresence>
+        <AnimatePresence>
+          {editClicked ? (
+            <>
+              <motion.div
+                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                onClick={onOverlayClick}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+              ></motion.div>
+              <motion.div
+                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                style={{ top: scrollY.get() + 100 }}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <h3 className="text-center text-3xl font-bold">Edit Briz</h3>
+                <div className="mt-4 px-4 max-sm:px-0 ">
+                  <form
+                    className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+                    onSubmit={handleSubmitEditBriz(onSubmitEdit)}
+                  >
+                    <Input
+                      label="Title"
+                      name="title"
+                      type="text"
+                      placeholder="Title"
+                      required
+                      register={registerEditBriz("editBriz.title")}
+                    />
+                    <Input
+                      label="Tags"
+                      name="metatags"
+                      type="text"
+                      placeholder="#add #tags #about #this #briz"
+                      required
+                      register={registerEditBriz("editBriz.metatags")}
+                    />
+                    <Input
+                      label="Description"
+                      name="description"
+                      type="textarea"
+                      placeholder="Write a description"
+                      required
+                      register={registerEditBriz("editBriz.description")}
+                    />
+                    <Button text={"Edit this Briz"} />
                   </form>
                 </div>
               </motion.div>
