@@ -5,7 +5,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, useScroll, motion, LayoutGroup } from "framer-motion";
+import {
+  AnimatePresence,
+  useScroll,
+  motion,
+  LayoutGroup,
+  useDragControls,
+} from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -171,7 +177,6 @@ const Briz: NextPage = () => {
     error: getBrizError,
     refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
-
   useEffect(() => {
     if (
       !getBrizError &&
@@ -382,6 +387,7 @@ const Briz: NextPage = () => {
   if (meLoading) {
     return <div>Loading</div>;
   }
+
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
@@ -608,45 +614,47 @@ const Briz: NextPage = () => {
                       duration: 0.4,
                     }}
                     className={cls(
-                      `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down`
+                      `relative m-1 flex items-center justify-center object-scale-down`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
                     }}
                   >
-                    <motion.div
-                      className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105"
-                      style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
-                      variants={{
-                        hoverBox: {
-                          opacity: 0.8,
-                        },
-                      }}
-                      onClick={() => {
-                        onClickDelete(briz.id);
-                      }}
-                    >
-                      <span>✖︎</span>
-                    </motion.div>
-                    <motion.div
-                      className="absolute right-2 top-12 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105"
-                      style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
-                      variants={{
-                        hoverBox: {
-                          opacity: 0.8,
-                        },
-                      }}
-                      onClick={() => {
-                        setEditClicked(briz.id);
-                        setValueEditBriz("editBriz", {
-                          title: briz.title,
-                          description: briz.description,
-                          metatags: briz.metatags,
-                        });
-                      }}
-                    >
-                      <span>✎</span>
+                    <motion.div className="absolute flex flex-col items-center justify-center">
+                      <motion.div
+                        className="z-[1000] mb-1 flex aspect-square w-[3vw] min-w-min max-w-max cursor-pointer items-center justify-center rounded-full bg-gray-50 px-1 text-center text-black opacity-0 hover:scale-105"
+                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
+                        variants={{
+                          hoverBox: {
+                            opacity: 1,
+                          },
+                        }}
+                        onClick={() => {
+                          onClickDelete(briz.id);
+                        }}
+                      >
+                        <span className="block">✖︎</span>
+                      </motion.div>
+                      <motion.div
+                        className="z-[1000] flex aspect-square w-[3vw] min-w-min max-w-max cursor-pointer items-center justify-center rounded-full bg-gray-50 px-1 text-center font-bold text-black opacity-0 hover:scale-105"
+                        style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
+                        variants={{
+                          hoverBox: {
+                            opacity: 1,
+                          },
+                        }}
+                        onClick={() => {
+                          setEditClicked(briz.id);
+                          setValueEditBriz("editBriz", {
+                            title: briz.title,
+                            description: briz.description,
+                            metatags: briz.metatags,
+                          });
+                        }}
+                      >
+                        <span className="block">✎</span>
+                      </motion.div>
                     </motion.div>
                     {briz.coverImg !== "null" ? (
                       <Image
@@ -666,6 +674,7 @@ const Briz: NextPage = () => {
                           setGrid({});
                           setBrizLoading(false);
                         }}
+                        style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
                       ></Image>
                     ) : (
                       <motion.div className=" relative font-semibold text-black ">
