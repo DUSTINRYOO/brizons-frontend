@@ -459,8 +459,8 @@ const Briz: NextPage = () => {
                         rowEndIndex: Math.floor(i / 24),
                       });
                       if (
-                        dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
-                        dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
+                        dragIndex.colStartIndex! <= dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! <= dragIndex.rowEndIndex!
                       ) {
                         setGrid({
                           colStart: dragIndex.colStartIndex! + 1,
@@ -470,8 +470,8 @@ const Briz: NextPage = () => {
                         });
                       }
                       if (
-                        dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
-                        dragIndex.rowStartIndex! < dragIndex.rowEndIndex!
+                        dragIndex.colStartIndex! >= dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! <= dragIndex.rowEndIndex!
                       ) {
                         setGrid({
                           colStart: dragIndex.colEndIndex! + 1,
@@ -481,8 +481,8 @@ const Briz: NextPage = () => {
                         });
                       }
                       if (
-                        dragIndex.colStartIndex! < dragIndex.colEndIndex! &&
-                        dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
+                        dragIndex.colStartIndex! <= dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! >= dragIndex.rowEndIndex!
                       ) {
                         setGrid({
                           colStart: dragIndex.colStartIndex! + 1,
@@ -492,25 +492,14 @@ const Briz: NextPage = () => {
                         });
                       }
                       if (
-                        dragIndex.colStartIndex! > dragIndex.colEndIndex! &&
-                        dragIndex.rowStartIndex! > dragIndex.rowEndIndex!
+                        dragIndex.colStartIndex! >= dragIndex.colEndIndex! &&
+                        dragIndex.rowStartIndex! >= dragIndex.rowEndIndex!
                       ) {
                         setGrid({
                           colStart: dragIndex.colEndIndex! + 1,
                           rowStart: dragIndex.rowEndIndex! + 1,
                           colEnd: dragIndex.colStartIndex! + 2,
                           rowEnd: dragIndex.rowStartIndex! + 2,
-                        });
-                      }
-                      if (
-                        dragIndex.colStartIndex! === dragIndex.colEndIndex! &&
-                        dragIndex.rowStartIndex! === dragIndex.rowEndIndex!
-                      ) {
-                        setGrid({
-                          colStart: dragIndex.colStartIndex! + 1,
-                          rowStart: dragIndex.rowStartIndex! + 1,
-                          colEnd: dragIndex.colEndIndex! + 2,
-                          rowEnd: dragIndex.rowEndIndex! + 2,
                         });
                       }
                     }}
@@ -609,7 +598,7 @@ const Briz: NextPage = () => {
                     }}
                   >
                     <motion.div
-                      className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200 "
+                      className="absolute top-2 right-2 z-[1000] block cursor-pointer items-center justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105"
                       style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
                       variants={{
                         hoverBox: {
@@ -623,7 +612,7 @@ const Briz: NextPage = () => {
                       <span>✖︎</span>
                     </motion.div>
                     <motion.div
-                      className="absolute top-2 left-2 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105 hover:bg-red-200"
+                      className="absolute right-2 top-12 z-[1000] block cursor-pointer items-center  justify-center rounded-full bg-white px-1 text-black opacity-0 hover:scale-105"
                       style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
                       variants={{
                         hoverBox: {
