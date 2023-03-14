@@ -183,8 +183,9 @@ const Briz: NextPage = () => {
         gridRow.push(briz.grid.rowEnd);
       });
       setGridRowNumber(Math.max(...gridRow) + 13);
+    } else {
+      setGridRowNumber(14);
     }
-    setGridRowNumber(14);
   }, [getBrizData, getBrizError, getBrizLoading]);
 
   const {
@@ -397,6 +398,9 @@ const Briz: NextPage = () => {
               right: 20,
               left: -200,
             }}
+            transition={{
+              duration: 0.4,
+            }}
           >
             <button
               onClick={() => {
@@ -555,42 +559,56 @@ const Briz: NextPage = () => {
               </div>
             ) : null}
           </AnimatePresence>
-          <AnimatePresence>
-            <motion.div
-              className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
-              style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
-            >
-              <>
-                {baseGrid.map((id, i) => (
-                  <motion.div
-                    key={i}
-                    className="z-[-10000] aspect-square w-full"
-                  ></motion.div>
-                ))}
+          <motion.div
+            className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
+            style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
+          >
+            <>
+              {baseGrid.map((id, i) => (
                 <motion.div
+                  key={i}
+                  className="z-[-10000] aspect-square w-full"
+                ></motion.div>
+              ))}
+              <AnimatePresence>
+                <motion.div
+                  layout
                   className={cls(
                     `relative rounded-xl`,
-                    brizLoading ? "bg-gray-50 opacity-50 shadow-lg" : ""
+                    brizLoading ? "bg-gray-50 opacity-30 shadow-lg" : ""
                   )}
                   style={{
                     gridColumn: `${grid.colStart}/${grid.colEnd}`,
                     gridRow: `${grid.rowStart}/${grid.rowEnd}`,
                   }}
+                  transition={{
+                    duration: 0.4,
+                  }}
                 >
                   {brizLoading ? <ThreeDotsWave /> : null}
                 </motion.div>
+              </AnimatePresence>
+              <AnimatePresence>
                 {getBrizData?.getBriz.getBriz.map((briz) => (
                   <motion.div
-                    layout
                     key={briz.id}
+                    layout
                     layoutId={briz.id + ""}
+                    initial="initial"
+                    animate="normal"
+                    exit="exit"
                     whileHover="hoverBox"
-                    variants={{ hoverBox: { scale: 1.05, zIndex: 101 } }}
+                    variants={{
+                      initial: { opacity: 0 },
+                      normal: { opacity: 1 },
+                      exit: { opacity: 0 },
+                      hoverBox: { scale: 1.05, zIndex: 101 },
+                    }}
                     transition={{
-                      duration: 0.3,
+                      duration: 0.4,
                     }}
                     className={cls(
-                      `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down `
+                      `relative m-1 flex items-center justify-center overflow-hidden rounded-xl object-scale-down`
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
@@ -642,6 +660,8 @@ const Briz: NextPage = () => {
                         src={`${briz.coverImg}`}
                         alt={`${briz.title}-${briz.description}`}
                         fill
+                        placeholder="blur"
+                        blurDataURL={briz.coverImg}
                         onLoadingComplete={() => {
                           setGrid({});
                           setBrizLoading(false);
@@ -662,9 +682,9 @@ const Briz: NextPage = () => {
                     )}
                   </motion.div>
                 ))}
-              </>
-            </motion.div>
-          </AnimatePresence>
+              </AnimatePresence>
+            </>
+          </motion.div>
         </motion.div>
         <AnimatePresence>
           {brizClicked ? (
