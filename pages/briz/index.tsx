@@ -5,13 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import {
-  AnimatePresence,
-  useScroll,
-  motion,
-  LayoutGroup,
-  useDragControls,
-} from "framer-motion";
+import { AnimatePresence, useScroll, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -24,8 +18,6 @@ import {
 } from "@/src/gql/graphql";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
-import { title } from "process";
-import { data } from "autoprefixer";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -278,7 +270,6 @@ const Briz: NextPage = () => {
       return getBrizRefetch();
     },
   });
-
   const onOverlayClick = () => {
     setGrid({});
     setDragIndex({});
