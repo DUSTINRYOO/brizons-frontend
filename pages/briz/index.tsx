@@ -370,7 +370,8 @@ const Briz: NextPage = () => {
 
   const gridOnOffVar = {
     hidden: { backgroundColor: "rgba(255, 0, 0,0)" },
-    visible: { backgroundColor: "rgba(0, 0, 0, 0.3)" },
+    visibleCreate: { backgroundColor: "rgba(255, 0, 0, 0.5)" },
+    visibleEdit: { backgroundColor: "rgba(255, 255, 0, 0.5)" },
     exit: { backgroundColor: "rgba(255, 0, 0, 0)" },
   };
 
@@ -472,7 +473,7 @@ const Briz: NextPage = () => {
                     setGridOnOff((prev) => !prev);
                   }}
                   className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-blue-300 p-2 shadow-xl transition-all hover:bg-blue-400 active:scale-105"
+                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-xl transition-all hover:bg-orange-400 active:scale-105"
                   )}
                 >
                   <svg
@@ -492,7 +493,7 @@ const Briz: NextPage = () => {
                     setOpenAiOnOff((prev) => !prev);
                   }}
                   className={cls(
-                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-blue-300 p-2 shadow-lg transition-all hover:bg-blue-400 active:scale-105"
+                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-lg transition-all hover:bg-orange-400 active:scale-105"
                   )}
                 >
                   <svg
@@ -509,10 +510,11 @@ const Briz: NextPage = () => {
                 </button>
                 <button
                   onClick={() => {
+                    setBrizLongPressed(undefined);
                     setGridOnOff((prev) => !prev);
                   }}
                   className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-blue-300 p-2 shadow-xl transition-all hover:bg-blue-400 active:scale-105"
+                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-xl transition-all hover:bg-orange-400 active:scale-105"
                   )}
                 >
                   <svg
@@ -595,12 +597,14 @@ const Briz: NextPage = () => {
                       }
                     }}
                     onDragEnd={() => {
-                      setDragged(true);
+                      if (brizLongPressed) {
+                        console.log(grid);
+                      } else setDragged(true);
                     }}
                     key={i}
                     variants={gridOnOffVar}
                     initial="hidden"
-                    animate="visible"
+                    animate={!brizLongPressed ? "visibleCreate" : "visibleEdit"}
                     exit="exit"
                     transition={{ delay: i * 0.001 }}
                     className={cls(
@@ -618,7 +622,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) <= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) >= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "scale-100 opacity-40"
+                          ? "scale-100  opacity-40"
                           : ""
                         : "",
                       dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex!
@@ -627,7 +631,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "scale-100 opacity-40"
+                          ? "scale-100  opacity-40"
                           : ""
                         : "",
                       dragIndex!.rowStartIndex! > dragIndex!.rowEndIndex! &&
@@ -637,7 +641,7 @@ const Briz: NextPage = () => {
                           Math.floor(i / 24) >= dragIndex!.rowEndIndex! &&
                           Math.floor(i / 24) <= dragIndex!.rowStartIndex! &&
                           !brizLoading
-                          ? "scale-100 opacity-40"
+                          ? "scale-100  opacity-40"
                           : ""
                         : ""
                     )}
@@ -705,6 +709,7 @@ const Briz: NextPage = () => {
                       longPressTimeOut.current = window.setTimeout(() => {
                         console.log(`${briz.id} Long Pressed`);
                         setBrizLongPressed(briz.id);
+                        setGridOnOff(true);
                       }, 400);
                     }}
                     onMouseUp={() => {
