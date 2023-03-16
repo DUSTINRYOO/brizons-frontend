@@ -111,6 +111,7 @@ interface CreateBrizForm {
 }
 
 interface EditBrizInputForm {
+  id?: number;
   title: string;
   description: string;
   metatags: string;
@@ -148,10 +149,9 @@ const Briz: NextPage = () => {
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
-  const [longPress, setlongPress] = useState<number>();
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [brizText, setBrizText] = useState<string>();
-  const [brizLongPressed, setBrizLongPressed] = useState<number>();
+  const [brizLongPressed, setBrizLongPressed] = useState<EditBrizInputForm>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
   const [brizClicked, setBrizClicked] = useState<boolean>();
   const [editClicked, setEditClicked] = useState<number>();
@@ -470,10 +470,15 @@ const Briz: NextPage = () => {
               >
                 <button
                   onClick={() => {
-                    setGridOnOff((prev) => !prev);
+                    setEditClicked(brizLongPressed.id);
+                    setValueEditBriz("editBriz", {
+                      title: brizLongPressed.title,
+                      description: brizLongPressed.description,
+                      metatags: brizLongPressed.metatags,
+                    });
                   }}
                   className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-xl transition-all hover:bg-orange-400 active:scale-105"
+                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
                   )}
                 >
                   <svg
@@ -490,10 +495,10 @@ const Briz: NextPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setOpenAiOnOff((prev) => !prev);
+                    onClickDelete(brizLongPressed.id!);
                   }}
                   className={cls(
-                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-lg transition-all hover:bg-orange-400 active:scale-105"
+                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
                   )}
                 >
                   <svg
@@ -514,17 +519,17 @@ const Briz: NextPage = () => {
                     setGridOnOff((prev) => !prev);
                   }}
                   className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-300 p-2 shadow-xl transition-all hover:bg-orange-400 active:scale-105"
+                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
                   )}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="50"
                     height="50"
-                    viewBox="0 -60 625 625"
+                    viewBox="-55 -60 625 625"
                   >
                     <path
-                      d="M115.2 0C84.7 0 58.5 21.5 52.5 51.4L1.3 307.4C-6.6 347 23.6 384 64 384H281v64H217c-17.7 0-32 14.3-32 32s14.3 32 32 32H409c17.7 0 32-14.3 32-32s-14.3-32-32-32H345V384H562c40.4 0 70.7-36.9 62.8-76.6l-51.2-256C567.5 21.5 541.3 0 510.8 0H115.2zM253.9 64H372.1l10.4 104h-139L253.9 64zM195.3 168H94.4L115.2 64h90.4L195.3 168zM84.8 216H190.5L180.1 320H64L84.8 216zm153.9 0H387.3l10.4 104-169.4 0 10.4-104zm196.8 0H541.2L562 320h-116L435.5 216zm96-48H430.7L420.3 64h90.4l31.4-6.3L510.8 64l20.8 104z"
+                      d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM0 96C0 60.65 28.65 32 64 32H448C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H448C456.8 432 464 424.8 464 416V96C464 87.16 456.8 80 448 80H64C55.16 80 48 87.16 48 96z"
                       fill="white"
                     />
                   </svg>
@@ -707,8 +712,12 @@ const Briz: NextPage = () => {
                     }}
                     onMouseDown={() => {
                       longPressTimeOut.current = window.setTimeout(() => {
-                        console.log(`${briz.id} Long Pressed`);
-                        setBrizLongPressed(briz.id);
+                        setBrizLongPressed({
+                          id: briz.id,
+                          title: briz.title,
+                          metatags: briz.metatags,
+                          description: briz.description,
+                        });
                         setGridOnOff(true);
                       }, 400);
                     }}
@@ -716,41 +725,6 @@ const Briz: NextPage = () => {
                       clearTimeout(longPressTimeOut.current);
                     }}
                   >
-                    <motion.div className="absolute flex flex-col items-center justify-center">
-                      <motion.div
-                        className="z-[1000] mb-1 flex aspect-square w-[3vw] min-w-min max-w-max cursor-pointer items-center justify-center rounded-full bg-gray-50 px-1 text-center text-black opacity-0 hover:scale-105"
-                        style={{ fontSize: "clamp(1px,2vw,1.6rem)" }}
-                        variants={{
-                          hoverBox: {
-                            opacity: 1,
-                          },
-                        }}
-                        onClick={() => {
-                          onClickDelete(briz.id);
-                        }}
-                      >
-                        <span className="block">✖︎</span>
-                      </motion.div>
-                      <motion.div
-                        className="z-[1000] flex aspect-square w-[3vw] min-w-min max-w-max cursor-pointer items-center justify-center rounded-full bg-gray-50 px-1 text-center font-bold text-black opacity-0 hover:scale-105"
-                        style={{ fontSize: "clamp(1px,2.2vw,1.8rem)" }}
-                        variants={{
-                          hoverBox: {
-                            opacity: 1,
-                          },
-                        }}
-                        onClick={() => {
-                          setEditClicked(briz.id);
-                          setValueEditBriz("editBriz", {
-                            title: briz.title,
-                            description: briz.description,
-                            metatags: briz.metatags,
-                          });
-                        }}
-                      >
-                        <span className="block">✎</span>
-                      </motion.div>
-                    </motion.div>
                     {briz.coverImg !== "null" ? (
                       <Image
                         onMouseOver={() => {
