@@ -112,9 +112,10 @@ interface CreateBrizForm {
 
 interface EditBrizInputForm {
   id?: number;
-  title: string;
-  description: string;
-  metatags: string;
+  title?: string;
+  description?: string;
+  metatags?: string;
+  grid?: IGrid;
 }
 
 interface EditBrizForm {
@@ -352,6 +353,20 @@ const Briz: NextPage = () => {
     setEditClicked(undefined);
   };
 
+  const onSubmitGridEdit = async (brizId: number) => {
+    if (!meLoading) {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId,
+            grid: grid,
+          },
+        },
+      });
+    }
+    setEditClicked(undefined);
+  };
+
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
     const { openAi } = await (
@@ -476,6 +491,8 @@ const Briz: NextPage = () => {
                       description: brizLongPressed.description,
                       metatags: brizLongPressed.metatags,
                     });
+                    setBrizLongPressed(undefined);
+                    setGridOnOff((prev) => !prev);
                   }}
                   className={cls(
                     "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
@@ -496,6 +513,8 @@ const Briz: NextPage = () => {
                 <button
                   onClick={() => {
                     onClickDelete(brizLongPressed.id!);
+                    setBrizLongPressed(undefined);
+                    setGridOnOff((prev) => !prev);
                   }}
                   className={cls(
                     "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
@@ -603,7 +622,11 @@ const Briz: NextPage = () => {
                     }}
                     onDragEnd={() => {
                       if (brizLongPressed) {
-                        console.log(grid);
+                        onSubmitGridEdit(brizLongPressed.id!);
+                        setBrizLongPressed(undefined);
+                        setGridOnOff((prev) => !prev);
+                        setGrid({});
+                        setDragIndex({});
                       } else setDragged(true);
                     }}
                     key={i}
@@ -691,14 +714,19 @@ const Briz: NextPage = () => {
                     layout
                     layoutId={briz.id + ""}
                     initial="initial"
-                    animate="normal"
+                    animate={
+                      brizLongPressed && brizLongPressed.id === briz.id
+                        ? "selected"
+                        : "normal"
+                    }
                     exit="exit"
                     whileHover="hoverBox"
                     variants={{
                       initial: { opacity: 0 },
                       normal: { opacity: 1 },
+                      selected: { opacity: 0.3, scale: 1.05 },
                       exit: { opacity: 0 },
-                      hoverBox: { scale: 1.05, zIndex: 101 },
+                      hoverBox: { scale: 1.03, zIndex: 101 },
                     }}
                     transition={{
                       duration: 0.4,
