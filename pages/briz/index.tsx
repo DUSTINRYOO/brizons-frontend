@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
 import { AnimatePresence, useScroll, motion } from "framer-motion";
@@ -142,11 +142,13 @@ interface getBrizQuery {
 
 const Briz: NextPage = () => {
   const { scrollY } = useScroll();
+  const longPressTimeOut = useRef<number>();
   const [gridRowNumber, setGridRowNumber] = useState<number>(14);
   const baseGrid = [...Array(gridRowNumber * 24)];
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
+  const [longPress, setlongPress] = useState<number>();
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
   const [brizText, setBrizText] = useState<string>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
@@ -610,6 +612,14 @@ const Briz: NextPage = () => {
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
                       gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                    }}
+                    onMouseDown={() => {
+                      longPressTimeOut.current = window.setTimeout(() => {
+                        console.log("Long Pressed");
+                      }, 400);
+                    }}
+                    onMouseUp={() => {
+                      clearTimeout(longPressTimeOut.current);
                     }}
                   >
                     <motion.div className="absolute flex flex-col items-center justify-center">
