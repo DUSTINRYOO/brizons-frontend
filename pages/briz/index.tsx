@@ -5,7 +5,12 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, useScroll, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  useScroll,
+  motion,
+  CustomValueType,
+} from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -162,6 +167,11 @@ interface deleteBrizMutation {
 interface getBrizQuery {
   getBriz: GetBrizOutput;
 }
+enum textRowAlign {
+  "start" = "start",
+  "center" = "center",
+  "end" = "end",
+}
 
 const Briz: NextPage = () => {
   const { scrollY } = useScroll();
@@ -184,7 +194,6 @@ const Briz: NextPage = () => {
   const [inputToggle, setInputToggle] = useState<boolean>(false);
   const [textBold, setTextBold] = useState<string>("500");
   const [textItalic, setTextItalic] = useState<boolean>(false);
-  const [fontSize, setFontSize] = useState<number>(10);
   const [textRowAlign, setTextRowAlign] = useState<string>("center");
   const [textColAlign, setTextColAlign] = useState<string>("center");
   const [openAI, setOpenAI] = useState("Hello! What do you want to know?");
@@ -263,6 +272,10 @@ const Briz: NextPage = () => {
       const {
         createBriz: { ok, error },
       } = data;
+      setTextBold("500");
+      setTextItalic(false);
+      setTextRowAlign("center");
+      setTextColAlign("center");
       reset();
       return getBrizRefetch();
     },
@@ -325,6 +338,7 @@ const Briz: NextPage = () => {
     setDragged(false);
     setGridOnOff(false);
     setBrizLoading(true);
+
     let coverImg = "null";
     let text = null;
     if (data.coverImg) {
@@ -343,8 +357,12 @@ const Briz: NextPage = () => {
     }
     if (data.text) {
       text = data.text;
-      text.fontSize = 1;
-      text.italic = true;
+      text.fontSize = +data.text.fontSize;
+      text.textColAlign = textColAlign;
+      text.textRowAlign = textRowAlign;
+      text.bold = textBold;
+      text.italic = textItalic;
+      data.description = "";
       setBrizText(text.text);
       setBrizLoading(false);
     }
@@ -807,13 +825,17 @@ const Briz: NextPage = () => {
                           <motion.span
                             className="flex h-full w-full flex-col"
                             style={{
-                              fontSize: "clamp(1px,3.2vw,2.6rem)",
+                              fontSize: `clamp(1px,${
+                                0.064 * (briz.text.fontSize + 10)
+                              }vw,${0.052 * (briz.text.fontSize + 10)}rem)`,
                               color: briz.text.textColor,
-                              backgroundColor: briz.text.boxColor,
-                              fontStyle: "italic",
-                              fontWeight: "900",
-                              textAlign: "center",
-                              justifyContent: "center",
+                              backgroundColor: briz.text.boxColor
+                                ? briz.text.boxColor
+                                : "",
+                              fontStyle: briz.text.italic ? "italic" : "",
+                              fontWeight: briz.text.bold,
+                              textAlign: briz.text.textRowAlign as textRowAlign,
+                              justifyContent: briz.text.textColAlign,
                             }}
                           >{`${briz.text.text}`}</motion.span>
                         ) : (
@@ -1010,29 +1032,49 @@ const Briz: NextPage = () => {
                               required={false}
                               register={register("text.fontSize")}
                             />
-
                             <motion.div className="flex flex-row">
-                              <Input
-                                label="Text Color"
-                                name="textColor"
-                                type="color"
-                                placeholder="textColor"
-                                required={false}
-                                register={register("text.textColor")}
-                              />
+                              <motion.div className="mr-2">
+                                <Input
+                                  label="Text Color"
+                                  name="textColor"
+                                  type="color"
+                                  placeholder="textColor"
+                                  required
+                                  register={register("text.textColor")}
+                                />
+                              </motion.div>
                               <Input
                                 label="Box Color"
                                 name="boxColor"
                                 type="color"
                                 placeholder="boxColor"
-                                required={false}
+                                required
                                 register={register("text.boxColor")}
                               />
                             </motion.div>
                           </motion.div>
                           <motion.div className="flex flex-col items-center justify-end">
                             <motion.div className="mb-1 flex flex-row rounded-lg border border-gray-300 px-2 py-1">
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  "mr-1",
+                                  textBold === "700"
+                                    ? " rounded-md bg-red-300"
+                                    : "",
+                                  textBold === "900"
+                                    ? "rounded-md bg-red-400"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  if (textBold === "500") {
+                                    setTextBold("700");
+                                  } else if (textBold === "700") {
+                                    setTextBold("900");
+                                  } else if (textBold === "900") {
+                                    setTextBold("500");
+                                  }
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
@@ -1042,7 +1084,14 @@ const Briz: NextPage = () => {
                                   <path d="M0 64C0 46.3 14.3 32 32 32H80 96 224c70.7 0 128 57.3 128 128c0 31.3-11.3 60.1-30 82.3c37.1 22.4 62 63.1 62 109.7c0 70.7-57.3 128-128 128H96 80 32c-17.7 0-32-14.3-32-32s14.3-32 32-32H48V256 96H32C14.3 96 0 81.7 0 64zM224 224c35.3 0 64-28.7 64-64s-28.7-64-64-64H112V224H224zM112 288V416H256c35.3 0 64-28.7 64-64s-28.7-64-64-64H224 112z" />
                                 </svg>
                               </motion.div>
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  textItalic ? " rounded-md bg-red-300" : ""
+                                )}
+                                onClick={() => {
+                                  setTextItalic((prev) => !prev);
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
@@ -1054,64 +1103,122 @@ const Briz: NextPage = () => {
                               </motion.div>
                             </motion.div>
                             <motion.div className="mb-1 flex flex-row rounded-lg border border-gray-300 px-2 py-1">
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  "mr-1",
+                                  textRowAlign === "left"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextRowAlign("left");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-90 -60 625 625"
                                 >
                                   <path d="M288 64c0 17.7-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32H256c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H256c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
                                 </svg>
                               </motion.div>
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  "mr-1",
+                                  textRowAlign === "center"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextRowAlign("center");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-90 -60 625 625"
                                 >
                                   <path d="M352 64c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32zm96 128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32-14.3 32-32zM0 448c0 17.7 14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32zM352 320c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32z" />
                                 </svg>
                               </motion.div>
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  textRowAlign === "right"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextRowAlign("right");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-90 -60 625 625"
                                 >
                                   <path d="M448 64c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
                                 </svg>
                               </motion.div>
                             </motion.div>
                             <motion.div className="flex flex-row rounded-lg border border-gray-300 px-2 py-1">
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  "mr-1",
+                                  textColAlign === "start"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextColAlign("start");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-30 -60 625 625"
                                 >
                                   <path d="M32 96l512 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32C14.3 32 0 46.3 0 64S14.3 96 32 96zM9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L96 237.3 96 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96zm320 45.3c12.5 12.5 32.8 12.5 45.3 0L416 237.3 416 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3z" />
                                 </svg>
                               </motion.div>
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  "mr-1",
+                                  textColAlign === "center"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextColAlign("center");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-30 -60 625 625"
                                 >
                                   <path d="M137.4 502.6c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7V288H544c17.7 0 32-14.3 32-32s-14.3-32-32-32H448V109.3l41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L384 109.3V224H192 128 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96V402.7L86.6 361.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96zM128 192h64V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V192zM448 320H384V448c0 17.7 14.3 32 32 32s32-14.3 32-32V320z" />
                                 </svg>
                               </motion.div>
-                              <motion.div className="bg-red-500">
+                              <motion.div
+                                className={cls(
+                                  textColAlign === "end"
+                                    ? " rounded-md bg-red-300"
+                                    : ""
+                                )}
+                                onClick={() => {
+                                  setTextColAlign("end");
+                                }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="25"
                                   height="25"
-                                  viewBox="-50 -60 625 625"
+                                  viewBox="-30 -60 625 625"
                                 >
                                   <path d="M544 416L32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l512 0c17.7 0 32-14.3 32-32s-14.3-32-32-32zm22.6-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L480 274.7 480 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96zm-320-45.3c-12.5-12.5-32.8-12.5-45.3 0L160 274.7 160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7L54.6 233.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3z" />
                                 </svg>
@@ -1121,7 +1228,6 @@ const Briz: NextPage = () => {
                         </motion.div>
                       </>
                     )}
-
                     <Button text={"Create a Briz"} />
                   </form>
                 </div>
