@@ -237,6 +237,7 @@ export type Text = {
   fontSize: Scalars['Float'];
   id: Scalars['Float'];
   italic: Scalars['Boolean'];
+  text: Scalars['String'];
   textColAlign: Scalars['String'];
   textColor: Scalars['String'];
   textRowAlign: Scalars['String'];
@@ -248,6 +249,7 @@ export type TextInputType = {
   boxColor: Scalars['String'];
   fontSize: Scalars['Float'];
   italic: Scalars['Boolean'];
+  text: Scalars['String'];
   textColAlign: Scalars['String'];
   textColor: Scalars['String'];
   textRowAlign: Scalars['String'];

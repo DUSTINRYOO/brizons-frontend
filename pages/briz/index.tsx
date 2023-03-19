@@ -10,14 +10,15 @@ import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import { cls } from "@/libs/utils";
+
+import Image from "next/image";
+import ThreeDotsWave from "@/components/loading";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
   EditBrizOutput,
   GetBrizOutput,
 } from "@/src/gql/graphql";
-import Image from "next/image";
-import ThreeDotsWave from "@/components/loading";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -103,6 +104,17 @@ interface IGrid {
   rowStart?: number;
   rowEnd?: number;
 }
+
+interface IText {
+  text: string;
+  fontSize: number;
+  bold: string;
+  italic: boolean;
+  textColor: string;
+  boxColor: string;
+  textColAlign: string;
+  textRowAlign: string;
+}
 interface IDragIndex {
   colStartIndex?: number;
   colEndIndex?: number;
@@ -111,7 +123,7 @@ interface IDragIndex {
 }
 interface CreateBrizForm {
   title: string;
-  text: string;
+  text: IText;
   description: string;
   metatags: string;
   coverImg: string;
@@ -309,6 +321,7 @@ const Briz: NextPage = () => {
     setBrizLoading(true);
     let coverImg = "null";
     let text = null;
+    console.log(data);
     if (data.coverImg) {
       if (data.coverImg.length !== 0) {
         const actualFile = data.coverImg[0];
@@ -325,9 +338,12 @@ const Briz: NextPage = () => {
     }
     if (data.text) {
       text = data.text;
-      setBrizText(text);
+      text.fontSize = 1;
+      text.italic = true;
+      setBrizText(text.text);
       setBrizLoading(false);
     }
+    console.log(coverImg);
     setDragIndex({});
     if (!meLoading) {
       createBrizMutation({
@@ -906,50 +922,134 @@ const Briz: NextPage = () => {
                       </button>
                     </div>
                     {!inputToggle ? (
-                      <Input
-                        label="Image"
-                        name="coverImg"
-                        type="file"
-                        required
-                        tab
-                        accept="image/*"
-                        register={register("coverImg")}
-                      />
+                      <>
+                        <Input
+                          label="Image"
+                          name="coverImg"
+                          type="file"
+                          required
+                          tab
+                          accept="image/*"
+                          register={register("coverImg")}
+                        />
+                        <Input
+                          label="Title"
+                          name="title"
+                          type="text"
+                          placeholder="Title"
+                          required
+                          register={register("title")}
+                        />
+                        <Input
+                          label="Tags"
+                          name="metatags"
+                          type="text"
+                          placeholder="#add #tags #about #this #briz"
+                          required
+                          register={register("metatags")}
+                        />
+                        <Input
+                          label="Description"
+                          name="description"
+                          type="textarea"
+                          placeholder="Write a description"
+                          required
+                          register={register("description")}
+                        />
+                      </>
                     ) : (
-                      <Input
-                        tab
-                        label="Text"
-                        name="text"
-                        type="text"
-                        placeholder="Write anything"
-                        required
-                        register={register("text")}
-                      />
+                      <>
+                        <Input
+                          tab
+                          label="Text"
+                          name="text"
+                          type="text"
+                          placeholder="Write anything"
+                          required
+                          register={register("text.text")}
+                        />
+                        <Input
+                          label="Title"
+                          name="title"
+                          type="text"
+                          placeholder="Title"
+                          required={false}
+                          register={register("title")}
+                        />
+                        <Input
+                          label="Tags"
+                          name="metatags"
+                          type="text"
+                          placeholder="#add #tags #about #this #briz"
+                          required={false}
+                          register={register("metatags")}
+                        />
+                        <Input
+                          label="Description"
+                          name="description"
+                          type="textarea"
+                          placeholder="Write a description"
+                          required={false}
+                          register={register("description")}
+                        />
+                        <Input
+                          label="Font"
+                          name="fontSize"
+                          type="number"
+                          placeholder="fontSize"
+                          required={false}
+                          register={register("text.fontSize")}
+                        />
+                        <Input
+                          label="Bold"
+                          name="bold"
+                          type="text"
+                          placeholder="bold"
+                          required={false}
+                          register={register("text.bold")}
+                        />
+                        <Input
+                          label="Italic"
+                          name="italic"
+                          type="text"
+                          placeholder="italic"
+                          required={false}
+                          register={register("text.italic")}
+                        />
+                        <Input
+                          label="Text Color"
+                          name="textColor"
+                          type="text"
+                          placeholder="textColor"
+                          required={false}
+                          register={register("text.textColor")}
+                        />
+                        <Input
+                          label="Box Color"
+                          name="boxColor"
+                          type="text"
+                          placeholder="boxColor"
+                          required={false}
+                          register={register("text.boxColor")}
+                        />
+                        <Input
+                          label="Text Col Align"
+                          name="textColAlign"
+                          type="text"
+                          placeholder="textColAlign"
+                          required={false}
+                          register={register("text.textColAlign")}
+                        />
+                        <Input
+                          label="Text Row Align"
+                          name="textRowAlign"
+                          type="text"
+                          placeholder="textRowAlign"
+                          required={false}
+                          register={register("text.textRowAlign")}
+                        />
+                      </>
                     )}
-                    <Input
-                      label="Title"
-                      name="title"
-                      type="text"
-                      placeholder="Title"
-                      required
-                      register={register("title")}
-                    />
-                    <Input
-                      label="Tags"
-                      name="metatags"
-                      type="text"
-                      placeholder="#add #tags #about #this #briz"
-                      required
-                      register={register("metatags")}
-                    />
-                    <Input
-                      label="Description"
-                      name="description"
-                      type="textarea"
-                      placeholder="Write a description"
-                      required
-                      register={register("description")}
-                    />
 
                     <Button text={"Create a Briz"} />
                   </form>
