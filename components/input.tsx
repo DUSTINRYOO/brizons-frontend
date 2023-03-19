@@ -29,7 +29,8 @@ export default function Input({
       <label
         className={cls(
           "text-md mb-1 block font-semibold text-gray-700",
-          tab ? "hidden" : ""
+          tab ? "hidden" : "",
+          type === "color" ? "mr-3" : ""
         )}
         htmlFor={name}
       >
@@ -68,8 +69,10 @@ export default function Input({
                 ? "absolute top-0 aspect-video opacity-0"
                 : "",
               tab
-                ? " ransition-all aspect-video border-none bg-red-50 text-center text-xl font-semibold placeholder:font-semibold placeholder:text-gray-700 hover:bg-red-100 "
-                : ""
+                ? " aspect-video border-none bg-red-50 text-center text-xl font-semibold transition-all placeholder:font-semibold placeholder:text-gray-700 hover:bg-red-100 "
+                : "",
+              type === "color" ? "h-12 w-full bg-white px-2" : "",
+              type === "range" ? "range h-6  accent-black" : ""
             )}
           />
         )}
