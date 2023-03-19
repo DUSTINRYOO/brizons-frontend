@@ -39,6 +39,7 @@ const BRIZ_QUERY = gql`
       getBriz {
         id
         text {
+          text
           fontSize
           bold
           italic
@@ -321,7 +322,6 @@ const Briz: NextPage = () => {
     setBrizLoading(true);
     let coverImg = "null";
     let text = null;
-    console.log(data);
     if (data.coverImg) {
       if (data.coverImg.length !== 0) {
         const actualFile = data.coverImg[0];
@@ -343,7 +343,6 @@ const Briz: NextPage = () => {
       setBrizText(text.text);
       setBrizLoading(false);
     }
-    console.log(coverImg);
     setDragIndex({});
     if (!meLoading) {
       createBrizMutation({
@@ -798,12 +797,24 @@ const Briz: NextPage = () => {
                         style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
                       ></Image>
                     ) : (
-                      <motion.div className=" relative font-semibold text-black ">
+                      <motion.div className="relative h-full w-full">
                         {briz.text ? (
                           <motion.span
-                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                          >{`${briz.text}`}</motion.span>
+                            className="flex h-full w-full flex-col"
+                            style={{
+                              fontSize: "clamp(1px,3.2vw,2.6rem)",
+                              color: briz.text.textColor,
+                              backgroundColor: briz.text.boxColor,
+                              fontStyle: "italic",
+                              fontWeight: "900",
+                              textAlign: "center",
+                              justifyContent: "center",
+                            }}
+                          >{`${briz.text.text}`}</motion.span>
                         ) : (
+                          /*            <motion.span
+                          style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
+                        >{`${briz.text.text}`}</motion.span> */
                           <motion.span
                             style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
                           >{`${brizText}`}</motion.span>
@@ -1019,7 +1030,7 @@ const Briz: NextPage = () => {
                         <Input
                           label="Text Color"
                           name="textColor"
-                          type="text"
+                          type="color"
                           placeholder="textColor"
                           required={false}
                           register={register("text.textColor")}
@@ -1027,7 +1038,7 @@ const Briz: NextPage = () => {
                         <Input
                           label="Box Color"
                           name="boxColor"
-                          type="text"
+                          type="color"
                           placeholder="boxColor"
                           required={false}
                           register={register("text.boxColor")}
