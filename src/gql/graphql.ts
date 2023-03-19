@@ -24,7 +24,7 @@ export type Briz = {
   id: Scalars['Float'];
   metatags: Scalars['String'];
   owner: User;
-  text?: Maybe<Scalars['String']>;
+  text?: Maybe<Text>;
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -47,7 +47,7 @@ export type CreateBrizInput = {
   grid: GridInputType;
   metatags: Scalars['String'];
   parentBrizId?: InputMaybe<Scalars['Int']>;
-  text?: InputMaybe<Scalars['String']>;
+  text?: InputMaybe<TextInputType>;
   title: Scalars['String'];
 };
 
@@ -81,7 +81,7 @@ export type EditBrizInput = {
   grid?: InputMaybe<GridInputType>;
   metatags?: InputMaybe<Scalars['String']>;
   parentBrizId?: InputMaybe<Scalars['Int']>;
-  text?: InputMaybe<Scalars['String']>;
+  text?: InputMaybe<TextInputType>;
   title?: InputMaybe<Scalars['String']>;
 };
 
@@ -227,6 +227,30 @@ export type QueryGetBrizArgs = {
 
 export type QueryUserProfileArgs = {
   userId: Scalars['Float'];
+};
+
+export type Text = {
+  __typename?: 'Text';
+  bold: Scalars['String'];
+  boxColor: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  fontSize: Scalars['Float'];
+  id: Scalars['Float'];
+  italic: Scalars['Boolean'];
+  textColAlign: Scalars['String'];
+  textColor: Scalars['String'];
+  textRowAlign: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type TextInputType = {
+  bold: Scalars['String'];
+  boxColor: Scalars['String'];
+  fontSize: Scalars['Float'];
+  italic: Scalars['Boolean'];
+  textColAlign: Scalars['String'];
+  textColor: Scalars['String'];
+  textRowAlign: Scalars['String'];
 };
 
 export type UpdateExampleDto = {

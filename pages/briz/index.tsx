@@ -30,14 +30,22 @@ const ME_QUERY = gql`
   }
 `;
 
-const GRID_QUERY = gql`
+const BRIZ_QUERY = gql`
   query gridQuery($getBrizInput: GetBrizInput!) {
     getBriz(getBrizInput: $getBrizInput) {
       ok
       error
       getBriz {
         id
-        text
+        text {
+          fontSize
+          bold
+          italic
+          textColor
+          boxColor
+          textColAlign
+          textRowAlign
+        }
         coverImg
         title
         description
@@ -172,7 +180,7 @@ const Briz: NextPage = () => {
     loading: getBrizLoading,
     error: getBrizError,
     refetch: getBrizRefetch,
-  } = useQuery<getBrizQuery>(GRID_QUERY, { variables: { getBrizInput: {} } });
+  } = useQuery<getBrizQuery>(BRIZ_QUERY, { variables: { getBrizInput: {} } });
   useEffect(() => {
     if (
       !getBrizError &&
