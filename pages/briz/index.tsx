@@ -149,6 +149,11 @@ interface EditBrizForm {
   editBriz: EditBrizInputForm;
 }
 
+interface EditClickedForm {
+  id: number;
+  briztype: string;
+}
+
 interface OpenAiForm {
   prompt: string;
 }
@@ -187,7 +192,7 @@ const Briz: NextPage = () => {
   const [brizLongPressed, setBrizLongPressed] = useState<EditBrizInputForm>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
   const [brizClicked, setBrizClicked] = useState<boolean>();
-  const [editClicked, setEditClicked] = useState<number>();
+  const [editClicked, setEditClicked] = useState<EditClickedForm>();
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
@@ -405,12 +410,11 @@ const Briz: NextPage = () => {
         text.boxColor = "";
       }
     }
-
-    if (!meLoading) {
+    if (!meLoading && text) {
       editBrizMutation({
         variables: {
           editBrizInput: {
-            brizId: editClicked,
+            brizId: editClicked?.id,
             text: {
               text: text?.text,
               bold: text?.bold,
@@ -421,6 +425,17 @@ const Briz: NextPage = () => {
               textColAlign: text?.textColAlign,
               textRowAlign: text?.textRowAlign,
             },
+            title: data.editBriz.title,
+            description: data.editBriz.description,
+            metatags: data.editBriz.metatags,
+          },
+        },
+      });
+    } else {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId: editClicked?.id,
             title: data.editBriz.title,
             description: data.editBriz.description,
             metatags: data.editBriz.metatags,
@@ -563,7 +578,10 @@ const Briz: NextPage = () => {
               >
                 <button
                   onClick={() => {
-                    setEditClicked(brizLongPressed.id);
+                    setEditClicked({
+                      id: brizLongPressed.id!,
+                      briztype: brizLongPressed.text ? "text" : "image",
+                    });
                     setValueEditBriz("editBriz", {
                       title: brizLongPressed.title,
                       description: brizLongPressed.description,
@@ -1315,14 +1333,17 @@ const Briz: NextPage = () => {
                     className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
                     onSubmit={handleSubmitEditBriz(onSubmitEdit)}
                   >
-                    <Input
-                      label="Text"
-                      name="text"
-                      type="text"
-                      placeholder="Text"
-                      required
-                      register={registerEditBriz("editBriz.text.text")}
-                    />
+                    {editClicked.briztype === "text" ? (
+                      <Input
+                        label="Text"
+                        name="text"
+                        type="text"
+                        placeholder="Text"
+                        required
+                        register={registerEditBriz("editBriz.text.text")}
+                      />
+                    ) : null}
+
                     <Input
                       label="Title"
                       name="title"
@@ -1339,8 +1360,7 @@ const Briz: NextPage = () => {
                       required
                       register={registerEditBriz("editBriz.metatags")}
                     />
-
-                    {true ? (
+                    {editClicked.briztype === "text" ? (
                       <motion.div className="flex w-full flex-row justify-evenly rounded-xl bg-gray-50 py-2">
                         <motion.div className="flex flex-col">
                           <Input
