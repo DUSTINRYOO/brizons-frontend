@@ -189,6 +189,7 @@ const Briz: NextPage = () => {
   const [editClicked, setEditClicked] = useState<number>();
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
+  const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const [inputToggle, setInputToggle] = useState<boolean>(false);
@@ -363,6 +364,9 @@ const Briz: NextPage = () => {
       text.bold = textBold;
       text.italic = textItalic;
       data.description = "";
+      if (boxColorOnOff) {
+        text.boxColor = "";
+      }
       setBrizText(text.text);
       setBrizLoading(false);
     }
@@ -838,14 +842,7 @@ const Briz: NextPage = () => {
                               justifyContent: briz.text.textColAlign,
                             }}
                           >{`${briz.text.text}`}</motion.span>
-                        ) : (
-                          /*            <motion.span
-                          style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                        >{`${briz.text.text}`}</motion.span> */
-                          <motion.span
-                            style={{ fontSize: "clamp(1px,3.2vw,2.6rem)" }}
-                          >{`${brizText}`}</motion.span>
-                        )}
+                        ) : null}
                       </motion.div>
                     )}
                   </motion.div>
@@ -1011,7 +1008,7 @@ const Briz: NextPage = () => {
                           name="title"
                           type="text"
                           placeholder="Title"
-                          required={false}
+                          required
                           register={register("title")}
                         />
                         <Input
@@ -1019,7 +1016,7 @@ const Briz: NextPage = () => {
                           name="metatags"
                           type="text"
                           placeholder="#add #tags #about #this #briz"
-                          required={false}
+                          required
                           register={register("metatags")}
                         />
                         <motion.div className="flex w-full flex-row justify-evenly rounded-xl bg-gray-50 py-2">
@@ -1029,13 +1026,13 @@ const Briz: NextPage = () => {
                               name="fontSize"
                               type="range"
                               placeholder="fontSize"
-                              required={false}
+                              required
                               register={register("text.fontSize")}
                             />
                             <motion.div className="flex flex-row">
-                              <motion.div className="mr-2">
+                              <motion.div className="mr-2 w-1/2">
                                 <Input
-                                  label="Text Color"
+                                  label="Font Color"
                                   name="textColor"
                                   type="color"
                                   placeholder="textColor"
@@ -1043,14 +1040,46 @@ const Briz: NextPage = () => {
                                   register={register("text.textColor")}
                                 />
                               </motion.div>
-                              <Input
-                                label="Box Color"
-                                name="boxColor"
-                                type="color"
-                                placeholder="boxColor"
-                                required
-                                register={register("text.boxColor")}
-                              />
+                              <motion.div className="relative w-1/2">
+                                <motion.span
+                                  className={cls(
+                                    "text-md mb-1 block  cursor-pointer font-semibold ",
+                                    boxColorOnOff
+                                      ? "text-gray-400"
+                                      : "text-gray-700"
+                                  )}
+                                  onClick={() => {
+                                    setBoxColorOnOff((prev) => !prev);
+                                  }}
+                                >
+                                  Box Color
+                                </motion.span>
+                                <motion.div className="absolute left-4 ">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="45"
+                                    height="45"
+                                    viewBox="-80 -60 625 625"
+                                  >
+                                    <path
+                                      d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM0 96C0 60.65 28.65 32 64 32H448C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H448C456.8 432 464 424.8 464 416V96C464 87.16 456.8 80 448 80H64C55.16 80 48 87.16 48 96z"
+                                      fill="gray"
+                                    />
+                                  </svg>
+                                </motion.div>
+                                <motion.div
+                                  className={cls(boxColorOnOff ? "hidden" : "")}
+                                >
+                                  <Input
+                                    label=""
+                                    name="boxColor"
+                                    type="color"
+                                    placeholder="boxColor"
+                                    required
+                                    register={register("text.boxColor")}
+                                  />
+                                </motion.div>
+                              </motion.div>
                             </motion.div>
                           </motion.div>
                           <motion.div className="flex flex-col items-center justify-end">
@@ -1285,7 +1314,7 @@ const Briz: NextPage = () => {
                 </div>
               </motion.div>
             </>
-          ) : null}{" "}
+          ) : null}
         </AnimatePresence>
         <AnimatePresence>
           {openAiOnOff ? (

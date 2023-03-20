@@ -16,6 +16,7 @@ interface InputProps {
 
 export default function Input({
   label,
+
   name,
   register,
   type,
@@ -28,7 +29,7 @@ export default function Input({
     <div>
       <label
         className={cls(
-          "text-md mb-1 block font-semibold text-gray-700",
+          "text-md mb-1 block w-full font-semibold text-gray-700",
           tab ? "hidden" : "",
           type === "color" ? "mr-3" : ""
         )}
@@ -38,9 +39,9 @@ export default function Input({
       </label>
       <div
         className={cls(
-          "relative flex items-center  rounded-md shadow-sm",
+          "relative flex w-full items-center rounded-md shadow-sm",
           tab && type === "file"
-            ? "aspect-video w-full items-center justify-center rounded-xl bg-red-50 transition-transform  hover:bg-red-100 active:scale-105 active:bg-red-200"
+            ? "aspect-video  items-center justify-center rounded-xl bg-red-50 transition-transform  hover:bg-red-100 active:scale-105 active:bg-red-200"
             : ""
         )}
       >
