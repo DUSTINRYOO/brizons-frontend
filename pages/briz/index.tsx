@@ -141,6 +141,7 @@ interface EditBrizInputForm {
   title?: string;
   description?: string;
   metatags?: string;
+  text?: IText | null;
   grid?: IGrid;
 }
 
@@ -294,6 +295,7 @@ const Briz: NextPage = () => {
       const {
         editBriz: { ok, error },
       } = data;
+
       resetEditBriz();
       return getBrizRefetch();
     },
@@ -370,6 +372,7 @@ const Briz: NextPage = () => {
       setBrizText(text.text);
       setBrizLoading(false);
     }
+
     setDragIndex({});
     if (!meLoading) {
       createBrizMutation({
@@ -388,11 +391,36 @@ const Briz: NextPage = () => {
   };
 
   const onSubmitEdit = async (data: EditBrizForm) => {
+    let text = null;
+    if (data.editBriz.text) {
+      text = data.editBriz.text;
+      text.fontSize = +data.editBriz.text.fontSize;
+      text.textColAlign = textColAlign;
+      text.textRowAlign = textRowAlign;
+      text.bold = textBold;
+      text.italic = textItalic;
+      text.text = data.editBriz.text.text;
+      data.editBriz.description = "";
+      if (boxColorOnOff) {
+        text.boxColor = "";
+      }
+    }
+
     if (!meLoading) {
       editBrizMutation({
         variables: {
           editBrizInput: {
             brizId: editClicked,
+            text: {
+              text: text?.text,
+              bold: text?.bold,
+              boxColor: text?.boxColor,
+              textColor: text?.textColor,
+              fontSize: text?.fontSize,
+              italic: text?.italic,
+              textColAlign: text?.textColAlign,
+              textRowAlign: text?.textRowAlign,
+            },
             title: data.editBriz.title,
             description: data.editBriz.description,
             metatags: data.editBriz.metatags,
@@ -540,6 +568,7 @@ const Briz: NextPage = () => {
                       title: brizLongPressed.title,
                       description: brizLongPressed.description,
                       metatags: brizLongPressed.metatags,
+                      text: brizLongPressed.text,
                     });
                     setBrizLongPressed(undefined);
                     setGridOnOff((prev) => !prev);
@@ -795,6 +824,7 @@ const Briz: NextPage = () => {
                           title: briz.title,
                           metatags: briz.metatags,
                           description: briz.description,
+                          text: briz.text,
                         });
                         setGridOnOff(true);
                       }, 400);
@@ -1286,6 +1316,14 @@ const Briz: NextPage = () => {
                     onSubmit={handleSubmitEditBriz(onSubmitEdit)}
                   >
                     <Input
+                      label="Text"
+                      name="text"
+                      type="text"
+                      placeholder="Text"
+                      required
+                      register={registerEditBriz("editBriz.text.text")}
+                    />
+                    <Input
                       label="Title"
                       name="title"
                       type="text"
@@ -1301,14 +1339,260 @@ const Briz: NextPage = () => {
                       required
                       register={registerEditBriz("editBriz.metatags")}
                     />
-                    <Input
-                      label="Description"
-                      name="description"
-                      type="textarea"
-                      placeholder="Write a description"
-                      required
-                      register={registerEditBriz("editBriz.description")}
-                    />
+
+                    {true ? (
+                      <motion.div className="flex w-full flex-row justify-evenly rounded-xl bg-gray-50 py-2">
+                        <motion.div className="flex flex-col">
+                          <Input
+                            label="Font Size"
+                            name="fontSize"
+                            type="range"
+                            placeholder="fontSize"
+                            required
+                            register={registerEditBriz(
+                              "editBriz.text.fontSize"
+                            )}
+                          />
+                          <motion.div className="flex flex-row">
+                            <motion.div className="mr-2 w-1/2">
+                              <Input
+                                label="Font Color"
+                                name="textColor"
+                                type="color"
+                                placeholder="textColor"
+                                required
+                                register={registerEditBriz(
+                                  "editBriz.text.textColor"
+                                )}
+                              />
+                            </motion.div>
+                            <motion.div className="relative w-1/2">
+                              <motion.span
+                                className={cls(
+                                  "text-md mb-1 block  cursor-pointer font-semibold ",
+                                  boxColorOnOff
+                                    ? "text-gray-400"
+                                    : "text-gray-700"
+                                )}
+                                onClick={() => {
+                                  setBoxColorOnOff((prev) => !prev);
+                                }}
+                              >
+                                Box Color
+                              </motion.span>
+                              <motion.div className="absolute left-4 ">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="45"
+                                  height="45"
+                                  viewBox="-80 -60 625 625"
+                                >
+                                  <path
+                                    d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM0 96C0 60.65 28.65 32 64 32H448C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H448C456.8 432 464 424.8 464 416V96C464 87.16 456.8 80 448 80H64C55.16 80 48 87.16 48 96z"
+                                    fill="gray"
+                                  />
+                                </svg>
+                              </motion.div>
+                              <motion.div
+                                className={cls(boxColorOnOff ? "hidden" : "")}
+                              >
+                                <Input
+                                  label=""
+                                  name="boxColor"
+                                  type="color"
+                                  placeholder="boxColor"
+                                  required
+                                  register={registerEditBriz(
+                                    "editBriz.text.boxColor"
+                                  )}
+                                />
+                              </motion.div>
+                            </motion.div>
+                          </motion.div>
+                        </motion.div>
+                        <motion.div className="flex flex-col items-center justify-end">
+                          <motion.div className="mb-1 flex flex-row rounded-lg border border-gray-300 px-2 py-1">
+                            <motion.div
+                              className={cls(
+                                "mr-1",
+                                textBold === "700"
+                                  ? " rounded-md bg-red-300"
+                                  : "",
+                                textBold === "900"
+                                  ? "rounded-md bg-red-400"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                if (textBold === "500") {
+                                  setTextBold("700");
+                                } else if (textBold === "700") {
+                                  setTextBold("900");
+                                } else if (textBold === "900") {
+                                  setTextBold("500");
+                                }
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-120 -60 625 625"
+                              >
+                                <path d="M0 64C0 46.3 14.3 32 32 32H80 96 224c70.7 0 128 57.3 128 128c0 31.3-11.3 60.1-30 82.3c37.1 22.4 62 63.1 62 109.7c0 70.7-57.3 128-128 128H96 80 32c-17.7 0-32-14.3-32-32s14.3-32 32-32H48V256 96H32C14.3 96 0 81.7 0 64zM224 224c35.3 0 64-28.7 64-64s-28.7-64-64-64H112V224H224zM112 288V416H256c35.3 0 64-28.7 64-64s-28.7-64-64-64H224 112z" />
+                              </svg>
+                            </motion.div>
+                            <motion.div
+                              className={cls(
+                                textItalic ? " rounded-md bg-red-300" : ""
+                              )}
+                              onClick={() => {
+                                setTextItalic((prev) => !prev);
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-120 -60 625 625"
+                              >
+                                <path d="M128 64c0-17.7 14.3-32 32-32H352c17.7 0 32 14.3 32 32s-14.3 32-32 32H293.3L160 416h64c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H90.7L224 96H160c-17.7 0-32-14.3-32-32z" />
+                              </svg>
+                            </motion.div>
+                          </motion.div>
+                          <motion.div className="mb-1 flex flex-row rounded-lg border border-gray-300 px-2 py-1">
+                            <motion.div
+                              className={cls(
+                                "mr-1",
+                                textRowAlign === "left"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextRowAlign("left");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-90 -60 625 625"
+                              >
+                                <path d="M288 64c0 17.7-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32H256c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H256c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+                              </svg>
+                            </motion.div>
+                            <motion.div
+                              className={cls(
+                                "mr-1",
+                                textRowAlign === "center"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextRowAlign("center");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-90 -60 625 625"
+                              >
+                                <path d="M352 64c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32zm96 128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32-14.3 32-32zM0 448c0 17.7 14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32zM352 320c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32z" />
+                              </svg>
+                            </motion.div>
+                            <motion.div
+                              className={cls(
+                                textRowAlign === "right"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextRowAlign("right");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-90 -60 625 625"
+                              >
+                                <path d="M448 64c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+                              </svg>
+                            </motion.div>
+                          </motion.div>
+                          <motion.div className="flex flex-row rounded-lg border border-gray-300 px-2 py-1">
+                            <motion.div
+                              className={cls(
+                                "mr-1",
+                                textColAlign === "start"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextColAlign("start");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-30 -60 625 625"
+                              >
+                                <path d="M32 96l512 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32C14.3 32 0 46.3 0 64S14.3 96 32 96zM9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L96 237.3 96 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96zm320 45.3c12.5 12.5 32.8 12.5 45.3 0L416 237.3 416 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3z" />
+                              </svg>
+                            </motion.div>
+                            <motion.div
+                              className={cls(
+                                "mr-1",
+                                textColAlign === "center"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextColAlign("center");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-30 -60 625 625"
+                              >
+                                <path d="M137.4 502.6c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7V288H544c17.7 0 32-14.3 32-32s-14.3-32-32-32H448V109.3l41.4 41.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L384 109.3V224H192 128 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96V402.7L86.6 361.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96zM128 192h64V64c0-17.7-14.3-32-32-32s-32 14.3-32 32V192zM448 320H384V448c0 17.7 14.3 32 32 32s32-14.3 32-32V320z" />
+                              </svg>
+                            </motion.div>
+                            <motion.div
+                              className={cls(
+                                textColAlign === "end"
+                                  ? " rounded-md bg-red-300"
+                                  : ""
+                              )}
+                              onClick={() => {
+                                setTextColAlign("end");
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="25"
+                                height="25"
+                                viewBox="-30 -60 625 625"
+                              >
+                                <path d="M544 416L32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l512 0c17.7 0 32-14.3 32-32s-14.3-32-32-32zm22.6-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L480 274.7 480 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96zm-320-45.3c-12.5-12.5-32.8-12.5-45.3 0L160 274.7 160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 210.7L54.6 233.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l96 96c12.5 12.5 32.8 12.5 45.3 0l96-96c12.5-12.5 12.5-32.8 0-45.3z" />
+                              </svg>
+                            </motion.div>
+                          </motion.div>
+                        </motion.div>
+                      </motion.div>
+                    ) : (
+                      <Input
+                        label="Description"
+                        name="description"
+                        type="textarea"
+                        placeholder="Write a description"
+                        required
+                        register={registerEditBriz("editBriz.description")}
+                      />
+                    )}
                     <Button text={"Edit this Briz"} />
                   </form>
                 </div>
