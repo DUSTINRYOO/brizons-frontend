@@ -19,6 +19,7 @@ import {
   EditBrizOutput,
   GetBrizOutput,
 } from "@/src/gql/graphql";
+import Link from "next/link";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -180,6 +181,10 @@ const Briz: NextPage = () => {
   const [gridRowNumber, setGridRowNumber] = useState<number>(14);
   const baseGrid = [...Array(gridRowNumber * 24)];
   const router = useRouter();
+  const brizUserName = router.query.username;
+  const routerBrizId = router.query.brizid;
+  const parentId = +routerBrizId![routerBrizId!.length - 1];
+  const parentIdsUrl = router.query.brizid?.toString().replace(",", "/");
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
@@ -210,8 +215,9 @@ const Briz: NextPage = () => {
     error: getBrizError,
     refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(BRIZ_QUERY, {
-    variables: { getBrizInput: { parentId: 0 } },
+    variables: { getBrizInput: { brizUserName, parentId } },
   });
+
   useEffect(() => {
     if (
       !getBrizError &&
@@ -329,6 +335,9 @@ const Briz: NextPage = () => {
   };
 
   const onClickDelete = async (brizId: number) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
     if (!meLoading) {
       deleteBrizMutation({
         variables: {
@@ -340,6 +349,9 @@ const Briz: NextPage = () => {
     }
   };
   const onSubmitCreate = async (data: CreateBrizForm) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
     setDragged(false);
     setGridOnOff(false);
     setBrizLoading(true);
@@ -386,7 +398,7 @@ const Briz: NextPage = () => {
             metatags: data.metatags,
             coverImg: coverImg,
             grid: grid,
-            parentBrizId: null,
+            parentBrizId: parentId,
           },
         },
       });
@@ -394,6 +406,9 @@ const Briz: NextPage = () => {
   };
 
   const onSubmitEdit = async (data: EditBrizForm) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
     let text = null;
     if (data.editBriz.text) {
       text = data.editBriz.text;
@@ -445,6 +460,9 @@ const Briz: NextPage = () => {
   };
 
   const onSubmitGridEdit = async (brizId: number) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
     if (!meLoading) {
       editBrizMutation({
         variables: {
@@ -493,164 +511,168 @@ const Briz: NextPage = () => {
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
-          <AnimatePresence>
-            {!brizLongPressed ? (
-              <motion.div
-                className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
-                initial={{ x: 180, opacity: 0 }}
-                animate={{ x: -90, opacity: 1 }}
-                exit={{ x: -360, opacity: 0 }}
-                drag
-                dragElastic={0.15}
-                dragConstraints={{
-                  top: 0,
-                  bottom: 0,
-                  right: 20,
-                  left: -200,
-                }}
-                transition={{
-                  duration: 0.4,
-                }}
-              >
-                <button
-                  onClick={() => {
-                    setOpenAiOnOff((prev) => !prev);
-                  }}
-                  className={cls(
-                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-lg transition-all hover:bg-red-400 active:scale-105"
-                  )}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="50"
-                    height="50"
-                    viewBox="-112 -40 580 580"
+          {meData?.me.username === brizUserName ? (
+            <>
+              <AnimatePresence>
+                {!brizLongPressed ? (
+                  <motion.div
+                    className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+                    initial={{ x: 180, opacity: 0 }}
+                    animate={{ x: -90, opacity: 1 }}
+                    exit={{ x: -360, opacity: 0 }}
+                    drag
+                    dragElastic={0.15}
+                    dragConstraints={{
+                      top: 0,
+                      bottom: 0,
+                      right: 20,
+                      left: -200,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                    }}
                   >
-                    <path
-                      d="M281.2 248.9C295.6 228.3 304 203.2 304 176c0-70.7-57.3-128-128-128S48 105.3 48 176c0 27.2 8.4 52.3 22.8 72.9c3.7 5.3 8.1 11.3 12.8 17.7l0 0c12.9 17.7 28.3 38.9 39.8 59.8c10.4 19 15.7 38.8 18.3 57.5H93c-2.2-12-5.9-23.7-11.8-34.5c-9.9-18-22.2-34.9-34.5-51.8l0 0 0 0c-5.2-7.1-10.4-14.2-15.4-21.4C11.6 247.9 0 213.3 0 176C0 78.8 78.8 0 176 0s176 78.8 176 176c0 37.3-11.6 71.9-31.4 100.3c-5 7.2-10.2 14.3-15.4 21.4l0 0 0 0c-12.3 16.8-24.6 33.7-34.5 51.8c-5.9 10.8-9.6 22.5-11.8 34.5H210.4c2.6-18.7 7.9-38.6 18.3-57.5c11.5-20.9 26.9-42.1 39.8-59.8l0 0 0 0 0 0c4.7-6.4 9-12.4 12.7-17.7zM176 128c-26.5 0-48 21.5-48 48c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16s-7.2 16-16 16zm0 384c-44.2 0-80-35.8-80-80V416H256v16c0 44.2-35.8 80-80 80z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => {
-                    setGridOnOff((prev) => !prev);
-                  }}
-                  className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
-                  )}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="50"
-                    height="50"
-                    viewBox="0 -60 625 625"
+                    <button
+                      onClick={() => {
+                        setOpenAiOnOff((prev) => !prev);
+                      }}
+                      className={cls(
+                        "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-lg transition-all hover:bg-red-400 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="-112 -40 580 580"
+                      >
+                        <path
+                          d="M281.2 248.9C295.6 228.3 304 203.2 304 176c0-70.7-57.3-128-128-128S48 105.3 48 176c0 27.2 8.4 52.3 22.8 72.9c3.7 5.3 8.1 11.3 12.8 17.7l0 0c12.9 17.7 28.3 38.9 39.8 59.8c10.4 19 15.7 38.8 18.3 57.5H93c-2.2-12-5.9-23.7-11.8-34.5c-9.9-18-22.2-34.9-34.5-51.8l0 0 0 0c-5.2-7.1-10.4-14.2-15.4-21.4C11.6 247.9 0 213.3 0 176C0 78.8 78.8 0 176 0s176 78.8 176 176c0 37.3-11.6 71.9-31.4 100.3c-5 7.2-10.2 14.3-15.4 21.4l0 0 0 0c-12.3 16.8-24.6 33.7-34.5 51.8c-5.9 10.8-9.6 22.5-11.8 34.5H210.4c2.6-18.7 7.9-38.6 18.3-57.5c11.5-20.9 26.9-42.1 39.8-59.8l0 0 0 0 0 0c4.7-6.4 9-12.4 12.7-17.7zM176 128c-26.5 0-48 21.5-48 48c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-44.2 35.8-80 80-80c8.8 0 16 7.2 16 16s-7.2 16-16 16zm0 384c-44.2 0-80-35.8-80-80V416H256v16c0 44.2-35.8 80-80 80z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setGridOnOff((prev) => !prev);
+                      }}
+                      className={cls(
+                        "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="0 -60 625 625"
+                      >
+                        <path
+                          d="M115.2 0C84.7 0 58.5 21.5 52.5 51.4L1.3 307.4C-6.6 347 23.6 384 64 384H281v64H217c-17.7 0-32 14.3-32 32s14.3 32 32 32H409c17.7 0 32-14.3 32-32s-14.3-32-32-32H345V384H562c40.4 0 70.7-36.9 62.8-76.6l-51.2-256C567.5 21.5 541.3 0 510.8 0H115.2zM253.9 64H372.1l10.4 104h-139L253.9 64zM195.3 168H94.4L115.2 64h90.4L195.3 168zM84.8 216H190.5L180.1 320H64L84.8 216zm153.9 0H387.3l10.4 104-169.4 0 10.4-104zm196.8 0H541.2L562 320h-116L435.5 216zm96-48H430.7L420.3 64h90.4l31.4-6.3L510.8 64l20.8 104z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+              <AnimatePresence>
+                {brizLongPressed ? (
+                  <motion.div
+                    className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+                    initial={{ x: 135, opacity: 0 }}
+                    animate={{ x: -135, opacity: 1 }}
+                    exit={{ x: -405, opacity: 0 }}
+                    drag
+                    dragElastic={0.15}
+                    dragConstraints={{
+                      top: 0,
+                      bottom: 0,
+                      right: -25,
+                      left: -245,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                    }}
                   >
-                    <path
-                      d="M115.2 0C84.7 0 58.5 21.5 52.5 51.4L1.3 307.4C-6.6 347 23.6 384 64 384H281v64H217c-17.7 0-32 14.3-32 32s14.3 32 32 32H409c17.7 0 32-14.3 32-32s-14.3-32-32-32H345V384H562c40.4 0 70.7-36.9 62.8-76.6l-51.2-256C567.5 21.5 541.3 0 510.8 0H115.2zM253.9 64H372.1l10.4 104h-139L253.9 64zM195.3 168H94.4L115.2 64h90.4L195.3 168zM84.8 216H190.5L180.1 320H64L84.8 216zm153.9 0H387.3l10.4 104-169.4 0 10.4-104zm196.8 0H541.2L562 320h-116L435.5 216zm96-48H430.7L420.3 64h90.4l31.4-6.3L510.8 64l20.8 104z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-          <AnimatePresence>
-            {brizLongPressed ? (
-              <motion.div
-                className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
-                initial={{ x: 135, opacity: 0 }}
-                animate={{ x: -135, opacity: 1 }}
-                exit={{ x: -405, opacity: 0 }}
-                drag
-                dragElastic={0.15}
-                dragConstraints={{
-                  top: 0,
-                  bottom: 0,
-                  right: -25,
-                  left: -245,
-                }}
-                transition={{
-                  duration: 0.4,
-                }}
-              >
-                <button
-                  onClick={() => {
-                    setEditClicked({
-                      id: brizLongPressed.id!,
-                      briztype: brizLongPressed.text ? "text" : "image",
-                    });
-                    setValueEditBriz("editBriz", {
-                      title: brizLongPressed.title,
-                      description: brizLongPressed.description,
-                      metatags: brizLongPressed.metatags,
-                      text: brizLongPressed.text,
-                    });
-                    setBrizLongPressed(undefined);
-                    setGridOnOff((prev) => !prev);
-                  }}
-                  className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
-                  )}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="50"
-                    height="50"
-                    viewBox="-50 -60 625 625"
-                  >
-                    <path
-                      d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => {
-                    onClickDelete(brizLongPressed.id!);
-                    setBrizLongPressed(undefined);
-                    setGridOnOff((prev) => !prev);
-                  }}
-                  className={cls(
-                    "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
-                  )}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="50"
-                    height="50"
-                    viewBox="-65 -40 580 580"
-                  >
-                    <path
-                      d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => {
-                    setBrizLongPressed(undefined);
-                    setGridOnOff((prev) => !prev);
-                  }}
-                  className={cls(
-                    "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
-                  )}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="50"
-                    height="50"
-                    viewBox="-55 -60 625 625"
-                  >
-                    <path
-                      d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM0 96C0 60.65 28.65 32 64 32H448C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H448C456.8 432 464 424.8 464 416V96C464 87.16 456.8 80 448 80H64C55.16 80 48 87.16 48 96z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+                    <button
+                      onClick={() => {
+                        setEditClicked({
+                          id: brizLongPressed.id!,
+                          briztype: brizLongPressed.text ? "text" : "image",
+                        });
+                        setValueEditBriz("editBriz", {
+                          title: brizLongPressed.title,
+                          description: brizLongPressed.description,
+                          metatags: brizLongPressed.metatags,
+                          text: brizLongPressed.text,
+                        });
+                        setBrizLongPressed(undefined);
+                        setGridOnOff((prev) => !prev);
+                      }}
+                      className={cls(
+                        "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="-50 -60 625 625"
+                      >
+                        <path
+                          d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onClickDelete(brizLongPressed.id!);
+                        setBrizLongPressed(undefined);
+                        setGridOnOff((prev) => !prev);
+                      }}
+                      className={cls(
+                        "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="-65 -40 580 580"
+                      >
+                        <path
+                          d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setBrizLongPressed(undefined);
+                        setGridOnOff((prev) => !prev);
+                      }}
+                      className={cls(
+                        "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-red-300 p-2 shadow-xl transition-all hover:bg-red-400 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="-55 -60 625 625"
+                      >
+                        <path
+                          d="M175 175C184.4 165.7 199.6 165.7 208.1 175L255.1 222.1L303 175C312.4 165.7 327.6 165.7 336.1 175C346.3 184.4 346.3 199.6 336.1 208.1L289.9 255.1L336.1 303C346.3 312.4 346.3 327.6 336.1 336.1C327.6 346.3 312.4 346.3 303 336.1L255.1 289.9L208.1 336.1C199.6 346.3 184.4 346.3 175 336.1C165.7 327.6 165.7 312.4 175 303L222.1 255.1L175 208.1C165.7 199.6 165.7 184.4 175 175V175zM0 96C0 60.65 28.65 32 64 32H448C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H448C456.8 432 464 424.8 464 416V96C464 87.16 456.8 80 448 80H64C55.16 80 48 87.16 48 96z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </>
+          ) : null}
           <AnimatePresence>
             {gridOnOff && !brizLoading ? (
               <div className="absolute left-1/2 z-[101] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
@@ -835,14 +857,18 @@ const Briz: NextPage = () => {
                     }}
                     onMouseDown={() => {
                       longPressTimeOut.current = window.setTimeout(() => {
-                        setBrizLongPressed({
-                          id: briz.id,
-                          title: briz.title,
-                          metatags: briz.metatags,
-                          description: briz.description,
-                          text: briz.text,
-                        });
-                        setGridOnOff(true);
+                        if (meData?.me.username !== brizUserName) {
+                          return null;
+                        } else {
+                          setBrizLongPressed({
+                            id: briz.id,
+                            title: briz.title,
+                            metatags: briz.metatags,
+                            description: briz.description,
+                            text: briz.text,
+                          });
+                          setGridOnOff(true);
+                        }
                       }, 400);
                     }}
                     onMouseUp={() => {
@@ -925,21 +951,32 @@ const Briz: NextPage = () => {
                         >
                           {briz.title}
                         </motion.span>
-                        <motion.div className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg">
-                          <Image
-                            priority
-                            src={`${briz.coverImg}`}
-                            alt={`${briz.title}-${briz.description}`}
-                            fill
-                            style={{
-                              objectFit: "contain",
+                        <Link
+                          legacyBehavior
+                          href={`/briz/${brizUserName}/${parentIdsUrl}/${briz.id}`}
+                        >
+                          <motion.div
+                            className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
+                            whileTap={{ scale: 1.05 }}
+                            onClick={() => {
+                              setBrizClicked(undefined);
                             }}
-                            onLoadingComplete={() => {
-                              setGrid({});
-                              setBrizLoading(false);
-                            }}
-                          ></Image>
-                        </motion.div>
+                          >
+                            <Image
+                              priority
+                              src={`${briz.coverImg}`}
+                              alt={`${briz.title}-${briz.description}`}
+                              fill
+                              style={{
+                                objectFit: "contain",
+                              }}
+                              onLoadingComplete={() => {
+                                setGrid({});
+                                setBrizLoading(false);
+                              }}
+                            ></Image>
+                          </motion.div>
+                        </Link>
                         <motion.span className="block text-center text-xl font-medium">
                           {briz.description}
                         </motion.span>

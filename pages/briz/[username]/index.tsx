@@ -19,6 +19,7 @@ import {
   EditBrizOutput,
   GetBrizOutput,
 } from "@/src/gql/graphql";
+import Link from "next/link";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -946,21 +947,32 @@ const Briz: NextPage = () => {
                         >
                           {briz.title}
                         </motion.span>
-                        <motion.div className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg">
-                          <Image
-                            priority
-                            src={`${briz.coverImg}`}
-                            alt={`${briz.title}-${briz.description}`}
-                            fill
-                            style={{
-                              objectFit: "contain",
+                        <Link
+                          legacyBehavior
+                          href={`/briz/${brizUserName}/${briz.id}`}
+                        >
+                          <motion.div
+                            className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
+                            whileTap={{ scale: 1.05 }}
+                            onClick={() => {
+                              console.log("clicked");
                             }}
-                            onLoadingComplete={() => {
-                              setGrid({});
-                              setBrizLoading(false);
-                            }}
-                          ></Image>
-                        </motion.div>
+                          >
+                            <Image
+                              priority
+                              src={`${briz.coverImg}`}
+                              alt={`${briz.title}-${briz.description}`}
+                              fill
+                              style={{
+                                objectFit: "contain",
+                              }}
+                              onLoadingComplete={() => {
+                                setGrid({});
+                                setBrizLoading(false);
+                              }}
+                            ></Image>
+                          </motion.div>
+                        </Link>
                         <motion.span className="block text-center text-xl font-medium">
                           {briz.description}
                         </motion.span>
