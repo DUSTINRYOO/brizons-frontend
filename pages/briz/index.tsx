@@ -5,12 +5,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import {
-  AnimatePresence,
-  useScroll,
-  motion,
-  CustomValueType,
-} from "framer-motion";
+import { AnimatePresence, useScroll, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -872,7 +867,7 @@ const Briz: NextPage = () => {
                         style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
                       ></Image>
                     ) : (
-                      <motion.div className="relative h-full w-full">
+                      <motion.div className="relative h-full w-full overflow-hidden text-ellipsis break-words ">
                         {briz.text ? (
                           <motion.span
                             className="flex h-full w-full flex-col"
