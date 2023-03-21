@@ -3,10 +3,29 @@ import Link from "next/link";
 import { cls } from "../libs/utils";
 import { useRouter } from "next/router";
 import { Helmet } from "react-helmet-async";
-import { useReactiveVar } from "@apollo/client";
+import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar, authTokenVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
+const ME_QUERY = gql`
+  query meQuery {
+    me {
+      id
+      email
+      username
+      verified
+    }
+  }
+`;
+type meQueryList = {
+  id: string;
+  email: string;
+  username: string;
+  verified: boolean;
+};
 
+interface meQuery {
+  me: meQueryList;
+}
 interface LayoutProps {
   title?: string;
   canGoBack?: boolean;
@@ -20,6 +39,7 @@ export default function Layout({
   hasTabBar,
   children,
 }: LayoutProps) {
+  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const onClickLogOut = () => {
@@ -136,7 +156,7 @@ export default function Layout({
                 </a>
               </Link>
             ) : (
-              <Link legacyBehavior href="/briz">
+              <Link legacyBehavior href={`/briz/${data?.me.username}`}>
                 <a
                   className={cls(
                     "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",

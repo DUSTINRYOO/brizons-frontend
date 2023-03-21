@@ -67,7 +67,7 @@ const Signup: NextPage = () => {
           createAccountInput: {
             email: data.email,
             password: data.password,
-            username: data.username,
+            username: data.username.toLowerCase(),
           },
         },
       });

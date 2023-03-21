@@ -113,6 +113,7 @@ export type Example = {
 };
 
 export type GetBrizInput = {
+  brizUserName: Scalars['String'];
   parentId?: InputMaybe<Scalars['Int']>;
 };
 

@@ -180,6 +180,7 @@ const Briz: NextPage = () => {
   const [gridRowNumber, setGridRowNumber] = useState<number>(14);
   const baseGrid = [...Array(gridRowNumber * 24)];
   const router = useRouter();
+  const brizUserName = router.query.username;
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
@@ -209,7 +210,9 @@ const Briz: NextPage = () => {
     loading: getBrizLoading,
     error: getBrizError,
     refetch: getBrizRefetch,
-  } = useQuery<getBrizQuery>(BRIZ_QUERY, { variables: { getBrizInput: {} } });
+  } = useQuery<getBrizQuery>(BRIZ_QUERY, {
+    variables: { getBrizInput: { brizUserName, parentId: null } },
+  });
   useEffect(() => {
     if (
       !getBrizError &&
@@ -384,6 +387,7 @@ const Briz: NextPage = () => {
             metatags: data.metatags,
             coverImg: coverImg,
             grid: grid,
+            parentBrizId: null,
           },
         },
       });

@@ -64,7 +64,7 @@ const Login: NextPage = () => {
       loginMutation({
         variables: {
           loginInput: {
-            username: data.username,
+            username: data.username.toLowerCase(),
             password: data.password,
           },
         },
