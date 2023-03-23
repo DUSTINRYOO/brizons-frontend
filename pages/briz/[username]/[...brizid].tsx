@@ -183,8 +183,12 @@ const Briz: NextPage = () => {
   const router = useRouter();
   const brizUserName = router.query.username;
   const routerBrizId = router.query.brizid;
-  const parentId = +routerBrizId![routerBrizId!.length - 1];
+  console.log(routerBrizId?.slice(0, -1));
   const parentIdsUrl = router.query.brizid?.toString().replace(",", "/");
+  const previousParentIdsUrl = router.query.brizid
+    ?.slice(0, -1)
+    .toString()
+    .replace(",", "/");
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
@@ -209,6 +213,10 @@ const Briz: NextPage = () => {
     loading: meLoading,
     error: meQuery,
   } = useQuery<meQuery>(ME_QUERY);
+  let parentId: number | any = null;
+  if (routerBrizId) {
+    parentId = +routerBrizId[routerBrizId.length - 1];
+  }
   const {
     data: getBrizData,
     loading: getBrizLoading,
@@ -517,21 +525,44 @@ const Briz: NextPage = () => {
                 {!brizLongPressed ? (
                   <motion.div
                     className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
-                    initial={{ x: 180, opacity: 0 }}
-                    animate={{ x: -90, opacity: 1 }}
-                    exit={{ x: -360, opacity: 0 }}
+                    initial={{ x: 135, opacity: 0 }}
+                    animate={{ x: -135, opacity: 1 }}
+                    exit={{ x: -405, opacity: 0 }}
                     drag
                     dragElastic={0.15}
                     dragConstraints={{
                       top: 0,
                       bottom: 0,
-                      right: 20,
-                      left: -200,
+                      right: -25,
+                      left: -245,
                     }}
                     transition={{
                       duration: 0.4,
                     }}
                   >
+                    <button
+                      onClick={() => {
+                        router.push(
+                          `/briz/${brizUserName}/${previousParentIdsUrl}`
+                        );
+                      }}
+                      className={cls(
+                        "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
+                      )}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="-65 -35 580 580"
+                      >
+                        <path
+                          d="M48 416c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80c-8.8 0-16 7.2-16 16l0 320zm16 64c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480zm64-224c0-6.7 2.8-13 7.7-17.6l112-104c7-6.5 17.2-8.2 25.9-4.4s14.4 12.5 14.4 22l0 208c0 9.5-5.7 18.2-14.4 22s-18.9 2.1-25.9-4.4l-112-104c-4.9-4.5-7.7-10.9-7.7-17.6z"
+                          fill="white"
+                        />
+                      </svg>
+                    </button>
+
                     <button
                       onClick={() => {
                         setOpenAiOnOff((prev) => !prev);
@@ -896,10 +927,10 @@ const Briz: NextPage = () => {
                         style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
                       ></Image>
                     ) : (
-                      <motion.div className="relative h-full w-full overflow-hidden text-ellipsis break-words ">
+                      <motion.div className="relative h-full w-full ">
                         {briz.text ? (
                           <motion.span
-                            className="flex h-full w-full flex-col"
+                            className="absolute flex h-full w-full flex-col break-words"
                             style={{
                               fontSize: `clamp(1px,${
                                 0.064 * (briz.text.fontSize + 10)
