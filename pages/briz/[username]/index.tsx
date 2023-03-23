@@ -892,10 +892,10 @@ const Briz: NextPage = () => {
                         style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
                       ></Image>
                     ) : (
-                      <motion.div className="relative h-full w-full overflow-hidden text-ellipsis break-words ">
+                      <motion.div className="relative h-full w-full">
                         {briz.text ? (
                           <motion.span
-                            className="flex h-full w-full flex-col"
+                            className="absolute flex h-full w-full flex-col break-words"
                             style={{
                               fontSize: `clamp(1px,${
                                 0.064 * (briz.text.fontSize + 10)

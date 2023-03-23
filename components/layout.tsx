@@ -165,7 +165,7 @@ export default function Layout({
                       : "transition-all hover:scale-105 "
                   )}
                 >
-                  <span>BRIZ</span>
+                  <span>MY BRIZ</span>
                 </a>
               </Link>
             )}
