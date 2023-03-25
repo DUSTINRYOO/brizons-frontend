@@ -18,6 +18,7 @@ import {
   DeleteBrizOutput,
   EditBrizOutput,
   GetBrizOutput,
+  GetPinnedBrizOutput,
 } from "@/src/gql/graphql";
 import Link from "next/link";
 import { data } from "autoprefixer";
@@ -34,7 +35,7 @@ const ME_QUERY = gql`
 `;
 
 const BRIZ_QUERY = gql`
-  query gridQuery($getBrizInput: GetBrizInput!) {
+  query brizQuery($getBrizInput: GetBrizInput!) {
     getBriz(getBrizInput: $getBrizInput) {
       ok
       error
@@ -61,6 +62,21 @@ const BRIZ_QUERY = gql`
           rowStart
           rowEnd
         }
+      }
+    }
+  }
+`;
+
+const PINNED_BRIZ_QUERY = gql`
+  query pinnedBrizQuery($getPinnedBrizInput: GetPinnedBrizInput!) {
+    getPinnedBriz(getPinnedBrizInput: $getPinnedBrizInput) {
+      ok
+      error
+      getPinnedBriz {
+        id
+        coverImg
+        pinned
+        title
       }
     }
   }
@@ -172,6 +188,9 @@ interface deleteBrizMutation {
 interface getBrizQuery {
   getBriz: GetBrizOutput;
 }
+interface getPinnedBrizQuery {
+  getPinnedBriz: GetPinnedBrizOutput;
+}
 enum textRowAlign {
   "start" = "start",
   "center" = "center",
@@ -217,6 +236,14 @@ const Briz: NextPage = () => {
   } = useQuery<getBrizQuery>(BRIZ_QUERY, {
     variables: { getBrizInput: { brizUserName, parentId: null } },
   });
+  const {
+    data: getPinnedBrizData,
+    loading: getPinnedBrizLoading,
+    error: getPinnedBrizError,
+    refetch: getPinnedBrizRefetch,
+  } = useQuery<getPinnedBrizQuery>(PINNED_BRIZ_QUERY, {
+    variables: { getPinnedBrizInput: { brizUserName } },
+  });
   useEffect(() => {
     if (
       !getBrizError &&
@@ -231,7 +258,8 @@ const Briz: NextPage = () => {
     } else {
       setGridRowNumber(14);
     }
-  }, [getBrizData, getBrizError, getBrizLoading]);
+    getPinnedBrizRefetch();
+  }, [getPinnedBrizData, getBrizData]);
 
   const {
     register,
@@ -490,6 +518,7 @@ const Briz: NextPage = () => {
         },
       });
     }
+    getPinnedBrizRefetch();
   };
 
   const onSubmitOpenAi = async (data: OpenAiForm) => {
@@ -522,7 +551,6 @@ const Briz: NextPage = () => {
   if (meLoading) {
     return <div>Loading</div>;
   }
-
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
@@ -532,71 +560,64 @@ const Briz: NextPage = () => {
           exit={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {getBrizData?.getBriz.getBriz.map((briz, i) => {
-            if (briz.pinned === true) {
-              return (
-                <AnimatePresence>
+          {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
+            <AnimatePresence>
+              <motion.div
+                key={i}
+                layout
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="relative"
+                whileHover="hoverBox"
+              >
+                <Link legacyBehavior href={`/briz/${brizUserName}/${briz.id}`}>
                   <motion.div
-                    key={i}
-                    layout
-                    initial={{ opacity: 0 }}
-                    exit={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="relative"
-                    whileHover="hoverBox"
+                    className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-100 bg-white  shadow-lg"
+                    style={{
+                      height: `clamp(1px,10vw,8rem)`,
+                      margin: `clamp(1px,1vw,0.8rem)`,
+                    }}
+                    whileTap={{ scale: 1.05 }}
+                    variants={{
+                      hoverBox: {
+                        scale: 1.03,
+                        borderColor: "rgb(254 202 202)",
+                      },
+                    }}
                   >
-                    <Link
-                      legacyBehavior
-                      href={`/briz/${brizUserName}/${briz.id}`}
-                    >
-                      <motion.div
-                        className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-100 bg-white  shadow-lg"
-                        style={{
-                          height: `clamp(1px,10vw,8rem)`,
-                          margin: `clamp(1px,1vw,0.8rem)`,
-                        }}
-                        whileTap={{ scale: 1.05 }}
-                        variants={{
-                          hoverBox: {
-                            scale: 1.03,
-                            borderColor: "rgb(254 202 202)",
-                          },
-                        }}
-                      >
-                        <Image
-                          priority
-                          src={`${briz.coverImg}`}
-                          alt={`${briz.title}-${briz.description}`}
-                          fill
-                          style={{
-                            objectFit: "contain",
-                          }}
-                          onLoadingComplete={() => {
-                            setGrid({});
-                            setBrizLoading(false);
-                          }}
-                        ></Image>
-                      </motion.div>
-                    </Link>
-                    <motion.span
-                      className="absolute left-1/2 -translate-x-1/2 font-bold opacity-0 "
+                    <Image
+                      priority
+                      src={`${briz.coverImg}`}
+                      alt={`${briz.title}-${briz.description}`}
+                      fill
                       style={{
-                        fontSize: `clamp(1px,
-                      2vw,1.6rem)`,
-                        bottom: `clamp(-1.8rem,
-                        -2vw, -1px)`,
+                        objectFit: "contain",
                       }}
-                      variants={{
-                        hoverBox: { opacity: 1 },
+                      onLoadingComplete={() => {
+                        setGrid({});
+                        setBrizLoading(false);
                       }}
-                    >
-                      {briz.title}
-                    </motion.span>
+                    ></Image>
                   </motion.div>
-                </AnimatePresence>
-              );
-            }
-          })}
+                </Link>
+                <motion.span
+                  className="absolute left-1/2 -translate-x-1/2 font-bold opacity-0 "
+                  style={{
+                    fontSize: `clamp(1px,
+                      2vw,1.6rem)`,
+                    bottom: `clamp(-1.8rem,
+                        -2vw, -1px)`,
+                  }}
+                  variants={{
+                    hoverBox: { opacity: 1 },
+                  }}
+                >
+                  {briz.title}
+                </motion.span>
+              </motion.div>
+            </AnimatePresence>
+          ))}
         </motion.div>
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (

@@ -48,6 +48,7 @@ export type CreateBrizInput = {
   grid: GridInputType;
   metatags: Scalars['String'];
   parentBrizId?: InputMaybe<Scalars['Int']>;
+  pinned: Scalars['Boolean'];
   text?: InputMaybe<TextInputType>;
   title: Scalars['String'];
 };
@@ -82,6 +83,7 @@ export type EditBrizInput = {
   grid?: InputMaybe<GridInputType>;
   metatags?: InputMaybe<Scalars['String']>;
   parentBrizId?: InputMaybe<Scalars['Int']>;
+  pinned?: InputMaybe<Scalars['Boolean']>;
   text?: InputMaybe<TextInputType>;
   title?: InputMaybe<Scalars['String']>;
 };
@@ -122,6 +124,17 @@ export type GetBrizOutput = {
   __typename?: 'GetBrizOutput';
   error?: Maybe<Scalars['String']>;
   getBriz: Array<Briz>;
+  ok: Scalars['Boolean'];
+};
+
+export type GetPinnedBrizInput = {
+  brizUserName: Scalars['String'];
+};
+
+export type GetPinnedBrizOutput = {
+  __typename?: 'GetPinnedBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  getPinnedBriz: Array<Briz>;
   ok: Scalars['Boolean'];
 };
 
@@ -217,6 +230,7 @@ export type Query = {
   __typename?: 'Query';
   examples: Array<Example>;
   getBriz: GetBrizOutput;
+  getPinnedBriz: GetPinnedBrizOutput;
   me: User;
   userProfile: UserProfileOutput;
 };
@@ -224,6 +238,11 @@ export type Query = {
 
 export type QueryGetBrizArgs = {
   getBrizInput: GetBrizInput;
+};
+
+
+export type QueryGetPinnedBrizArgs = {
+  getPinnedBrizInput: GetPinnedBrizInput;
 };
 
 

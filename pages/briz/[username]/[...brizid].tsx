@@ -33,7 +33,7 @@ const ME_QUERY = gql`
 `;
 
 const BRIZ_QUERY = gql`
-  query gridQuery($getBrizInput: GetBrizInput!) {
+  query brizQuery($getBrizInput: GetBrizInput!) {
     getBriz(getBrizInput: $getBrizInput) {
       ok
       error
