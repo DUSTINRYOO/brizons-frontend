@@ -24,6 +24,7 @@ export type Briz = {
   id: Scalars['Float'];
   metatags: Scalars['String'];
   owner: User;
+  pinned: Scalars['Boolean'];
   text?: Maybe<Text>;
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];

@@ -183,7 +183,6 @@ const Briz: NextPage = () => {
   const router = useRouter();
   const brizUserName = router.query.username;
   const routerBrizId = router.query.brizid;
-  console.log(routerBrizId?.slice(0, -1));
   const parentIdsUrl = router.query.brizid?.toString().replace(",", "/");
   const previousParentIdsUrl = router.query.brizid
     ?.slice(0, -1)
@@ -562,7 +561,6 @@ const Briz: NextPage = () => {
                         />
                       </svg>
                     </button>
-
                     <button
                       onClick={() => {
                         setOpenAiOnOff((prev) => !prev);

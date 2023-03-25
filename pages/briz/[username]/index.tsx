@@ -20,6 +20,7 @@ import {
   GetBrizOutput,
 } from "@/src/gql/graphql";
 import Link from "next/link";
+import { data } from "autoprefixer";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -50,6 +51,7 @@ const BRIZ_QUERY = gql`
           textRowAlign
         }
         coverImg
+        pinned
         title
         description
         metatags
@@ -135,6 +137,7 @@ interface CreateBrizForm {
 interface EditBrizInputForm {
   id?: number;
   title?: string;
+  pinned?: boolean;
   description?: string;
   metatags?: string;
   text?: IText | null;
@@ -394,6 +397,7 @@ const Briz: NextPage = () => {
             metatags: data.metatags,
             coverImg: coverImg,
             grid: grid,
+            pinned: false,
             parentBrizId: null,
           },
         },
@@ -470,6 +474,22 @@ const Briz: NextPage = () => {
       });
     }
     setEditClicked(undefined);
+  };
+
+  const onClickPinned = async (brizId: number, pinned: boolean) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
+    if (!meLoading) {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId,
+            pinned,
+          },
+        },
+      });
+    }
   };
 
   const onSubmitOpenAi = async (data: OpenAiForm) => {
@@ -791,6 +811,7 @@ const Briz: NextPage = () => {
               </div>
             ) : null}
           </AnimatePresence>
+
           <motion.div
             className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
             style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
@@ -973,6 +994,29 @@ const Briz: NextPage = () => {
                             ></Image>
                           </motion.div>
                         </Link>
+                        <button
+                          onClick={() => {
+                            onClickPinned(briz.id, !briz.pinned);
+                          }}
+                          className={cls(
+                            " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl bg-red-100 p-1 shadow-xl transition-all hover:bg-red-300 active:scale-105"
+                          )}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="35"
+                            height="35"
+                            viewBox="-125 -80 625 625"
+                          >
+                            <path
+                              d="M32 32C32 14.3 46.3 0 64 0H320c17.7 0 32 14.3 32 32s-14.3 32-32 32H290.5l11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3H32c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64H64C46.3 64 32 49.7 32 32zM160 384h64v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V384z"
+                              fill={briz.pinned ? "black" : "white"}
+                            />
+                          </svg>
+                        </button>
+                        <motion.span className="block text-left text-xl font-medium">
+                          {briz.metatags}
+                        </motion.span>
                         <motion.span className="block text-center text-xl font-medium">
                           {briz.description}
                         </motion.span>
