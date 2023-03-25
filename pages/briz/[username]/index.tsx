@@ -526,6 +526,45 @@ const Briz: NextPage = () => {
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
+        <motion.div
+          layout
+          className="bg-white-50 relative mx-auto mb-4 flex h-auto w-fit max-w-7xl flex-row items-center justify-center rounded-3xl"
+          exit={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {getBrizData?.getBriz.getBriz.map((briz, i) => {
+            if (briz.pinned === true) {
+              return (
+                <motion.div key={i}>
+                  <Link
+                    legacyBehavior
+                    href={`/briz/${brizUserName}/${briz.id}`}
+                  >
+                    <motion.div
+                      className="relative m-4 aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-200 bg-white shadow-lg"
+                      whileTap={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.03 }}
+                    >
+                      <Image
+                        priority
+                        src={`${briz.coverImg}`}
+                        alt={`${briz.title}-${briz.description}`}
+                        fill
+                        style={{
+                          objectFit: "contain",
+                        }}
+                        onLoadingComplete={() => {
+                          setGrid({});
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    </motion.div>
+                  </Link>
+                </motion.div>
+              );
+            }
+          })}
+        </motion.div>
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
             <>
