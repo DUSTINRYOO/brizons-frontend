@@ -528,39 +528,71 @@ const Briz: NextPage = () => {
       <motion.div className="h-auto w-full py-20 ">
         <motion.div
           layout
-          className="bg-white-50 relative mx-auto mb-4 flex h-auto w-fit max-w-7xl flex-row items-center justify-center rounded-3xl"
+          className="relative mx-auto mb-4 flex h-auto max-w-7xl flex-row items-center justify-center"
           exit={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           {getBrizData?.getBriz.getBriz.map((briz, i) => {
             if (briz.pinned === true) {
               return (
-                <motion.div key={i}>
-                  <Link
-                    legacyBehavior
-                    href={`/briz/${brizUserName}/${briz.id}`}
+                <AnimatePresence>
+                  <motion.div
+                    key={i}
+                    layout
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="relative"
+                    whileHover="hoverBox"
                   >
-                    <motion.div
-                      className="relative m-4 aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-200 bg-white shadow-lg"
-                      whileTap={{ scale: 1.05 }}
-                      whileHover={{ scale: 1.03 }}
+                    <Link
+                      legacyBehavior
+                      href={`/briz/${brizUserName}/${briz.id}`}
                     >
-                      <Image
-                        priority
-                        src={`${briz.coverImg}`}
-                        alt={`${briz.title}-${briz.description}`}
-                        fill
+                      <motion.div
+                        className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-300 bg-white  shadow-lg"
                         style={{
-                          objectFit: "contain",
+                          height: `clamp(1px,10vw,8rem)`,
+                          margin: `clamp(1px,1vw,0.8rem)`,
                         }}
-                        onLoadingComplete={() => {
-                          setGrid({});
-                          setBrizLoading(false);
+                        whileTap={{ scale: 1.05 }}
+                        variants={{
+                          hoverBox: {
+                            scale: 1.03,
+                            borderColor: "rgb(156 163 175)",
+                          },
                         }}
-                      ></Image>
-                    </motion.div>
-                  </Link>
-                </motion.div>
+                      >
+                        <Image
+                          priority
+                          src={`${briz.coverImg}`}
+                          alt={`${briz.title}-${briz.description}`}
+                          fill
+                          style={{
+                            objectFit: "contain",
+                          }}
+                          onLoadingComplete={() => {
+                            setGrid({});
+                            setBrizLoading(false);
+                          }}
+                        ></Image>
+                      </motion.div>
+                    </Link>
+                    <motion.span
+                      className="absolute left-1/2 -translate-x-1/2 font-bold opacity-0 "
+                      style={{
+                        fontSize: `clamp(1px,
+                      2vw,1.6rem)`,
+                        bottom: `clamp(-1.8rem,
+                        -2vw, -1px)`,
+                      }}
+                      variants={{
+                        hoverBox: { opacity: 1 },
+                      }}
+                    >
+                      {briz.title}
+                    </motion.span>
+                  </motion.div>
+                </AnimatePresence>
               );
             }
           })}
@@ -905,7 +937,8 @@ const Briz: NextPage = () => {
                       duration: 0.4,
                     }}
                     className={cls(
-                      `relative m-1 flex items-center justify-center object-scale-down`
+                      `relative m-1 flex items-center justify-center object-scale-down`,
+                      briz.id === brizMouseOn && brizClicked ? "hidden" : ""
                     )}
                     style={{
                       gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
