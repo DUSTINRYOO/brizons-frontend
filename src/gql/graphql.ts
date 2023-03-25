@@ -127,6 +127,19 @@ export type GetBrizOutput = {
   ok: Scalars['Boolean'];
 };
 
+export type GetParentBrizInput = {
+  brizUserName: Scalars['String'];
+  parentId: Scalars['Int'];
+};
+
+export type GetParentBrizOutput = {
+  __typename?: 'GetParentBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  getParentBriz: Briz;
+  ok: Scalars['Boolean'];
+  parentOfParentBriz: Briz;
+};
+
 export type GetPinnedBrizInput = {
   brizUserName: Scalars['String'];
 };
@@ -230,6 +243,7 @@ export type Query = {
   __typename?: 'Query';
   examples: Array<Example>;
   getBriz: GetBrizOutput;
+  getParentBriz: GetParentBrizOutput;
   getPinnedBriz: GetPinnedBrizOutput;
   me: User;
   userProfile: UserProfileOutput;
@@ -238,6 +252,11 @@ export type Query = {
 
 export type QueryGetBrizArgs = {
   getBrizInput: GetBrizInput;
+};
+
+
+export type QueryGetParentBrizArgs = {
+  getParentBrizInput: GetParentBrizInput;
 };
 
 

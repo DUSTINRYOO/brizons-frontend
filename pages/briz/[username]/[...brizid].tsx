@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
 import { AnimatePresence, useScroll, motion } from "framer-motion";
@@ -13,13 +13,15 @@ import { cls } from "@/libs/utils";
 
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
+
+import Link from "next/link";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
   EditBrizOutput,
   GetBrizOutput,
+  GetParentBrizOutput,
 } from "@/src/gql/graphql";
-import Link from "next/link";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -60,6 +62,26 @@ const BRIZ_QUERY = gql`
           rowStart
           rowEnd
         }
+      }
+    }
+  }
+`;
+
+const PARENT_BRIZ_QUERY = gql`
+  query parentBrizQuery($getParentBrizInput: GetParentBrizInput!) {
+    getParentBriz(getParentBrizInput: $getParentBrizInput) {
+      ok
+      error
+      getParentBriz {
+        id
+        coverImg
+        pinned
+        title
+        description
+        metatags
+      }
+      parentOfParentBriz {
+        id
       }
     }
   }
@@ -170,6 +192,11 @@ interface deleteBrizMutation {
 interface getBrizQuery {
   getBriz: GetBrizOutput;
 }
+
+interface getParentBrizQuery {
+  getParentBriz: GetParentBrizOutput;
+}
+
 enum textRowAlign {
   "start" = "start",
   "center" = "center",
@@ -224,6 +251,14 @@ const Briz: NextPage = () => {
     refetch: getBrizRefetch,
   } = useQuery<getBrizQuery>(BRIZ_QUERY, {
     variables: { getBrizInput: { brizUserName, parentId } },
+  });
+  const {
+    data: getParentBrizData,
+    loading: getParentBrizLoading,
+    error: getParentBrizError,
+    refetch: getParentBrizRefetch,
+  } = useQuery<getParentBrizQuery>(PARENT_BRIZ_QUERY, {
+    variables: { getParentBrizInput: { brizUserName, parentId } },
   });
 
   useEffect(() => {
@@ -516,7 +551,6 @@ const Briz: NextPage = () => {
     ).json();
     setOpenAI(openAi);
   };
-
   const gridOnOffVar = {
     hidden: { backgroundColor: "rgba(255, 0, 0,0)" },
     visibleCreate: { backgroundColor: "rgba(255, 0, 0, 0.5)" },
@@ -531,10 +565,72 @@ const Briz: NextPage = () => {
   if (meLoading) {
     return <div>Loading</div>;
   }
-
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
+        {getParentBrizData ? (
+          <motion.div
+            layout
+            className="relative mx-auto mb-4 flex h-auto max-w-7xl flex-row items-center justify-center"
+            initial={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <motion.div className="relative" whileHover="hoverBox">
+              <Link
+                legacyBehavior
+                href={
+                  getParentBrizData.getParentBriz.parentOfParentBriz?.id
+                    ? `/briz/${brizUserName}/${getParentBrizData.getParentBriz.parentOfParentBriz.id}`
+                    : `/briz/${brizUserName}`
+                }
+              >
+                <motion.div
+                  className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
+                  style={{
+                    height: `clamp(1px,10vw,8rem)`,
+                    margin: `clamp(1px,1vw,0.8rem)`,
+                  }}
+                  whileTap={{ scale: 1.05 }}
+                  variants={{
+                    hoverBox: {
+                      scale: 1.03,
+                      borderColor: "rgb(209 213 219)",
+                    },
+                  }}
+                >
+                  <Image
+                    priority
+                    src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                    alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                    fill
+                    style={{
+                      objectFit: "contain",
+                    }}
+                    onLoadingComplete={() => {
+                      setGrid({});
+                      setBrizLoading(false);
+                    }}
+                  ></Image>
+                </motion.div>
+              </Link>
+              <motion.span
+                className="absolute left-1/2 -translate-x-1/2 font-bold opacity-0 "
+                style={{
+                  fontSize: `clamp(1px,
+                      2vw,1.6rem)`,
+                  bottom: `clamp(-1.8rem,
+                        -2vw, -1px)`,
+                }}
+                variants={{
+                  hoverBox: { opacity: 1 },
+                }}
+              >
+                {getParentBrizData.getParentBriz.getParentBriz.title}
+              </motion.span>
+            </motion.div>
+          </motion.div>
+        ) : null}
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
             <>

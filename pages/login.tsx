@@ -8,7 +8,6 @@ import bg from "public/homebg.png";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { gql, useMutation, useReactiveVar } from "@apollo/client";
-
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import { useEffect } from "react";

@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { gql, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
 import { AnimatePresence, useScroll, motion } from "framer-motion";
@@ -10,18 +10,16 @@ import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import { cls } from "@/libs/utils";
-
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
+import Link from "next/link";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
-  EditBrizOutput,
   GetBrizOutput,
   GetPinnedBrizOutput,
+  EditBrizOutput,
 } from "@/src/gql/graphql";
-import Link from "next/link";
-import { data } from "autoprefixer";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -258,8 +256,7 @@ const Briz: NextPage = () => {
     } else {
       setGridRowNumber(14);
     }
-    getPinnedBrizRefetch();
-  }, [getPinnedBrizData, getBrizData]);
+  }, [getBrizData]);
 
   const {
     register,
@@ -518,7 +515,6 @@ const Briz: NextPage = () => {
         },
       });
     }
-    getPinnedBrizRefetch();
   };
 
   const onSubmitOpenAi = async (data: OpenAiForm) => {
@@ -557,13 +553,13 @@ const Briz: NextPage = () => {
         <motion.div
           layout
           className="relative mx-auto mb-4 flex h-auto max-w-7xl flex-row items-center justify-center"
+          initial={{ opacity: 0 }}
           exit={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
-            <AnimatePresence>
+            <AnimatePresence key={i}>
               <motion.div
-                key={i}
                 layout
                 initial={{ opacity: 0 }}
                 exit={{ opacity: 0 }}
@@ -573,7 +569,7 @@ const Briz: NextPage = () => {
               >
                 <Link legacyBehavior href={`/briz/${brizUserName}/${briz.id}`}>
                   <motion.div
-                    className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-100 bg-white  shadow-lg"
+                    className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
                     style={{
                       height: `clamp(1px,10vw,8rem)`,
                       margin: `clamp(1px,1vw,0.8rem)`,
@@ -582,7 +578,7 @@ const Briz: NextPage = () => {
                     variants={{
                       hoverBox: {
                         scale: 1.03,
-                        borderColor: "rgb(254 202 202)",
+                        borderColor: "rgb(209 213 219)",
                       },
                     }}
                   >
@@ -1088,6 +1084,7 @@ const Briz: NextPage = () => {
                         <button
                           onClick={() => {
                             onClickPinned(briz.id, !briz.pinned);
+                            getPinnedBrizRefetch();
                           }}
                           className={cls(
                             " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl p-1 shadow-xl transition-all hover:scale-105"
