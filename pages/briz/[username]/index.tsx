@@ -20,6 +20,7 @@ import {
   GetPinnedBrizOutput,
   EditBrizOutput,
 } from "@/src/gql/graphql";
+import profile from "public/IMG_2837.jpeg";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -552,7 +553,6 @@ const Briz: NextPage = () => {
   if (meLoading) {
     return <div>Loading</div>;
   }
-  console.log();
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
@@ -560,11 +560,50 @@ const Briz: NextPage = () => {
           <>
             <motion.div
               layout
-              className="relative mx-auto mb-4 flex h-auto max-w-7xl flex-row items-center justify-center"
+              className="relative mx-auto mb-6 flex h-[12vw] w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl bg-gray-100  shadow-md"
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
+              <motion.div
+                className="absolute left-[2vw] bottom-[-1.2vw] z-[200] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                style={{
+                  height: `clamp(1px,10vw,8rem)`,
+                }}
+                whileHover={"hoverBox"}
+                whileTap={{ scale: 1.08 }}
+                variants={{
+                  hoverBox: {
+                    scale: 1.05,
+                  },
+                }}
+              >
+                <Image
+                  priority
+                  src={profile}
+                  alt={`1`}
+                  fill
+                  style={{
+                    objectFit: "contain",
+                  }}
+                  onLoadingComplete={() => {
+                    setGrid({});
+                    setBrizLoading(false);
+                  }}
+                ></Image>
+                <motion.span
+                  className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
+                  style={{
+                    fontSize: `clamp(1px,
+                      5vw,4rem)`,
+                  }}
+                  variants={{
+                    hoverBox: { opacity: 1 },
+                  }}
+                >
+                  123
+                </motion.span>
+              </motion.div>
               {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
                 <AnimatePresence key={i}>
                   <motion.div
@@ -582,16 +621,15 @@ const Briz: NextPage = () => {
                       <motion.div
                         key={briz.id}
                         layoutId={briz.id + "pinned"}
-                        className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
+                        className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
                         style={{
-                          height: `clamp(1px,10vw,8rem)`,
-                          margin: `clamp(1px,1vw,0.8rem)`,
+                          height: `clamp(1px,8vw,6.4rem)`,
+                          margin: `clamp(1px,0.8vw,0.64rem)`,
                         }}
                         whileTap={{ scale: 1.08 }}
                         variants={{
                           hoverBox: {
                             scale: 1.05,
-                            borderColor: "rgb(249 250 251)",
                           },
                         }}
                       >
@@ -628,7 +666,6 @@ const Briz: NextPage = () => {
                 </AnimatePresence>
               ))}
             </motion.div>
-            <motion.div className="mx-auto mb-4 h-[1px] w-11/12 max-w-7xl bg-gray-200"></motion.div>
           </>
         ) : null}
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
@@ -965,7 +1002,7 @@ const Briz: NextPage = () => {
                       normal: { opacity: 1 },
                       selected: { opacity: 0.3, scale: 1.05 },
                       exit: { opacity: 0 },
-                      hoverBox: { scale: 1.03, zIndex: 101 },
+                      hoverBox: { scale: 1.03 },
                     }}
                     transition={{
                       duration: 0.4,

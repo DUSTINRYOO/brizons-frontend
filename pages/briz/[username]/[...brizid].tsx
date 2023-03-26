@@ -569,62 +569,89 @@ const Briz: NextPage = () => {
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
         {getParentBrizData ? (
-          <motion.div
-            layout
-            className="relative mx-auto mb-4 flex h-auto max-w-7xl flex-row items-center justify-center"
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <motion.div className="relative" whileHover="hoverBox">
-              <Link
-                legacyBehavior
-                href={
-                  getParentBrizData.getParentBriz.parentOfParentBriz?.id
-                    ? `/briz/${brizUserName}/${getParentBrizData.getParentBriz.parentOfParentBriz.id}`
-                    : `/briz/${brizUserName}`
+          <>
+            <motion.div
+              layout
+              className="relative mx-auto mb-6 flex h-[12vw] w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl bg-gray-100  shadow-md"
+              initial={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <motion.div
+                className="absolute left-[2vw] bottom-[-1.2vw] z-[200] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                key={getParentBrizData.getParentBriz.getParentBriz.id}
+                layoutId={
+                  getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
                 }
+                style={{
+                  height: `clamp(1px,10vw,8rem)`,
+                }}
+                whileHover={"hoverBox"}
+                whileTap={{ scale: 1.08 }}
+                variants={{
+                  hoverBox: {
+                    scale: 1.05,
+                  },
+                }}
               >
-                <motion.div
-                  className="relative aspect-square h-[10vw] overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
-                  key={getParentBrizData.getParentBriz.getParentBriz.id}
-                  layoutId={
-                    getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
-                  }
+                <Image
+                  priority
+                  src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                  alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                  fill
                   style={{
-                    height: `clamp(1px,10vw,8rem)`,
-                    margin: `clamp(1px,1vw,0.8rem)`,
+                    objectFit: "cover",
                   }}
-                  whileTap={{ scale: 1.05 }}
+                  onLoadingComplete={() => {
+                    setGrid({});
+                    setBrizLoading(false);
+                  }}
+                ></Image>
+                <motion.span
+                  className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
+                  style={{
+                    fontSize: `clamp(1px,
+                      5vw,4rem)`,
+                  }}
                   variants={{
-                    hoverBox: {
-                      scale: 1.03,
-                      borderColor: "rgb(209 213 219)",
-                    },
+                    hoverBox: { opacity: 1 },
                   }}
                 >
-                  <Image
-                    priority
-                    src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
-                    alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
-                    fill
-                    style={{
-                      objectFit: "contain",
-                    }}
-                    onLoadingComplete={() => {
-                      setGrid({});
-                      setBrizLoading(false);
-                    }}
-                  ></Image>
-                </motion.div>
-              </Link>
+                  {getParentBrizData.getParentBriz.getParentBriz.title}
+                </motion.span>
+              </motion.div>
+              <motion.div
+                className="absolute right-5 bottom-[-2vw] z-[200] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                style={{
+                  height: `clamp(1px,10vw,8rem)`,
+                }}
+                whileTap={{ scale: 1.05 }}
+                variants={{
+                  hoverBox: {
+                    scale: 1.03,
+                    borderColor: "rgb(209 213 219)",
+                  },
+                }}
+              >
+                <Image
+                  priority
+                  src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                  alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                  fill
+                  style={{
+                    objectFit: "contain",
+                  }}
+                  onLoadingComplete={() => {
+                    setGrid({});
+                    setBrizLoading(false);
+                  }}
+                ></Image>
+              </motion.div>
               <motion.span
-                className="absolute left-1/2 -translate-x-1/2 font-bold opacity-0 "
+                className="absolute left-1/2 w-full -translate-x-1/2 text-center font-extrabold"
                 style={{
                   fontSize: `clamp(1px,
-                      2vw,1.6rem)`,
-                  bottom: `clamp(-1.8rem,
-                        -2vw, -1px)`,
+                      5vw,4rem)`,
                 }}
                 variants={{
                   hoverBox: { opacity: 1 },
@@ -633,7 +660,7 @@ const Briz: NextPage = () => {
                 {getParentBrizData.getParentBriz.getParentBriz.title}
               </motion.span>
             </motion.div>
-          </motion.div>
+          </>
         ) : null}
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
@@ -659,29 +686,11 @@ const Briz: NextPage = () => {
                   >
                     <button
                       onClick={() => {
-                        console.log("clicked");
-                      }}
-                      className={cls(
-                        "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
-                      )}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="50"
-                        height="50"
-                        viewBox="-50 -60 625 625"
-                      >
-                        <path
-                          d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                          fill="white"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => {
-                        router.push(
-                          `/briz/${brizUserName}/${previousParentIdsUrl}`
-                        );
+                        getParentBrizData?.getParentBriz.parentOfParentBriz?.id
+                          ? router.push(
+                              `/briz/${brizUserName}/${getParentBrizData.getParentBriz.parentOfParentBriz.id}`
+                            )
+                          : router.push(`/briz/${brizUserName}`);
                       }}
                       className={cls(
                         "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
@@ -1010,7 +1019,7 @@ const Briz: NextPage = () => {
                       normal: { opacity: 1 },
                       selected: { opacity: 0.3, scale: 1.05 },
                       exit: { opacity: 0 },
-                      hoverBox: { scale: 1.03, zIndex: 101 },
+                      hoverBox: { scale: 1.03 },
                     }}
                     transition={{
                       duration: 0.4,
