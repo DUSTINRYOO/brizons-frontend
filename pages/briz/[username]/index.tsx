@@ -560,7 +560,7 @@ const Briz: NextPage = () => {
           <>
             <motion.div
               layout
-              className="relative mx-auto mb-6 flex h-[12vw] w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl bg-gray-100  shadow-md"
+              className="relative mx-auto mb-6 flex h-[12vw] w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white  shadow-md"
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
