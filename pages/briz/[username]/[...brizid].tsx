@@ -223,6 +223,7 @@ const Briz: NextPage = () => {
   const [brizLongPressed, setBrizLongPressed] = useState<EditBrizInputForm>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
   const [brizClicked, setBrizClicked] = useState<boolean>();
+  const [parentBrizClicked, setParentBrizClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
@@ -369,6 +370,7 @@ const Briz: NextPage = () => {
     },
   });
   const onOverlayClick = () => {
+    setParentBrizClicked(false);
     setGrid({});
     setDragIndex({});
     setDragged(false);
@@ -578,6 +580,90 @@ const Briz: NextPage = () => {
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
+              {parentBrizClicked ? (
+                <motion.div
+                  className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                  onClick={onOverlayClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                ></motion.div>
+              ) : null}
+              {parentBrizClicked ? (
+                <motion.div
+                  className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 -translate-x-1/2 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-black p-4 shadow-lg"
+                  key={
+                    getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
+                  }
+                  layout
+                  layoutId={
+                    getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
+                  }
+                  onClick={() => {
+                    setParentBrizClicked(false);
+                  }}
+                >
+                  <Image
+                    priority
+                    src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                    alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                    fill
+                    style={{
+                      opacity: 0.8,
+                      objectFit: "cover",
+                    }}
+                    onLoadingComplete={() => {
+                      setGrid({});
+                      setBrizLoading(false);
+                    }}
+                  ></Image>
+                  <motion.span
+                    className="left-0 right-0 z-[104] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
+                    style={{
+                      fontSize: `clamp(1px,
+                  1.8vw,1.44rem)`,
+                    }}
+                  >
+                    {getParentBrizData.getParentBriz.getParentBriz.description}
+                  </motion.span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="absolute left-[2vw] top-[3.2vw] z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg "
+                  layout
+                  key={
+                    getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
+                  }
+                  layoutId={
+                    getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
+                  }
+                  style={{
+                    height: `clamp(1px,10vw,8rem)`,
+                  }}
+                  whileHover={"hoverBox"}
+                  variants={{
+                    hoverBox: {
+                      scale: 1.05,
+                    },
+                  }}
+                  onClick={() => {
+                    setParentBrizClicked(true);
+                  }}
+                >
+                  <Image
+                    priority
+                    src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                    alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                    fill
+                    style={{
+                      objectFit: "cover",
+                    }}
+                    onLoadingComplete={() => {
+                      setGrid({});
+                      setBrizLoading(false);
+                    }}
+                  ></Image>
+                </motion.div>
+              )}
               <motion.div
                 onClick={() => {
                   onClickPinned(
@@ -606,50 +692,7 @@ const Briz: NextPage = () => {
                 </svg>
               </motion.div>
               <motion.div
-                className="absolute left-[2vw] bottom-[-1.2vw] z-[200] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-                key={getParentBrizData.getParentBriz.getParentBriz.id}
-                layoutId={
-                  getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
-                }
-                style={{
-                  height: `clamp(1px,10vw,8rem)`,
-                }}
-                whileHover={"hoverBox"}
-                whileTap={{ scale: 1.08 }}
-                variants={{
-                  hoverBox: {
-                    scale: 1.05,
-                  },
-                }}
-              >
-                <Image
-                  priority
-                  src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
-                  alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
-                  fill
-                  style={{
-                    objectFit: "cover",
-                  }}
-                  onLoadingComplete={() => {
-                    setGrid({});
-                    setBrizLoading(false);
-                  }}
-                ></Image>
-                <motion.span
-                  className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
-                  style={{
-                    fontSize: `clamp(1px,
-                      5vw,4rem)`,
-                  }}
-                  variants={{
-                    hoverBox: { opacity: 1 },
-                  }}
-                >
-                  {getParentBrizData.getParentBriz.getParentBriz.title}
-                </motion.span>
-              </motion.div>
-              <motion.div
-                className="absolute right-[2vw] bottom-[-1.2vw] z-[200] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                className="absolute right-[2vw]  top-[3.2vw] z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
                 style={{
                   height: `clamp(1px,10vw,8rem)`,
                 }}
@@ -665,7 +708,7 @@ const Briz: NextPage = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   width="8vw"
                   height="8vw"
-                  viewBox="-185 -245 825 825"
+                  viewBox="-110 -180 825 825"
                 >
                   <path
                     d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
@@ -674,14 +717,24 @@ const Briz: NextPage = () => {
                 </svg>
               </motion.div>
               <motion.span
-                className="absolute left-1/2 w-full -translate-x-1/2 text-center font-extrabold"
-                style={{
-                  fontSize: `clamp(1px,
+                layout={true}
+                className={cls(
+                  " absolute left-0 right-0 mx-auto max-w-max text-center font-extrabold transition-all",
+                  parentBrizClicked
+                    ? "z-[103] max-w-max rounded-2xl bg-white px-6"
+                    : ""
+                )}
+                style={
+                  parentBrizClicked
+                    ? {
+                        fontSize: `clamp(1px,
+                      3vw,2.4rem)`,
+                      }
+                    : {
+                        fontSize: `clamp(1px,
                       5vw,4rem)`,
-                }}
-                variants={{
-                  hoverBox: { opacity: 1 },
-                }}
+                      }
+                }
               >
                 {getParentBrizData.getParentBriz.getParentBriz.title}
               </motion.span>
