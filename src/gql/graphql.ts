@@ -22,6 +22,7 @@ export type Briz = {
   description: Scalars['String'];
   grid: Grid;
   id: Scalars['Float'];
+  inBucket: Scalars['Boolean'];
   metatags: Scalars['String'];
   owner: User;
   pinned: Scalars['Boolean'];
@@ -46,6 +47,7 @@ export type CreateBrizInput = {
   coverImg: Scalars['String'];
   description: Scalars['String'];
   grid: GridInputType;
+  inBucket: Scalars['Boolean'];
   metatags: Scalars['String'];
   parentBrizId?: InputMaybe<Scalars['Int']>;
   pinned: Scalars['Boolean'];
@@ -81,6 +83,7 @@ export type EditBrizInput = {
   coverImg?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   grid?: InputMaybe<GridInputType>;
+  inBucket?: InputMaybe<Scalars['Boolean']>;
   metatags?: InputMaybe<Scalars['String']>;
   parentBrizId?: InputMaybe<Scalars['Int']>;
   pinned?: InputMaybe<Scalars['Boolean']>;
@@ -127,6 +130,18 @@ export type GetBrizOutput = {
   ok: Scalars['Boolean'];
 };
 
+export type GetInBucketBrizInput = {
+  brizUserName: Scalars['String'];
+  parentId?: InputMaybe<Scalars['Int']>;
+};
+
+export type GetInBucketBrizOutput = {
+  __typename?: 'GetInBucketBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  getInBucketBriz: Array<Briz>;
+  ok: Scalars['Boolean'];
+};
+
 export type GetParentBrizInput = {
   brizUserName: Scalars['String'];
   parentId: Scalars['Int'];
@@ -137,7 +152,7 @@ export type GetParentBrizOutput = {
   error?: Maybe<Scalars['String']>;
   getParentBriz: Briz;
   ok: Scalars['Boolean'];
-  parentOfParentBriz: Briz;
+  parentOfParentBriz?: Maybe<Briz>;
 };
 
 export type GetPinnedBrizInput = {
@@ -243,6 +258,7 @@ export type Query = {
   __typename?: 'Query';
   examples: Array<Example>;
   getBriz: GetBrizOutput;
+  getInBucketBriz: GetInBucketBrizOutput;
   getParentBriz: GetParentBrizOutput;
   getPinnedBriz: GetPinnedBrizOutput;
   me: User;
@@ -252,6 +268,11 @@ export type Query = {
 
 export type QueryGetBrizArgs = {
   getBrizInput: GetBrizInput;
+};
+
+
+export type QueryGetInBucketBrizArgs = {
+  getInBucketBrizInput: GetInBucketBrizInput;
 };
 
 

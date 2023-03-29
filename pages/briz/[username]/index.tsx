@@ -13,14 +13,15 @@ import { cls } from "@/libs/utils";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
 import Link from "next/link";
+
+import profile from "public/IMG_2837.jpeg";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
+  EditBrizOutput,
   GetBrizOutput,
   GetPinnedBrizOutput,
-  EditBrizOutput,
 } from "@/src/gql/graphql";
-import profile from "public/IMG_2837.jpeg";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -255,7 +256,7 @@ const Briz: NextPage = () => {
     ) {
       const gridRow: Array<number> = [];
       getBrizData?.getBriz.getBriz.map((briz, i) => {
-        gridRow.push(briz.grid.rowEnd);
+        gridRow.push(briz.grid.rowEnd!);
       });
       setGridRowNumber(Math.max(...gridRow) + 13);
     } else {
@@ -1037,8 +1038,8 @@ const Briz: NextPage = () => {
                       briz.id === brizMouseOn && brizClicked ? "hidden" : ""
                     )}
                     style={{
-                      gridColumn: `${briz.grid.colStart}/${briz.grid.colEnd}`,
-                      gridRow: `${briz.grid.rowStart}/${briz.grid.rowEnd}`,
+                      gridColumn: `${briz.grid!.colStart}/${briz.grid!.colEnd}`,
+                      gridRow: `${briz.grid!.rowStart}/${briz.grid!.rowEnd}`,
                     }}
                     onMouseDown={() => {
                       longPressTimeOut.current = window.setTimeout(() => {
