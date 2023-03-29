@@ -74,7 +74,7 @@ const INBUCKET_BRIZ_QUERY = gql`
     getInBucketBriz(getInBucketBrizInput: $getInBucketBrizInput) {
       ok
       error
-      getBriz {
+      getInBucketBriz {
         id
         text {
           text
@@ -300,7 +300,7 @@ const Briz: NextPage = () => {
     error: getInBucketBrizError,
     refetch: getInBucketBrizRefetch,
   } = useQuery<getInBucketBrizQuery>(INBUCKET_BRIZ_QUERY, {
-    variables: { getBrizInput: { brizUserName, parentId } },
+    variables: { getInBucketBrizInput: { brizUserName, parentId } },
   });
   const {
     data: getParentBrizData,
@@ -399,6 +399,7 @@ const Briz: NextPage = () => {
 
       resetEditBriz();
       getParentBrizRefetch();
+      getInBucketBrizRefetch();
       return getBrizRefetch();
     },
   });
@@ -415,6 +416,7 @@ const Briz: NextPage = () => {
       const {
         deleteBriz: { ok, error },
       } = data;
+      getInBucketBrizRefetch();
       return getBrizRefetch();
     },
   });
@@ -751,7 +753,7 @@ const Briz: NextPage = () => {
               </motion.div>
               {bucketClicked ? (
                 <motion.div
-                  className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"
+                  className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"
                   key={"bucket"}
                   layout
                   layoutId={"bucket"}
@@ -767,7 +769,117 @@ const Briz: NextPage = () => {
                       fill="rgb(229 231 235)"
                     />
                   </svg>
-                  <motion.div>Hello</motion.div>
+                  <motion.div className="grid h-auto w-full grid-cols-3">
+                    <AnimatePresence>
+                      {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
+                        (briz) => (
+                          <motion.div
+                            key={briz.id}
+                            layout
+                            layoutId={briz.id + ""}
+                            initial="initial"
+                            animate={
+                              brizLongPressed && brizLongPressed.id === briz.id
+                                ? "selected"
+                                : "normal"
+                            }
+                            exit="exit"
+                            whileHover="hoverBox"
+                            variants={{
+                              initial: { opacity: 0 },
+                              normal: { opacity: 1 },
+                              selected: { opacity: 0.3, scale: 1.05 },
+                              exit: { opacity: 0 },
+                              hoverBox: { scale: 1.03 },
+                            }}
+                            transition={{
+                              duration: 0.4,
+                            }}
+                            className={cls(
+                              `relative m-1 flex aspect-square items-center justify-center object-scale-down`,
+                              briz.id === brizMouseOn && brizClicked
+                                ? "opacity-0"
+                                : ""
+                            )}
+                            onMouseDown={() => {
+                              longPressTimeOut.current = window.setTimeout(
+                                () => {
+                                  if (meData?.me.username !== brizUserName) {
+                                    return null;
+                                  } else {
+                                    setBrizLongPressed({
+                                      id: briz.id,
+                                      title: briz.title,
+                                      metatags: briz.metatags,
+                                      description: briz.description,
+                                      text: briz.text,
+                                    });
+                                    setGridOnOff(true);
+                                    setBucketClicked(false);
+                                  }
+                                },
+                                400
+                              );
+                            }}
+                            onMouseUp={() => {
+                              clearTimeout(longPressTimeOut.current);
+                            }}
+                          >
+                            {briz.coverImg !== "null" ? (
+                              <Image
+                                onMouseOver={() => {
+                                  setBrizMouseOn(briz.id);
+                                }}
+                                onClick={() => {
+                                  setBrizClicked(true);
+                                }}
+                                priority
+                                src={`${briz.coverImg}`}
+                                alt={`${briz.title}-${briz.description}`}
+                                fill
+                                placeholder="blur"
+                                blurDataURL={briz.coverImg}
+                                onLoadingComplete={() => {
+                                  setGrid({});
+                                  setBrizLoading(false);
+                                }}
+                                style={{
+                                  borderRadius: "clamp(1px,1vw,0.8rem)",
+                                  objectFit: "cover",
+                                }}
+                              ></Image>
+                            ) : (
+                              <motion.div className="relative h-full w-full ">
+                                {briz.text ? (
+                                  <motion.span
+                                    className="absolute flex h-full w-full flex-col break-words"
+                                    style={{
+                                      fontSize: `clamp(1px,${
+                                        0.064 * (briz.text.fontSize + 10)
+                                      }vw,${
+                                        0.052 * (briz.text.fontSize + 10)
+                                      }rem)`,
+                                      color: briz.text.textColor,
+                                      backgroundColor: briz.text.boxColor
+                                        ? briz.text.boxColor
+                                        : "",
+                                      fontStyle: briz.text.italic
+                                        ? "italic"
+                                        : "",
+                                      fontWeight: briz.text.bold,
+                                      textAlign: briz.text
+                                        .textRowAlign as textRowAlign,
+                                      justifyContent: briz.text.textColAlign,
+                                    }}
+                                  >{`${briz.text.text}`}</motion.span>
+                                ) : null}
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        )
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 </motion.div>
               ) : (
                 <motion.div
