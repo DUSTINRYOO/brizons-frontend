@@ -380,6 +380,7 @@ const Briz: NextPage = () => {
       setTextRowAlign("center");
       setTextColAlign("center");
       reset();
+      getInBucketBrizRefetch();
       return getBrizRefetch();
     },
   });
@@ -453,7 +454,12 @@ const Briz: NextPage = () => {
     setDragged(false);
     setGridOnOff(false);
     setBrizLoading(true);
-
+    const bucketGrid: IGrid = {
+      colStart: 23,
+      colEnd: 24,
+      rowStart: 1,
+      rowEnd: 2,
+    };
     let coverImg = "null";
     let text = null;
     if (data.coverImg) {
@@ -495,9 +501,9 @@ const Briz: NextPage = () => {
             description: data.description,
             metatags: data.metatags,
             coverImg: coverImg,
-            grid: grid,
+            grid: Object.keys(grid).length === 0 ? bucketGrid : grid,
+            inBucket: Object.keys(grid).length === 0 ? true : false,
             pinned: false,
-            inBucket: false,
             parentBrizId: parentId,
           },
         },
@@ -642,7 +648,9 @@ const Briz: NextPage = () => {
             >
               {parentBrizClicked || bucketClicked ? (
                 <motion.div
-                  className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                  className={cls(
+                    "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                  )}
                   onClick={onOverlayClick}
                   exit={{ opacity: 0 }}
                   animate={{ opacity: 0.5 }}
@@ -758,17 +766,47 @@ const Briz: NextPage = () => {
                   layout
                   layoutId={"bucket"}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="10vw"
-                    height="10vw"
-                    viewBox="-110 -180 825 825"
+                  {dragged ? (
+                    <motion.div
+                      className={cls(
+                        "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                      )}
+                      onClick={() => {
+                        setDragged(false);
+                      }}
+                      exit={{ opacity: 0 }}
+                      animate={{ opacity: 0.5 }}
+                    ></motion.div>
+                  ) : null}
+                  <motion.div
+                    className="my-4 rounded-3xl border-4 border-gray-50 bg-white"
+                    onClick={() => {
+                      setDragged(true);
+                    }}
+                    whileHover={{ scale: 1.05 }}
                   >
-                    <path
-                      d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                      fill="rgb(229 231 235)"
-                    />
-                  </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="8vw"
+                      height="8vw"
+                      viewBox="-110 -180 825 825"
+                    >
+                      <path
+                        d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                        fill={cls(
+                          brizLongPressed ? "rgb(254 215 170)" : "",
+                          getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                            .length !== 0 && !brizLongPressed
+                            ? "black"
+                            : "",
+                          getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                            .length === 0 && !brizLongPressed
+                            ? "rgb(229 231 235)"
+                            : ""
+                        )}
+                      />
+                    </svg>
+                  </motion.div>
                   <motion.div className="grid h-auto w-full grid-cols-3">
                     <AnimatePresence>
                       {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
@@ -917,11 +955,17 @@ const Briz: NextPage = () => {
                   >
                     <path
                       d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                      fill={
-                        brizLongPressed
-                          ? "rgb(254 215 170)"
-                          : "rgb(229 231 235)"
-                      }
+                      fill={cls(
+                        brizLongPressed ? "rgb(254 215 170)" : "",
+                        getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                          .length !== 0 && !brizLongPressed
+                          ? "black"
+                          : "",
+                        getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                          .length === 0 && !brizLongPressed
+                          ? "rgb(229 231 235)"
+                          : ""
+                      )}
                     />
                   </svg>
                 </motion.div>
