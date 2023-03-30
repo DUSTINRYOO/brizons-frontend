@@ -557,143 +557,141 @@ const Briz: NextPage = () => {
   return (
     <Layout title={`Briz`} hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
-        {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.length !== 0 ? (
-          <>
-            <motion.div
-              layout
-              className="relative mx-auto mb-6 flex h-[12vw] w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white  shadow-md"
-              initial={{ opacity: 0 }}
-              exit={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+        <motion.div
+          layout
+          className="relative mx-auto mb-6 flex  w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white  shadow-md"
+          initial={{ opacity: 0 }}
+          exit={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          style={{
+            height: `clamp(1px,
+                12vw,9.6rem)`,
+          }}
+        >
+          <motion.div
+            className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+            style={{
+              height: `clamp(1px,10vw,8rem)`,
+            }}
+            whileHover={"hoverBox"}
+            whileTap={{ scale: 1.08 }}
+            variants={{
+              hoverBox: {
+                scale: 1.05,
+              },
+            }}
+          >
+            <Image
+              priority
+              src={profile}
+              alt={`1`}
+              fill
+              style={{
+                objectFit: "contain",
+              }}
+              onLoadingComplete={() => {
+                setGrid({});
+                setBrizLoading(false);
+              }}
+            ></Image>
+            <motion.span
+              className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
+              style={{
+                fontSize: `clamp(1px,
+                      5vw,4rem)`,
+              }}
+              variants={{
+                hoverBox: { opacity: 1 },
+              }}
             >
+              123
+            </motion.span>
+          </motion.div>
+          <motion.div
+            className="absolute right-[2vw]  top-[3.2vw] z-[102] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+            style={{
+              height: `clamp(1px,10vw,8rem)`,
+            }}
+            whileHover={"hoverBox"}
+            whileTap={{ scale: 1.08 }}
+            variants={{
+              hoverBox: {
+                scale: 1.05,
+              },
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="8vw"
+              height="8vw"
+              viewBox="-110 -180 825 825"
+            >
+              <path
+                d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                fill="rgb(229 231 235)"
+              />
+            </svg>
+          </motion.div>
+          {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
+            <AnimatePresence key={i}>
               <motion.div
-                className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-                style={{
-                  height: `clamp(1px,10vw,8rem)`,
-                }}
-                whileHover={"hoverBox"}
-                whileTap={{ scale: 1.08 }}
-                variants={{
-                  hoverBox: {
-                    scale: 1.05,
-                  },
-                }}
+                layout
+                initial={{ opacity: 0 }}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="relative"
+                whileHover="hoverBox"
               >
-                <Image
-                  priority
-                  src={profile}
-                  alt={`1`}
-                  fill
-                  style={{
-                    objectFit: "contain",
-                  }}
-                  onLoadingComplete={() => {
-                    setGrid({});
-                    setBrizLoading(false);
-                  }}
-                ></Image>
+                <Link legacyBehavior href={`/briz/${brizUserName}/${briz.id}`}>
+                  <motion.div
+                    key={briz.id}
+                    layoutId={briz.id + "pinned"}
+                    className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
+                    style={{
+                      height: `clamp(1px,8vw,6.4rem)`,
+                      margin: `clamp(1px,0.8vw,0.64rem)`,
+                    }}
+                    whileTap={{ scale: 1.08 }}
+                    variants={{
+                      hoverBox: {
+                        scale: 1.05,
+                      },
+                    }}
+                  >
+                    <Image
+                      priority
+                      src={`${briz.coverImg}`}
+                      alt={`${briz.title}-${briz.description}`}
+                      fill
+                      style={{
+                        objectFit: "contain",
+                      }}
+                      onLoadingComplete={() => {
+                        setGrid({});
+                        setBrizLoading(false);
+                      }}
+                    ></Image>
+                  </motion.div>
+                </Link>
                 <motion.span
-                  className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
+                  className="absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-4 border-gray-50 bg-white px-4 py-1 font-bold  opacity-0 shadow-lg"
                   style={{
                     fontSize: `clamp(1px,
-                      5vw,4rem)`,
+                      2vw,1.6rem)`,
+                    bottom: `clamp(-2.4rem,
+                        -3vw, -1px)`,
                   }}
                   variants={{
                     hoverBox: { opacity: 1 },
                   }}
                 >
-                  123
+                  {briz.title}
                 </motion.span>
               </motion.div>
-              <motion.div
-                className="absolute right-[2vw]  top-[3.2vw] z-[102] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-                style={{
-                  height: `clamp(1px,10vw,8rem)`,
-                }}
-                whileHover={"hoverBox"}
-                whileTap={{ scale: 1.08 }}
-                variants={{
-                  hoverBox: {
-                    scale: 1.05,
-                  },
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="8vw"
-                  height="8vw"
-                  viewBox="-110 -180 825 825"
-                >
-                  <path
-                    d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                    fill="rgb(229 231 235)"
-                  />
-                </svg>
-              </motion.div>
-              {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
-                <AnimatePresence key={i}>
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    exit={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="relative"
-                    whileHover="hoverBox"
-                  >
-                    <Link
-                      legacyBehavior
-                      href={`/briz/${brizUserName}/${briz.id}`}
-                    >
-                      <motion.div
-                        key={briz.id}
-                        layoutId={briz.id + "pinned"}
-                        className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
-                        style={{
-                          height: `clamp(1px,8vw,6.4rem)`,
-                          margin: `clamp(1px,0.8vw,0.64rem)`,
-                        }}
-                        whileTap={{ scale: 1.08 }}
-                        variants={{
-                          hoverBox: {
-                            scale: 1.05,
-                          },
-                        }}
-                      >
-                        <Image
-                          priority
-                          src={`${briz.coverImg}`}
-                          alt={`${briz.title}-${briz.description}`}
-                          fill
-                          style={{
-                            objectFit: "contain",
-                          }}
-                          onLoadingComplete={() => {
-                            setGrid({});
-                            setBrizLoading(false);
-                          }}
-                        ></Image>
-                      </motion.div>
-                    </Link>
-                    <motion.span
-                      className="absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-4 border-gray-50 bg-white px-4 py-1 font-bold  opacity-0 shadow-lg"
-                      style={{
-                        fontSize: `clamp(1px,
-                      2vw,1.6rem)`,
-                        bottom: `clamp(-2.4rem,
-                        -3vw, -1px)`,
-                      }}
-                      variants={{
-                        hoverBox: { opacity: 1 },
-                      }}
-                    >
-                      {briz.title}
-                    </motion.span>
-                  </motion.div>
-                </AnimatePresence>
-              ))}
-            </motion.div>
-          </>
-        ) : null}
+            </AnimatePresence>
+          ))}
+        </motion.div>
+
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
             <>
@@ -1098,6 +1096,7 @@ const Briz: NextPage = () => {
                               fontWeight: briz.text.bold,
                               textAlign: briz.text.textRowAlign as textRowAlign,
                               justifyContent: briz.text.textColAlign,
+                              borderRadius: "clamp(1px,1vw,0.8rem)",
                             }}
                           >{`${briz.text.text}`}</motion.span>
                         ) : null}
