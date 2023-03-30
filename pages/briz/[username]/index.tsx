@@ -20,6 +20,7 @@ import {
   DeleteBrizOutput,
   EditBrizOutput,
   GetBrizOutput,
+  GetInBucketBrizOutput,
   GetPinnedBrizOutput,
 } from "@/src/gql/graphql";
 
@@ -53,6 +54,41 @@ const BRIZ_QUERY = gql`
         }
         coverImg
         pinned
+        inBucket
+        title
+        description
+        metatags
+        grid {
+          colStart
+          colEnd
+          rowStart
+          rowEnd
+        }
+      }
+    }
+  }
+`;
+
+const INBUCKET_BRIZ_QUERY = gql`
+  query inBucketBrizQuery($getInBucketBrizInput: GetInBucketBrizInput!) {
+    getInBucketBriz(getInBucketBrizInput: $getInBucketBrizInput) {
+      ok
+      error
+      getInBucketBriz {
+        id
+        text {
+          text
+          fontSize
+          bold
+          italic
+          textColor
+          boxColor
+          textColAlign
+          textRowAlign
+        }
+        coverImg
+        pinned
+        inBucket
         title
         description
         metatags
@@ -188,6 +224,11 @@ interface deleteBrizMutation {
 interface getBrizQuery {
   getBriz: GetBrizOutput;
 }
+
+interface getInBucketBrizQuery {
+  getInBucketBriz: GetInBucketBrizOutput;
+}
+
 interface getPinnedBrizQuery {
   getPinnedBriz: GetPinnedBrizOutput;
 }
@@ -211,6 +252,7 @@ const Briz: NextPage = () => {
   const [brizLongPressed, setBrizLongPressed] = useState<EditBrizInputForm>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
   const [brizClicked, setBrizClicked] = useState<boolean>();
+  const [bucketClicked, setBucketClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
@@ -227,6 +269,7 @@ const Briz: NextPage = () => {
     data: meData,
     loading: meLoading,
     error: meQuery,
+    refetch: meRefetch,
   } = useQuery<meQuery>(ME_QUERY);
   const {
     data: getBrizData,
@@ -237,6 +280,14 @@ const Briz: NextPage = () => {
     variables: { getBrizInput: { brizUserName, parentId: null } },
   });
   const {
+    data: getInBucketBrizData,
+    loading: getInBucketBrizLoading,
+    error: getInBucketBrizError,
+    refetch: getInBucketBrizRefetch,
+  } = useQuery<getInBucketBrizQuery>(INBUCKET_BRIZ_QUERY, {
+    variables: { getInBucketBrizInput: { brizUserName, parentId: null } },
+  });
+  const {
     data: getPinnedBrizData,
     loading: getPinnedBrizLoading,
     error: getPinnedBrizError,
@@ -245,9 +296,11 @@ const Briz: NextPage = () => {
     variables: { getPinnedBrizInput: { brizUserName } },
   });
   useEffect(() => {
+    meRefetch();
     getBrizRefetch();
     getPinnedBrizRefetch();
-  }, [getBrizData, getPinnedBrizData]);
+    getInBucketBrizRefetch();
+  }, [meData, getBrizData, getPinnedBrizData, getInBucketBrizData]);
   useEffect(() => {
     if (
       !getBrizError &&
@@ -317,6 +370,7 @@ const Briz: NextPage = () => {
       setTextRowAlign("center");
       setTextColAlign("center");
       reset();
+      getInBucketBrizRefetch();
       return getBrizRefetch();
     },
   });
@@ -333,8 +387,13 @@ const Briz: NextPage = () => {
       const {
         editBriz: { ok, error },
       } = data;
-
+      setTextBold("500");
+      setTextItalic(false);
+      setTextRowAlign("center");
+      setTextColAlign("center");
+      reset();
       resetEditBriz();
+      getInBucketBrizRefetch();
       getPinnedBrizRefetch();
       return getBrizRefetch();
     },
@@ -352,10 +411,13 @@ const Briz: NextPage = () => {
       const {
         deleteBriz: { ok, error },
       } = data;
+      getPinnedBrizRefetch();
+      getInBucketBrizRefetch();
       return getBrizRefetch();
     },
   });
   const onOverlayClick = () => {
+    setBucketClicked(false);
     setGrid({});
     setDragIndex({});
     setDragged(false);
@@ -386,7 +448,12 @@ const Briz: NextPage = () => {
     setDragged(false);
     setGridOnOff(false);
     setBrizLoading(true);
-
+    const bucketGrid: IGrid = {
+      colStart: 23,
+      colEnd: 24,
+      rowStart: 1,
+      rowEnd: 2,
+    };
     let coverImg = "null";
     let text = null;
     if (data.coverImg) {
@@ -428,7 +495,8 @@ const Briz: NextPage = () => {
             description: data.description,
             metatags: data.metatags,
             coverImg: coverImg,
-            grid: grid,
+            grid: Object.keys(grid).length === 0 ? bucketGrid : grid,
+            inBucket: Object.keys(grid).length === 0 ? true : false,
             pinned: false,
             parentBrizId: null,
           },
@@ -495,12 +563,19 @@ const Briz: NextPage = () => {
     if (meData?.me.username !== brizUserName) {
       return null;
     }
+    const bucketGrid: IGrid = {
+      colStart: 23,
+      colEnd: 24,
+      rowStart: 1,
+      rowEnd: 2,
+    };
     if (!meLoading) {
       editBrizMutation({
         variables: {
           editBrizInput: {
             brizId,
-            grid: grid,
+            grid: Object.keys(grid).length === 0 ? bucketGrid : grid,
+            inBucket: Object.keys(grid).length === 0 ? true : false,
           },
         },
       });
@@ -568,6 +643,16 @@ const Briz: NextPage = () => {
                 12vw,9.6rem)`,
           }}
         >
+          {bucketClicked ? (
+            <motion.div
+              className={cls(
+                "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+              )}
+              onClick={onOverlayClick}
+              exit={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+            ></motion.div>
+          ) : null}
           <motion.div
             className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
             style={{
@@ -607,31 +692,216 @@ const Briz: NextPage = () => {
               123
             </motion.span>
           </motion.div>
-          <motion.div
-            className="absolute right-[2vw]  top-[3.2vw] z-[102] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-            style={{
-              height: `clamp(1px,10vw,8rem)`,
-            }}
-            whileHover={"hoverBox"}
-            whileTap={{ scale: 1.08 }}
-            variants={{
-              hoverBox: {
-                scale: 1.05,
-              },
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="8vw"
-              height="8vw"
-              viewBox="-110 -180 825 825"
+          {bucketClicked ? (
+            <motion.div
+              className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"
+              key={"bucket"}
+              layout
+              layoutId={"bucket"}
             >
-              <path
-                d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                fill="rgb(229 231 235)"
-              />
-            </svg>
-          </motion.div>
+              {dragged ? (
+                <motion.div
+                  className={cls(
+                    "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                  )}
+                  onClick={() => {
+                    setDragged(false);
+                  }}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                ></motion.div>
+              ) : null}
+              <motion.div
+                className="my-4 rounded-3xl border-4 border-gray-50 bg-white"
+                onClick={() => {
+                  setDragged(true);
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  borderColor: "rgb(252 165 165)",
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="8vw"
+                  height="8vw"
+                  viewBox="-110 -180 825 825"
+                >
+                  <path
+                    d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                    fill={cls(
+                      brizLongPressed ? "rgb(254 215 170)" : "",
+                      getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                        .length !== 0 && !brizLongPressed
+                        ? "black"
+                        : "",
+                      getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                        .length === 0 && !brizLongPressed
+                        ? "rgb(229 231 235)"
+                        : ""
+                    )}
+                  />
+                </svg>
+              </motion.div>
+              <motion.div className="grid h-auto w-full grid-cols-3">
+                <AnimatePresence>
+                  {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
+                    (briz) => (
+                      <motion.div
+                        key={briz.id}
+                        layout
+                        layoutId={briz.id + ""}
+                        initial="initial"
+                        animate={
+                          brizLongPressed && brizLongPressed.id === briz.id
+                            ? "selected"
+                            : "normal"
+                        }
+                        exit="exit"
+                        whileHover="hoverBox"
+                        variants={{
+                          initial: { opacity: 0 },
+                          normal: { opacity: 1 },
+                          selected: { opacity: 0.3, scale: 1.05 },
+                          exit: { opacity: 0 },
+                          hoverBox: { scale: 1.03 },
+                        }}
+                        transition={{
+                          duration: 0.4,
+                        }}
+                        className={cls(
+                          `relative m-1 flex aspect-square items-center justify-center object-scale-down`,
+                          briz.id === brizMouseOn && brizClicked
+                            ? "opacity-0"
+                            : ""
+                        )}
+                        onMouseDown={() => {
+                          longPressTimeOut.current = window.setTimeout(() => {
+                            if (meData?.me.username !== brizUserName) {
+                              return null;
+                            } else {
+                              setBrizLongPressed({
+                                id: briz.id,
+                                title: briz.title,
+                                metatags: briz.metatags,
+                                description: briz.description,
+                                text: briz.text,
+                              });
+                              setGridOnOff(true);
+                              setBucketClicked(false);
+                            }
+                          }, 400);
+                        }}
+                        onMouseUp={() => {
+                          clearTimeout(longPressTimeOut.current);
+                        }}
+                      >
+                        {briz.coverImg !== "null" ? (
+                          <Image
+                            onMouseOver={() => {
+                              setBrizMouseOn(briz.id);
+                            }}
+                            onClick={() => {
+                              setBrizClicked(true);
+                            }}
+                            priority
+                            src={`${briz.coverImg}`}
+                            alt={`${briz.title}-${briz.description}`}
+                            fill
+                            placeholder="blur"
+                            blurDataURL={briz.coverImg}
+                            onLoadingComplete={() => {
+                              setGrid({});
+                              setBrizLoading(false);
+                            }}
+                            style={{
+                              borderRadius: "clamp(1px,1vw,0.8rem)",
+                              objectFit: "cover",
+                            }}
+                          ></Image>
+                        ) : (
+                          <motion.div className="relative h-full w-full ">
+                            {briz.text ? (
+                              <motion.span
+                                className="absolute flex h-full w-full flex-col break-words"
+                                style={{
+                                  fontSize: `clamp(1px,${
+                                    0.064 * (briz.text.fontSize + 10)
+                                  }vw,${0.052 * (briz.text.fontSize + 10)}rem)`,
+                                  color: briz.text.textColor,
+                                  backgroundColor: briz.text.boxColor
+                                    ? briz.text.boxColor
+                                    : "",
+                                  fontStyle: briz.text.italic ? "italic" : "",
+                                  fontWeight: briz.text.bold,
+                                  textAlign: briz.text
+                                    .textRowAlign as textRowAlign,
+                                  justifyContent: briz.text.textColAlign,
+                                  borderRadius: "clamp(1px,1vw,0.8rem)",
+                                }}
+                              >{`${briz.text.text}`}</motion.span>
+                            ) : null}
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    )
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              className={cls(
+                "absolute  z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+              )}
+              style={{
+                height: `clamp(1px,10vw,8rem)`,
+                top: `clamp(1px,3.2vw,2.56rem)`,
+                right: `clamp(1px,2vw,1.6rem)`,
+              }}
+              whileHover={"hoverBox"}
+              whileTap={{ scale: 1.08 }}
+              variants={{
+                hoverBox: {
+                  scale: 1.05,
+                },
+              }}
+              onClick={() => {
+                if (brizLongPressed) {
+                  onSubmitGridEdit(brizLongPressed.id!);
+                  setBrizLongPressed(undefined);
+                  setGridOnOff((prev) => !prev);
+                  setGrid({});
+                  setDragIndex({});
+                } else setBucketClicked(true);
+              }}
+              key={"bucket"}
+              layout
+              layoutId={"bucket"}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8vw"
+                height="8vw"
+                viewBox="-110 -180 825 825"
+              >
+                <path
+                  d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                  fill={cls(
+                    brizLongPressed ? "rgb(254 215 170)" : "",
+                    getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                      .length !== 0 && !brizLongPressed
+                      ? "black"
+                      : "",
+                    getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                      .length === 0 && !brizLongPressed
+                      ? "rgb(229 231 235)"
+                      : ""
+                  )}
+                />
+              </svg>
+            </motion.div>
+          )}
           {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
             <AnimatePresence key={i}>
               <motion.div
@@ -1111,85 +1381,160 @@ const Briz: NextPage = () => {
         <AnimatePresence>
           {brizClicked ? (
             <>
-              <motion.div
-                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 "
-                initial={{ opacity: 0 }}
-                onClick={onOverlayClick}
-                exit={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
-              ></motion.div>
-              <motion.div
-                layout
-                className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
-                style={{ top: scrollY.get() + 100 }}
-                exit={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                layoutId={brizMouseOn + ""}
-              >
-                {getBrizData?.getBriz.getBriz.map((briz, i) => {
-                  if (briz.id === brizMouseOn) {
-                    return (
-                      <motion.div key={i}>
-                        <motion.span
-                          className="block text-center text-3xl font-bold"
-                          style={{ textShadow: "#ff0000 0px 2px 20px" }}
-                        >
-                          {briz.title}
-                        </motion.span>
-                        <Link
-                          legacyBehavior
-                          href={`/briz/${brizUserName}/${briz.id}`}
-                        >
-                          <motion.div
-                            className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
-                            whileTap={{ scale: 1.05 }}
-                          >
-                            <Image
-                              priority
-                              src={`${briz.coverImg}`}
-                              alt={`${briz.title}-${briz.description}`}
-                              fill
-                              style={{
-                                objectFit: "contain",
+              {bucketClicked ? (
+                <>
+                  {" "}
+                  <motion.div
+                    className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 "
+                    initial={{ opacity: 0 }}
+                    onClick={() => {
+                      setBrizClicked(undefined);
+                    }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                  ></motion.div>
+                  <motion.div
+                    layout
+                    className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                    style={{ top: scrollY.get() + 100 }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    layoutId={brizMouseOn + ""}
+                  >
+                    {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
+                      (briz, i) => {
+                        if (briz.id === brizMouseOn) {
+                          return (
+                            <motion.div key={i}>
+                              <motion.span
+                                className="block text-center text-3xl font-bold"
+                                style={{ textShadow: "#ff0000 0px 2px 20px" }}
+                              >
+                                {briz.title}
+                              </motion.span>
+                              <motion.div
+                                className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
+                                whileTap={{ scale: 1.05 }}
+                                onClick={() => {
+                                  setBrizClicked(undefined);
+                                }}
+                              >
+                                <Image
+                                  priority
+                                  src={`${briz.coverImg}`}
+                                  alt={`${briz.title}-${briz.description}`}
+                                  fill
+                                  style={{
+                                    objectFit: "contain",
+                                  }}
+                                  onLoadingComplete={() => {
+                                    setGrid({});
+                                    setBrizLoading(false);
+                                  }}
+                                ></Image>
+                              </motion.div>
+                              <motion.span className="block text-left text-xl font-medium">
+                                {briz.metatags}
+                              </motion.span>
+                              <motion.span className="block text-center text-xl font-medium">
+                                {briz.description}
+                              </motion.span>
+                            </motion.div>
+                          );
+                        }
+                      }
+                    )}
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <motion.div
+                    className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 "
+                    initial={{ opacity: 0 }}
+                    onClick={onOverlayClick}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                  ></motion.div>
+                  <motion.div
+                    layout
+                    className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                    style={{ top: scrollY.get() + 100 }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    layoutId={brizMouseOn + ""}
+                  >
+                    {getBrizData?.getBriz.getBriz.map((briz, i) => {
+                      if (briz.id === brizMouseOn) {
+                        return (
+                          <motion.div key={i}>
+                            <motion.span
+                              className="block text-center text-3xl font-bold"
+                              style={{ textShadow: "#ff0000 0px 2px 20px" }}
+                            >
+                              {briz.title}
+                            </motion.span>
+                            <Link
+                              legacyBehavior
+                              href={`/briz/${brizUserName}/${briz.id}`}
+                            >
+                              <motion.div
+                                className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
+                                whileTap={{ scale: 1.05 }}
+                                onClick={() => {
+                                  setBrizClicked(undefined);
+                                }}
+                              >
+                                <Image
+                                  priority
+                                  src={`${briz.coverImg}`}
+                                  alt={`${briz.title}-${briz.description}`}
+                                  fill
+                                  style={{
+                                    objectFit: "contain",
+                                  }}
+                                  onLoadingComplete={() => {
+                                    setGrid({});
+                                    setBrizLoading(false);
+                                  }}
+                                ></Image>
+                              </motion.div>
+                            </Link>
+                            <button
+                              onClick={() => {
+                                onClickPinned(briz.id, !briz.pinned);
                               }}
-                              onLoadingComplete={() => {
-                                setGrid({});
-                                setBrizLoading(false);
-                              }}
-                            ></Image>
+                              className={cls(
+                                " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl p-1 shadow-xl transition-all hover:scale-105"
+                              )}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="35"
+                                height="35"
+                                viewBox="-125 -80 625 625"
+                              >
+                                <path
+                                  d="M32 32C32 14.3 46.3 0 64 0H320c17.7 0 32 14.3 32 32s-14.3 32-32 32H290.5l11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3H32c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64H64C46.3 64 32 49.7 32 32zM160 384h64v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V384z"
+                                  fill={
+                                    briz.pinned ? "black" : "rgb(229 231 235)"
+                                  }
+                                />
+                              </svg>
+                            </button>
+                            <motion.span className="block text-left text-xl font-medium">
+                              {briz.metatags}
+                            </motion.span>
+                            <motion.span className="block text-center text-xl font-medium">
+                              {briz.description}
+                            </motion.span>
                           </motion.div>
-                        </Link>
-                        <button
-                          onClick={() => {
-                            onClickPinned(briz.id, !briz.pinned);
-                          }}
-                          className={cls(
-                            " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl p-1 shadow-xl transition-all hover:scale-105"
-                          )}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="35"
-                            height="35"
-                            viewBox="-125 -80 625 625"
-                          >
-                            <path
-                              d="M32 32C32 14.3 46.3 0 64 0H320c17.7 0 32 14.3 32 32s-14.3 32-32 32H290.5l11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3H32c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64H64C46.3 64 32 49.7 32 32zM160 384h64v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V384z"
-                              fill={briz.pinned ? "black" : "rgb(229 231 235)"}
-                            />
-                          </svg>
-                        </button>
-                        <motion.span className="block text-left text-xl font-medium">
-                          {briz.metatags}
-                        </motion.span>
-                        <motion.span className="block text-center text-xl font-medium">
-                          {briz.description}
-                        </motion.span>
-                      </motion.div>
-                    );
-                  }
-                })}
-              </motion.div>
+                        );
+                      }
+                    })}
+                  </motion.div>
+                </>
+              )}
             </>
           ) : null}
         </AnimatePresence>
@@ -1550,7 +1895,7 @@ const Briz: NextPage = () => {
                 </div>
               </motion.div>
             </>
-          ) : null}{" "}
+          ) : null}
         </AnimatePresence>
         <AnimatePresence>
           {editClicked ? (

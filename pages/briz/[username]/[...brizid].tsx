@@ -281,6 +281,7 @@ const Briz: NextPage = () => {
     data: meData,
     loading: meLoading,
     error: meQuery,
+    refetch: meRefetch,
   } = useQuery<meQuery>(ME_QUERY);
   let parentId: number | any = null;
   if (routerBrizId) {
@@ -310,7 +311,12 @@ const Briz: NextPage = () => {
   } = useQuery<getParentBrizQuery>(PARENT_BRIZ_QUERY, {
     variables: { getParentBrizInput: { brizUserName, parentId } },
   });
-
+  useEffect(() => {
+    meRefetch();
+    getBrizRefetch();
+    getParentBrizRefetch();
+    getInBucketBrizRefetch();
+  }, [meData, getBrizData, getParentBrizData, getInBucketBrizData]);
   useEffect(() => {
     if (
       !getBrizError &&
@@ -397,7 +403,11 @@ const Briz: NextPage = () => {
       const {
         editBriz: { ok, error },
       } = data;
-
+      setTextBold("500");
+      setTextItalic(false);
+      setTextRowAlign("center");
+      setTextColAlign("center");
+      reset();
       resetEditBriz();
       getParentBrizRefetch();
       getInBucketBrizRefetch();
@@ -1455,7 +1465,6 @@ const Briz: NextPage = () => {
             <>
               {bucketClicked ? (
                 <>
-                  {" "}
                   <motion.div
                     className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 "
                     initial={{ opacity: 0 }}
@@ -1966,7 +1975,7 @@ const Briz: NextPage = () => {
                 </div>
               </motion.div>
             </>
-          ) : null}{" "}
+          ) : null}
         </AnimatePresence>
         <AnimatePresence>
           {editClicked ? (
