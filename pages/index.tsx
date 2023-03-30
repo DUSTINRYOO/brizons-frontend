@@ -11,6 +11,7 @@ import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
+import { capitalizeFirstLetter } from "@/libs/utils";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -116,7 +117,8 @@ const Home: NextPage = () => {
       <div className="h-auto w-full py-20">
         <div className="mx-auto mt-0 h-auto max-w-6xl p-10 pb-14 ">
           <h3 className="mt-4 text-center text-6xl font-bold text-gray-100">
-            Hello, {data?.me.username}!
+            Hello,
+            {capitalizeFirstLetter(`${data?.me.username}`)}!
           </h3>
           <h3 className="mt-4 text-center text-2xl font-bold text-gray-100">
             A portfolio-based archive service for all you want.

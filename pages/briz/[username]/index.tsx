@@ -9,7 +9,7 @@ import { AnimatePresence, useScroll, motion } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
-import { cls } from "@/libs/utils";
+import { capitalizeFirstLetter, cls } from "@/libs/utils";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
 import Link from "next/link";
@@ -688,9 +688,7 @@ const Briz: NextPage = () => {
               variants={{
                 hoverBox: { opacity: 1 },
               }}
-            >
-              123
-            </motion.span>
+            ></motion.span>
           </motion.div>
           {bucketClicked ? (
             <motion.div
@@ -960,6 +958,25 @@ const Briz: NextPage = () => {
               </motion.div>
             </AnimatePresence>
           ))}
+          {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.length === 0 ? (
+            <AnimatePresence>
+              <motion.span
+                layout
+                className={cls(
+                  " absolute left-0 right-0 mx-auto border-4 border-white text-center font-extrabold"
+                )}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  fontSize: `clamp(1px,
+                   5vw,4rem)`,
+                }}
+              >
+                {capitalizeFirstLetter(`${meData?.me.username}`) + "'s Briz"}
+              </motion.span>
+            </AnimatePresence>
+          ) : null}
         </motion.div>
 
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
