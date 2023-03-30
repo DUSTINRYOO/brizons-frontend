@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import Layout from "@/components/layout";
-import { AnimatePresence, useScroll, motion } from "framer-motion";
+import { AnimatePresence, useScroll, motion, clamp } from "framer-motion";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -645,6 +645,10 @@ const Briz: NextPage = () => {
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              style={{
+                height: `clamp(1px,
+                12vw,9.6rem)`,
+              }}
             >
               {parentBrizClicked || bucketClicked ? (
                 <motion.div
@@ -696,7 +700,7 @@ const Briz: NextPage = () => {
                 </motion.div>
               ) : (
                 <motion.div
-                  className="absolute left-[2vw] top-[3.2vw] z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg "
+                  className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg "
                   layout
                   key={
                     getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
@@ -706,6 +710,8 @@ const Briz: NextPage = () => {
                   }
                   style={{
                     height: `clamp(1px,10vw,8rem)`,
+                    top: `clamp(1px,3.2vw,2.56rem)`,
+                    left: `clamp(1px,2vw,1.6rem)`,
                   }}
                   whileHover={"hoverBox"}
                   variants={{
@@ -740,13 +746,17 @@ const Briz: NextPage = () => {
                   );
                 }}
                 className={cls(
-                  "absolute right-[-1.6vw] top-[-1.2vw] z-[100] flex aspect-square cursor-pointer items-center justify-center rounded-2xl border-[0.2vw] border-gray-50 bg-white p-1 shadow-xl transition-all hover:scale-105"
+                  "absolute  z-[100] flex aspect-square cursor-pointer items-center justify-center rounded-2xl border-[0.2vw] border-gray-50 bg-white p-1 shadow-xl transition-all hover:scale-105"
                 )}
+                style={{
+                  right: "clamp(-1.28rem,-1.6vw,1px)",
+                  top: "clamp(-1.28rem,-1.6vw,1px)",
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="3vw"
-                  height="3vw"
+                  width="clamp(1px,3vw,2.4rem)"
+                  height="clamp(1px,3vw,2.4rem)"
                   viewBox="-125 -80 625 625"
                 >
                   <path
@@ -922,10 +932,12 @@ const Briz: NextPage = () => {
               ) : (
                 <motion.div
                   className={cls(
-                    "absolute right-[2vw]  top-[3.2vw] z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                    "absolute  z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
                   )}
                   style={{
                     height: `clamp(1px,10vw,8rem)`,
+                    top: `clamp(1px,3.2vw,2.56rem)`,
+                    right: `clamp(1px,2vw,1.6rem)`,
                   }}
                   whileHover={"hoverBox"}
                   whileTap={{ scale: 1.08 }}
