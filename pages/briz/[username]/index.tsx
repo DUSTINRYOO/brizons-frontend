@@ -286,6 +286,7 @@ const Briz: NextPage = () => {
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
   const [brizClicked, setBrizClicked] = useState<boolean>();
   const [bucketClicked, setBucketClicked] = useState<boolean>(false);
+  const [profileClicked, setProfileClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
   const [editProfileClicked, setEditProfileClicked] = useState<boolean>(false);
   const [dragged, setDragged] = useState<boolean>(false);
@@ -492,6 +493,7 @@ const Briz: NextPage = () => {
   });
   const onOverlayClick = () => {
     setBucketClicked(false);
+    setProfileClicked(false);
     setEditProfileClicked(false);
     setGrid({});
     setDragIndex({});
@@ -766,7 +768,111 @@ const Briz: NextPage = () => {
               animate={{ opacity: 0.5 }}
             ></motion.div>
           ) : null}
-
+          {profileClicked ? (
+            <>
+              <motion.div
+                className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                onClick={onOverlayClick}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+              ></motion.div>
+              <motion.div
+                className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-black p-4 shadow-lg"
+                layout
+                layoutId="profile"
+                onClick={() => {
+                  setProfileClicked(false);
+                }}
+              >
+                <motion.span
+                  layout={true}
+                  className={cls(
+                    " absolute left-0 right-0 top-2 z-[103] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold"
+                  )}
+                  style={{
+                    fontSize: `clamp(1px,
+                      3vw,2.4rem)`,
+                  }}
+                >
+                  {meData?.me.name}
+                </motion.span>
+                <Image
+                  priority
+                  src={`${meData?.me.profileImg}`}
+                  alt={`${meData?.me.username}'s Briz`}
+                  fill
+                  style={{
+                    opacity: 0.8,
+                    objectFit: "cover",
+                  }}
+                  onLoadingComplete={() => {
+                    setGrid({});
+                    setBrizLoading(false);
+                  }}
+                ></Image>
+                <motion.span
+                  className="left-0 right-0 z-[104] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
+                  style={{
+                    fontSize: `clamp(1px,
+                  1.8vw,1.44rem)`,
+                  }}
+                >
+                  {meData?.me.biography}
+                </motion.span>
+              </motion.div>
+            </>
+          ) : (
+            <motion.div
+              layout
+              layoutId="profile"
+              className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+              style={{
+                height: `clamp(1px,10vw,8rem)`,
+              }}
+              whileHover={"hoverBox"}
+              whileTap={{ scale: 1.08 }}
+              variants={{
+                hoverBox: {
+                  scale: 1.05,
+                },
+              }}
+              onMouseDown={() => {
+                longPressTimeOut.current = window.setTimeout(() => {
+                  if (meData?.me.username !== brizUserName) {
+                    return null;
+                  } else {
+                    setValueEditProfile("editProfile", {
+                      username: meData?.me.username,
+                      email: meData?.me.email,
+                      biography: meData?.me.biography,
+                      name: meData?.me.name,
+                    });
+                    setEditProfileClicked(true);
+                  }
+                }, 400);
+              }}
+              onMouseUp={() => {
+                clearTimeout(longPressTimeOut.current);
+              }}
+              onClick={() => {
+                setProfileClicked(true);
+              }}
+            >
+              <Image
+                priority
+                src={`${meData?.me.profileImg}`}
+                alt={`1`}
+                fill
+                style={{
+                  objectFit: "contain",
+                }}
+                onLoadingComplete={() => {
+                  setGrid({});
+                  setBrizLoading(false);
+                }}
+              ></Image>
+            </motion.div>
+          )}
           {editProfileClicked ? (
             <>
               <motion.div
@@ -776,8 +882,6 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                layout
-                layoutId="profile"
                 className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
@@ -835,46 +939,7 @@ const Briz: NextPage = () => {
                 </div>
               </motion.div>
             </>
-          ) : (
-            <motion.div
-              layout
-              layoutId="profile"
-              className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-              style={{
-                height: `clamp(1px,10vw,8rem)`,
-              }}
-              whileHover={"hoverBox"}
-              whileTap={{ scale: 1.08 }}
-              variants={{
-                hoverBox: {
-                  scale: 1.05,
-                },
-              }}
-              onClick={() => {
-                setValueEditProfile("editProfile", {
-                  username: meData?.me.username,
-                  email: meData?.me.email,
-                  biography: meData?.me.biography,
-                  name: meData?.me.name,
-                });
-                setEditProfileClicked(true);
-              }}
-            >
-              <Image
-                priority
-                src={`${meData?.me.profileImg}`}
-                alt={`1`}
-                fill
-                style={{
-                  objectFit: "contain",
-                }}
-                onLoadingComplete={() => {
-                  setGrid({});
-                  setBrizLoading(false);
-                }}
-              ></Image>
-            </motion.div>
-          )}
+          ) : null}
 
           {bucketClicked ? (
             <motion.div
