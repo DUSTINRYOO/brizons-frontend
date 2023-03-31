@@ -136,6 +136,15 @@ const EDIT_BRIZ_MUTATION = gql`
   }
 `;
 
+const EDIT_PROFILE_MUTATION = gql`
+  mutation editProfileMutation($editProfileInput: EditProfileInput!) {
+    editProfile(editProfileInput: $editProfileInput) {
+      ok
+      error
+    }
+  }
+`;
+
 const DELETE_BRIZ_MUTATION = gql`
   mutation deleteBrizMutation($deleteBrizInput: DeleteBrizInput!) {
     deleteBriz(deleteBrizInput: $deleteBrizInput) {
@@ -196,8 +205,21 @@ interface EditBrizInputForm {
   grid?: IGrid;
 }
 
+interface EditProfileInputForm {
+  name?: string;
+  username?: string;
+  biography?: string;
+  password?: string;
+  profileImg?: string;
+  email?: string;
+}
+
 interface EditBrizForm {
   editBriz: EditBrizInputForm;
+}
+
+interface EditProfileForm {
+  editProfile: EditProfileInputForm;
 }
 
 interface EditClickedForm {
@@ -254,6 +276,7 @@ const Briz: NextPage = () => {
   const [brizClicked, setBrizClicked] = useState<boolean>();
   const [bucketClicked, setBucketClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
+  const [profileEditClicked, setProfileEditClicked] = useState<boolean>(false);
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
@@ -295,12 +318,16 @@ const Briz: NextPage = () => {
   } = useQuery<getPinnedBrizQuery>(PINNED_BRIZ_QUERY, {
     variables: { getPinnedBrizInput: { brizUserName } },
   });
+
   useEffect(() => {
     meRefetch();
-    getBrizRefetch();
-    getPinnedBrizRefetch();
-    getInBucketBrizRefetch();
+    if (brizUserName) {
+      getBrizRefetch();
+      getPinnedBrizRefetch();
+      getInBucketBrizRefetch();
+    }
   }, [meData, getBrizData, getPinnedBrizData, getInBucketBrizData]);
+
   useEffect(() => {
     if (
       !getBrizError &&
@@ -341,6 +368,25 @@ const Briz: NextPage = () => {
         title: "",
         description: "",
         metatags: "",
+      },
+    },
+  });
+
+  const {
+    register: registerEditProfile,
+    handleSubmit: handleSubmitPditBProfile,
+    resetField: resetFieldPditBProfile,
+    formState: { errors: errorsPditBProfile },
+    setValue: setValuePditBProfile,
+    reset: resetPditBProfile,
+  } = useForm<EditProfileForm>({
+    mode: "onChange",
+    defaultValues: {
+      editProfile: {
+        username: "",
+        email: "",
+        name: "",
+        biography: "",
       },
     },
   });
@@ -418,6 +464,7 @@ const Briz: NextPage = () => {
   });
   const onOverlayClick = () => {
     setBucketClicked(false);
+    setProfileEditClicked(false);
     setGrid({});
     setDragIndex({});
     setDragged(false);
@@ -653,43 +700,94 @@ const Briz: NextPage = () => {
               animate={{ opacity: 0.5 }}
             ></motion.div>
           ) : null}
-          <motion.div
-            className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-            style={{
-              height: `clamp(1px,10vw,8rem)`,
-            }}
-            whileHover={"hoverBox"}
-            whileTap={{ scale: 1.08 }}
-            variants={{
-              hoverBox: {
-                scale: 1.05,
-              },
-            }}
-          >
-            <Image
-              priority
-              src={profile}
-              alt={`1`}
-              fill
+
+          {profileEditClicked ? (
+            <>
+              <motion.div
+                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                onClick={onOverlayClick}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+              ></motion.div>
+              <motion.div
+                layout
+                layoutId="profile"
+                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                style={{ top: scrollY.get() + 100 }}
+                exit={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <h3 className="text-center text-3xl font-bold">Edit Profile</h3>
+                <div className="mt-4 px-4 max-sm:px-0 ">
+                  <form
+                    className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+                    onSubmit={handleSubmitEditBriz(onSubmitEdit)}
+                  >
+                    <Input
+                      label="Image"
+                      name="profileImg"
+                      type="file"
+                      required
+                      tab
+                      accept="image/*"
+                      register={register("coverImg")}
+                    />
+                    <Input
+                      label="Name"
+                      name="name"
+                      type="text"
+                      placeholder="Name"
+                      required
+                      register={registerEditBriz("editBriz.title")}
+                    />
+                    <Input
+                      label="Bio"
+                      name="bio"
+                      type="textarea"
+                      placeholder="Write a bio"
+                      required
+                      register={registerEditBriz("editBriz.description")}
+                    />
+                    <Button text={"Edit this Briz"} />
+                  </form>
+                </div>
+              </motion.div>
+            </>
+          ) : (
+            <motion.div
+              layout
+              layoutId="profile"
+              className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
               style={{
-                objectFit: "contain",
+                height: `clamp(1px,10vw,8rem)`,
               }}
-              onLoadingComplete={() => {
-                setGrid({});
-                setBrizLoading(false);
-              }}
-            ></Image>
-            <motion.span
-              className="absolute left-1/2 -translate-x-1/2 font-extrabold opacity-0"
-              style={{
-                fontSize: `clamp(1px,
-                      5vw,4rem)`,
-              }}
+              whileHover={"hoverBox"}
+              whileTap={{ scale: 1.08 }}
               variants={{
-                hoverBox: { opacity: 1 },
+                hoverBox: {
+                  scale: 1.05,
+                },
               }}
-            ></motion.span>
-          </motion.div>
+              onClick={() => {
+                setProfileEditClicked(true);
+              }}
+            >
+              <Image
+                priority
+                src={profile}
+                alt={`1`}
+                fill
+                style={{
+                  objectFit: "contain",
+                }}
+                onLoadingComplete={() => {
+                  setGrid({});
+                  setBrizLoading(false);
+                }}
+              ></Image>
+            </motion.div>
+          )}
+
           {bucketClicked ? (
             <motion.div
               className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"

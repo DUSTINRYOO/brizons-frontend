@@ -313,9 +313,11 @@ const Briz: NextPage = () => {
   });
   useEffect(() => {
     meRefetch();
-    getBrizRefetch();
-    getParentBrizRefetch();
-    getInBucketBrizRefetch();
+    if (brizUserName) {
+      getBrizRefetch();
+      getParentBrizRefetch();
+      getInBucketBrizRefetch();
+    }
   }, [meData, getBrizData, getParentBrizData, getInBucketBrizData]);
   useEffect(() => {
     if (

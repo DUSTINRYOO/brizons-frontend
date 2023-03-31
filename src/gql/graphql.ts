@@ -98,8 +98,11 @@ export type EditBrizOutput = {
 };
 
 export type EditProfileInput = {
+  bio?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
   password?: InputMaybe<Scalars['String']>;
+  profileImg?: InputMaybe<Scalars['String']>;
   username?: InputMaybe<Scalars['String']>;
 };
 
@@ -330,11 +333,14 @@ export type UpdateExampleInputType = {
 
 export type User = {
   __typename?: 'User';
+  bio?: Maybe<Scalars['String']>;
   brizs?: Maybe<Array<Briz>>;
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
   id: Scalars['Float'];
+  name?: Maybe<Scalars['String']>;
   password: Scalars['String'];
+  profileImg?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
   verified: Scalars['Boolean'];
