@@ -19,6 +19,7 @@ import {
   CreateBrizOutput,
   DeleteBrizOutput,
   EditBrizOutput,
+  EditProfileOutput,
   GetBrizOutput,
   GetInBucketBrizOutput,
   GetPinnedBrizOutput,
@@ -31,6 +32,9 @@ const ME_QUERY = gql`
       email
       username
       verified
+      profileImg
+      biography
+      name
     }
   }
 `;
@@ -158,6 +162,9 @@ type meQueryList = {
   email: string;
   username: string;
   verified: boolean;
+  name: string;
+  biography: string;
+  profileImg: string;
 };
 
 interface meQuery {
@@ -239,6 +246,10 @@ interface editBrizMutation {
   editBriz: EditBrizOutput;
 }
 
+interface editProfileMutation {
+  editProfile: EditProfileOutput;
+}
+
 interface deleteBrizMutation {
   deleteBriz: DeleteBrizOutput;
 }
@@ -276,7 +287,7 @@ const Briz: NextPage = () => {
   const [brizClicked, setBrizClicked] = useState<boolean>();
   const [bucketClicked, setBucketClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
-  const [profileEditClicked, setProfileEditClicked] = useState<boolean>(false);
+  const [editProfileClicked, setEditProfileClicked] = useState<boolean>(false);
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
@@ -374,11 +385,11 @@ const Briz: NextPage = () => {
 
   const {
     register: registerEditProfile,
-    handleSubmit: handleSubmitPditBProfile,
-    resetField: resetFieldPditBProfile,
-    formState: { errors: errorsPditBProfile },
-    setValue: setValuePditBProfile,
-    reset: resetPditBProfile,
+    handleSubmit: handleSubmitEditProfile,
+    resetField: resetFieldEditProfile,
+    formState: { errors: errorsEditProfile },
+    setValue: setValueEditProfile,
+    reset: resetEditProfile,
   } = useForm<EditProfileForm>({
     mode: "onChange",
     defaultValues: {
@@ -462,9 +473,26 @@ const Briz: NextPage = () => {
       return getBrizRefetch();
     },
   });
+
+  const [
+    editProfileMutation,
+    {
+      data: editProfileMutationResult,
+      loading: editProfileMutationLoading,
+      error: editProfileMutationError,
+    },
+  ] = useMutation<editProfileMutation>(EDIT_PROFILE_MUTATION, {
+    onCompleted(data: editProfileMutation) {
+      const {
+        editProfile: { ok, error },
+      } = data;
+      meRefetch();
+      return resetEditProfile();
+    },
+  });
   const onOverlayClick = () => {
     setBucketClicked(false);
-    setProfileEditClicked(false);
+    setEditProfileClicked(false);
     setGrid({});
     setDragIndex({});
     setDragged(false);
@@ -606,6 +634,44 @@ const Briz: NextPage = () => {
     setEditClicked(undefined);
   };
 
+  const onSubmitEditProfile = async (data: EditProfileForm) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
+    setEditProfileClicked(false);
+    let profileImg: string | null = null;
+    if (data.editProfile.profileImg) {
+      if (data.editProfile.profileImg.length !== 0) {
+        const actualFile = data.editProfile.profileImg[0];
+        const formBody = new FormData();
+        formBody.append("file", actualFile);
+        const { fileUrl: fetchProfileImg } = await (
+          await fetch("http://localhost:4000/uploads", {
+            method: "POST",
+            body: formBody,
+          })
+        ).json();
+        profileImg = fetchProfileImg;
+      }
+    }
+    if (data.editProfile.username !== brizUserName) {
+      router.replace(`/briz/${data.editProfile.username}`);
+    }
+    if (!meLoading) {
+      editProfileMutation({
+        variables: {
+          editProfileInput: {
+            username: data.editProfile.username,
+            name: data.editProfile.name,
+            email: data.editProfile.email,
+            biography: data.editProfile.biography,
+            profileImg,
+          },
+        },
+      });
+    }
+  };
+
   const onSubmitGridEdit = async (brizId: number) => {
     if (meData?.me.username !== brizUserName) {
       return null;
@@ -701,7 +767,7 @@ const Briz: NextPage = () => {
             ></motion.div>
           ) : null}
 
-          {profileEditClicked ? (
+          {editProfileClicked ? (
             <>
               <motion.div
                 className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
@@ -721,34 +787,50 @@ const Briz: NextPage = () => {
                 <div className="mt-4 px-4 max-sm:px-0 ">
                   <form
                     className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
-                    onSubmit={handleSubmitEditBriz(onSubmitEdit)}
+                    onSubmit={handleSubmitEditProfile(onSubmitEditProfile)}
                   >
                     <Input
                       label="Image"
                       name="profileImg"
                       type="file"
-                      required
+                      required={false}
                       tab
                       accept="image/*"
-                      register={register("coverImg")}
+                      register={registerEditProfile("editProfile.profileImg")}
                     />
                     <Input
                       label="Name"
                       name="name"
                       type="text"
                       placeholder="Name"
-                      required
-                      register={registerEditBriz("editBriz.title")}
+                      required={false}
+                      register={registerEditProfile("editProfile.name")}
                     />
                     <Input
                       label="Bio"
                       name="bio"
                       type="textarea"
                       placeholder="Write a bio"
-                      required
-                      register={registerEditBriz("editBriz.description")}
+                      required={false}
+                      register={registerEditProfile("editProfile.biography")}
                     />
-                    <Button text={"Edit this Briz"} />
+                    <Input
+                      label="Username"
+                      name="username"
+                      type="text"
+                      placeholder="Username"
+                      required
+                      register={registerEditProfile("editProfile.username")}
+                    />
+                    <Input
+                      label="Email"
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      required
+                      register={registerEditProfile("editProfile.email")}
+                    />
+                    <Button text={"Edit profile"} />
                   </form>
                 </div>
               </motion.div>
@@ -769,12 +851,18 @@ const Briz: NextPage = () => {
                 },
               }}
               onClick={() => {
-                setProfileEditClicked(true);
+                setValueEditProfile("editProfile", {
+                  username: meData?.me.username,
+                  email: meData?.me.email,
+                  biography: meData?.me.biography,
+                  name: meData?.me.name,
+                });
+                setEditProfileClicked(true);
               }}
             >
               <Image
                 priority
-                src={profile}
+                src={`${meData?.me.profileImg}`}
                 alt={`1`}
                 fill
                 style={{
