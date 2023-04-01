@@ -29,6 +29,7 @@ export type Briz = {
   text?: Maybe<Text>;
   title: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  zindex: Scalars['Float'];
 };
 
 export type CreateAccountInput = {
@@ -239,7 +240,7 @@ export type MutationEditBrizArgs = {
 
 
 export type MutationEditProfileArgs = {
-  input: EditProfileInput;
+  editProfileInput: EditProfileInput;
 };
 
 

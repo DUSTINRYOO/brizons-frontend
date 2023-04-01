@@ -62,6 +62,7 @@ const BRIZ_QUERY = gql`
         title
         description
         metatags
+        zindex
         grid {
           colStart
           colEnd
@@ -787,7 +788,7 @@ const Briz: NextPage = () => {
                 <motion.span
                   layout={true}
                   className={cls(
-                    " absolute left-0 right-0 top-2 z-[103] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold"
+                    " absolute left-0 right-0 top-2 z-[103] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl"
                   )}
                   style={{
                     fontSize: `clamp(1px,
@@ -796,20 +797,22 @@ const Briz: NextPage = () => {
                 >
                   {meData?.me.name}
                 </motion.span>
-                <Image
-                  priority
-                  src={`${meData?.me.profileImg}`}
-                  alt={`${meData?.me.username}'s Briz`}
-                  fill
-                  style={{
-                    opacity: 0.8,
-                    objectFit: "cover",
-                  }}
-                  onLoadingComplete={() => {
-                    setGrid({});
-                    setBrizLoading(false);
-                  }}
-                ></Image>
+                {meData?.me.profileImg ? (
+                  <Image
+                    priority
+                    src={`${meData?.me.profileImg}`}
+                    alt={`${meData?.me.username}'s Briz`}
+                    fill
+                    style={{
+                      opacity: 0.8,
+                      objectFit: "cover",
+                    }}
+                    onLoadingComplete={() => {
+                      setGrid({});
+                      setBrizLoading(false);
+                    }}
+                  ></Image>
+                ) : null}
                 <motion.span
                   className="left-0 right-0 z-[104] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
                   style={{
@@ -858,19 +861,21 @@ const Briz: NextPage = () => {
                 setProfileClicked(true);
               }}
             >
-              <Image
-                priority
-                src={`${meData?.me.profileImg}`}
-                alt={`1`}
-                fill
-                style={{
-                  objectFit: "contain",
-                }}
-                onLoadingComplete={() => {
-                  setGrid({});
-                  setBrizLoading(false);
-                }}
-              ></Image>
+              {meData?.me.profileImg ? (
+                <Image
+                  priority
+                  src={`${meData?.me.profileImg}`}
+                  alt={`1`}
+                  fill
+                  style={{
+                    objectFit: "contain",
+                  }}
+                  onLoadingComplete={() => {
+                    setGrid({});
+                    setBrizLoading(false);
+                  }}
+                ></Image>
+              ) : null}
             </motion.div>
           )}
           {editProfileClicked ? (
