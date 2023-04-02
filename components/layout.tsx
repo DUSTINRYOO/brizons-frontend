@@ -2,10 +2,11 @@ import React from "react";
 import Link from "next/link";
 import { cls } from "../libs/utils";
 import { useRouter } from "next/router";
-import { Helmet } from "react-helmet-async";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { isLoggedInVar, authTokenVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
+import Head from "next/head";
+
 const ME_QUERY = gql`
   query meQuery {
     me {
@@ -52,9 +53,9 @@ export default function Layout({
   };
   return (
     <div>
-      <Helmet>
+      <Head>
         <title>{title} | Brizons</title>
-      </Helmet>
+      </Head>
       <div>{children}</div>
       {hasTabBar ? (
         <nav className="fixed top-0 z-[1000] flex h-14 w-full justify-between border-b bg-white px-20 py-3 text-xs text-gray-800 shadow-md max-md:pl-0 max-md:pr-4">

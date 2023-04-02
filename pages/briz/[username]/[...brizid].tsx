@@ -647,7 +647,10 @@ const Briz: NextPage = () => {
     return <div>Loading</div>;
   }
   return (
-    <Layout title={`Briz`} hasTabBar>
+    <Layout
+      title={`${getParentBrizData?.getParentBriz.getParentBriz.title} - Briz`}
+      hasTabBar
+    >
       <motion.div className="h-auto w-full py-20 ">
         {getParentBrizData ? (
           <>
