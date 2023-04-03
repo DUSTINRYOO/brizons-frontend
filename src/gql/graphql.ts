@@ -54,6 +54,7 @@ export type CreateBrizInput = {
   pinned: Scalars['Boolean'];
   text?: InputMaybe<TextInputType>;
   title: Scalars['String'];
+  zindex: Scalars['Float'];
 };
 
 export type CreateBrizOutput = {
@@ -90,6 +91,7 @@ export type EditBrizInput = {
   pinned?: InputMaybe<Scalars['Boolean']>;
   text?: InputMaybe<TextInputType>;
   title?: InputMaybe<Scalars['String']>;
+  zindex?: InputMaybe<Scalars['Float']>;
 };
 
 export type EditBrizOutput = {

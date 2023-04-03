@@ -209,6 +209,7 @@ interface EditBrizInputForm {
   pinned?: boolean;
   description?: string;
   metatags?: string;
+  zindex?: number;
   text?: IText | null;
   grid?: IGrid;
 }
@@ -578,12 +579,12 @@ const Briz: NextPage = () => {
             inBucket: Object.keys(grid).length === 0 ? true : false,
             pinned: false,
             parentBrizId: null,
+            zindex: 100,
           },
         },
       });
     }
   };
-
   const onSubmitEdit = async (data: EditBrizForm) => {
     if (meData?.me.username !== brizUserName) {
       return null;
@@ -714,6 +715,40 @@ const Briz: NextPage = () => {
         },
       });
     }
+  };
+
+  const onClickUpZindex = async (brizId: number, currentZindex: number) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
+    if (!meLoading) {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId,
+            zindex: currentZindex! + 1,
+          },
+        },
+      });
+    }
+    setBrizLongPressed({ zindex: currentZindex! + 1 });
+  };
+
+  const onClickDownZindex = async (brizId: number, currentZindex: number) => {
+    if (meData?.me.username !== brizUserName) {
+      return null;
+    }
+    if (!meLoading) {
+      editBrizMutation({
+        variables: {
+          editBrizInput: {
+            brizId,
+            zindex: currentZindex! - 1,
+          },
+        },
+      });
+    }
+    setBrizLongPressed({ zindex: currentZindex! - 1 });
   };
 
   const onSubmitOpenAi = async (data: OpenAiForm) => {
@@ -1320,71 +1355,90 @@ const Briz: NextPage = () => {
                       duration: 0.4,
                     }}
                   >
-                    <button
-                      onClick={() => {
-                        setMouseOnLayerBtn(true);
-                      }}
-                      className={cls(
-                        "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105",
-                        mouseOnLayerBtn ? "hidden" : ""
-                      )}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="50"
-                        height="50"
-                        viewBox="-30 -60 625 625"
-                      >
-                        <path
-                          d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"
-                          fill="white"
-                        />
-                      </svg>
-                    </button>
-                    <div className="mx-2 flex aspect-square flex-col items-center justify-between rounded-2xl ">
-                      <button
-                        onClick={() => {
+                    {mouseOnLayerBtn ? (
+                      <div
+                        className="mx-2 flex aspect-square flex-col items-center justify-between rounded-2xl"
+                        onMouseLeave={() => {
                           setMouseOnLayerBtn(false);
                         }}
+                      >
+                        <button
+                          onClick={() => {
+                            onClickUpZindex(
+                              brizLongPressed.id!,
+                              brizLongPressed.zindex!
+                            );
+
+                            setBrizLongPressed(undefined);
+                            setGridOnOff((prev) => !prev);
+                          }}
+                          className={cls(
+                            " flex cursor-pointer items-center justify-center rounded-xl bg-orange-200 px-2 py-1  shadow-xl transition-all hover:bg-orange-300 active:scale-105",
+                            mouseOnLayerBtn ? "" : "hidden"
+                          )}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="50"
+                            height="23"
+                            viewBox="-10 -20 325 325"
+                          >
+                            <path
+                              d="M182.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z "
+                              fill="white"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => {
+                            onClickDownZindex(
+                              brizLongPressed.id!,
+                              brizLongPressed.zindex!
+                            );
+
+                            setBrizLongPressed(undefined);
+                            setGridOnOff((prev) => !prev);
+                          }}
+                          className={cls(
+                            "flex aspect-auto cursor-pointer items-center  justify-center rounded-xl bg-orange-200 py-1 px-2  shadow-xl transition-all hover:bg-orange-300 active:scale-105"
+                          )}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="50"
+                            height="23"
+                            viewBox="-10 210 325 325"
+                          >
+                            <path
+                              d="M182.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128z"
+                              fill="white"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onMouseEnter={() => {
+                          setMouseOnLayerBtn(true);
+                        }}
                         className={cls(
-                          "flex cursor-pointer items-center justify-center rounded-xl bg-orange-200 px-2 py-1  shadow-xl transition-all hover:bg-orange-300 active:scale-105",
-                          mouseOnLayerBtn ? "" : "hidden"
+                          "mx-2 flex  aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-xl transition-all hover:bg-orange-300 active:scale-105"
                         )}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="50"
-                          height="25"
-                          viewBox="-10 -20 325 325"
+                          height="50"
+                          viewBox="-30 -60 625 625"
                         >
                           <path
-                            d="M182.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z "
+                            d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"
                             fill="white"
                           />
                         </svg>
                       </button>
-                      <button
-                        onClick={() => {
-                          setMouseOnLayerBtn(false);
-                        }}
-                        className={cls(
-                          "flex aspect-auto cursor-pointer items-center  justify-center rounded-xl bg-orange-200 py-1 px-2  shadow-xl transition-all hover:bg-orange-300 active:scale-105",
-                          mouseOnLayerBtn ? "" : "hidden"
-                        )}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="50"
-                          height="25"
-                          viewBox="-10 210 325 325"
-                        >
-                          <path
-                            d="M182.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128z"
-                            fill="white"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                    )}
+
                     <button
                       onClick={() => {
                         setEditClicked({
@@ -1588,7 +1642,7 @@ const Briz: NextPage = () => {
           </AnimatePresence>
 
           <motion.div
-            className="absolute left-1/2 z-[100] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
+            className="absolute left-1/2 grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
             style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
           >
             <>
@@ -1647,6 +1701,7 @@ const Briz: NextPage = () => {
                     style={{
                       gridColumn: `${briz.grid!.colStart}/${briz.grid!.colEnd}`,
                       gridRow: `${briz.grid!.rowStart}/${briz.grid!.rowEnd}`,
+                      zIndex: `${briz.zindex}`,
                     }}
                     onMouseDown={() => {
                       longPressTimeOut.current = window.setTimeout(() => {
@@ -1659,6 +1714,7 @@ const Briz: NextPage = () => {
                             metatags: briz.metatags,
                             description: briz.description,
                             text: briz.text,
+                            zindex: briz.zindex,
                           });
                           setGridOnOff(true);
                         }
@@ -1722,7 +1778,6 @@ const Briz: NextPage = () => {
             <>
               {bucketClicked ? (
                 <>
-                  {" "}
                   <motion.div
                     className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 "
                     initial={{ opacity: 0 }}
