@@ -14,7 +14,6 @@ import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
 import Link from "next/link";
 
-import profile from "public/IMG_2837.jpeg";
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
@@ -290,8 +289,8 @@ const Briz: NextPage = () => {
   const [bucketClicked, setBucketClicked] = useState<boolean>(false);
   const [profileClicked, setProfileClicked] = useState<boolean>(false);
   const [editClicked, setEditClicked] = useState<EditClickedForm>();
-  const [mouseOnLayerBtn, setMouseOnLayerBtn] = useState<boolean>(false);
   const [editProfileClicked, setEditProfileClicked] = useState<boolean>(false);
+  const [mouseOnLayerBtn, setMouseOnLayerBtn] = useState<boolean>(false);
   const [dragged, setDragged] = useState<boolean>(false);
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
@@ -357,7 +356,7 @@ const Briz: NextPage = () => {
     } else {
       setGridRowNumber(14);
     }
-  }, [getBrizData]);
+  }, [getBrizData, getBrizError, getBrizLoading]);
 
   const {
     register,
@@ -814,7 +813,7 @@ const Briz: NextPage = () => {
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-black p-4 shadow-lg"
+                className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
                 layout
                 layoutId="profile"
                 onClick={() => {
@@ -864,9 +863,11 @@ const Briz: NextPage = () => {
             <motion.div
               layout
               layoutId="profile"
-              className="absolute left-[2vw] top-[3.2vw] z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+              className="absolute  z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
               style={{
                 height: `clamp(1px,10vw,8rem)`,
+                top: `clamp(1px,3.2vw,2.56rem)`,
+                left: `clamp(1px,2vw,1.6rem)`,
               }}
               whileHover={"hoverBox"}
               whileTap={{ scale: 1.08 }}
@@ -901,7 +902,7 @@ const Briz: NextPage = () => {
                 <Image
                   priority
                   src={`${meData?.me.profileImg}`}
-                  alt={`1`}
+                  alt={`${meData?.me.biography}`}
                   fill
                   style={{
                     objectFit: "contain",
