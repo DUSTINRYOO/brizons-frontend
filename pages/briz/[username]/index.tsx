@@ -826,14 +826,31 @@ const Briz: NextPage = () => {
                 <motion.span
                   layout={true}
                   className={cls(
-                    " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl"
+                    " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl",
+                    !meData?.me.name ? "cursor-pointer text-gray-300" : ""
                   )}
+                  onClick={() => {
+                    if (meData?.me.username !== brizUserName) {
+                      return null;
+                    } else {
+                      if (!meData?.me.name) {
+                        setValueEditProfile("editProfile", {
+                          username: meData?.me.username,
+                          email: meData?.me.email,
+                          biography: meData?.me.biography,
+                          name: meData?.me.name,
+                        });
+                        setEditProfileClicked(true);
+                      }
+                      return null;
+                    }
+                  }}
                   style={{
                     fontSize: `clamp(1px,
                       3vw,2.4rem)`,
                   }}
                 >
-                  {meData?.me.name}
+                  {meData?.me.name ? meData?.me.name : "Add your name"}
                 </motion.span>
                 {meData?.me.profileImg ? (
                   <Image
@@ -852,13 +869,32 @@ const Briz: NextPage = () => {
                   ></Image>
                 ) : null}
                 <motion.span
-                  className="left-0 right-0 z-[202] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
+                  className={cls(
+                    "left-0 right-0 z-[202] mx-auto block max-w-max  rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold",
+                    !meData?.me.biography ? "cursor-pointer text-gray-300" : ""
+                  )}
+                  onClick={() => {
+                    if (meData?.me.username !== brizUserName) {
+                      return null;
+                    } else {
+                      if (!meData?.me.biography) {
+                        setValueEditProfile("editProfile", {
+                          username: meData?.me.username,
+                          email: meData?.me.email,
+                          biography: meData?.me.biography,
+                          name: meData?.me.name,
+                        });
+                        setEditProfileClicked(true);
+                      }
+                      return null;
+                    }
+                  }}
                   style={{
                     fontSize: `clamp(1px,
                   1.8vw,1.44rem)`,
                   }}
                 >
-                  {meData?.me.biography}
+                  {meData?.me.biography ? meData?.me.biography : "Add your bio"}
                 </motion.span>
               </motion.div>
             </>

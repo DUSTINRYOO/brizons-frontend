@@ -12,6 +12,7 @@ import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { capitalizeFirstLetter } from "@/libs/utils";
+import { useEffect } from "react";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -35,9 +36,14 @@ interface meQuery {
 }
 
 const Home: NextPage = () => {
-  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+  const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
+
+  useEffect(() => {
+    refetch();
+  }, [data, loading, error]);
+
   if (loading) {
     return <div>Loading</div>;
   }
