@@ -800,7 +800,7 @@ const Briz: NextPage = () => {
           {bucketClicked ? (
             <motion.div
               className={cls(
-                "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
               )}
               onClick={onOverlayClick}
               exit={{ opacity: 0 }}
@@ -810,13 +810,13 @@ const Briz: NextPage = () => {
           {profileClicked ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
+                className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
                 layout
                 layoutId="profile"
                 onClick={() => {
@@ -826,7 +826,7 @@ const Briz: NextPage = () => {
                 <motion.span
                   layout={true}
                   className={cls(
-                    " absolute left-0 right-0 top-2 z-[103] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl"
+                    " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl"
                   )}
                   style={{
                     fontSize: `clamp(1px,
@@ -852,7 +852,7 @@ const Briz: NextPage = () => {
                   ></Image>
                 ) : null}
                 <motion.span
-                  className="left-0 right-0 z-[104] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
+                  className="left-0 right-0 z-[202] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
                   style={{
                     fontSize: `clamp(1px,
                   1.8vw,1.44rem)`,
@@ -866,7 +866,7 @@ const Briz: NextPage = () => {
             <motion.div
               layout
               layoutId="profile"
-              className="absolute  z-[102] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+              className="absolute  z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
               style={{
                 height: `clamp(1px,10vw,8rem)`,
                 top: `clamp(1px,3.2vw,2.56rem)`,
@@ -921,13 +921,13 @@ const Briz: NextPage = () => {
           {editProfileClicked ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[201]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -988,7 +988,7 @@ const Briz: NextPage = () => {
 
           {bucketClicked ? (
             <motion.div
-              className="absolute left-0 right-0 top-[10vw] z-[103] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"
+              className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4 border-gray-50 bg-white px-4 pb-4 shadow-lg"
               key={"bucket"}
               layout
               layoutId={"bucket"}
@@ -996,7 +996,7 @@ const Briz: NextPage = () => {
               {dragged ? (
                 <motion.div
                   className={cls(
-                    "fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 opacity-0"
+                    "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                   )}
                   onClick={() => {
                     setDragged(false);
@@ -1292,7 +1292,7 @@ const Briz: NextPage = () => {
               <AnimatePresence>
                 {!brizLongPressed ? (
                   <motion.div
-                    className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+                    className="fixed bottom-16 left-1/2 z-[199] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
                     initial={{ x: 180, opacity: 0 }}
                     animate={{ x: -90, opacity: 1 }}
                     exit={{ x: -360, opacity: 0 }}
@@ -1354,7 +1354,7 @@ const Briz: NextPage = () => {
               <AnimatePresence>
                 {brizLongPressed ? (
                   <motion.div
-                    className="fixed bottom-16 left-1/2 z-[102] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+                    className="fixed bottom-16 left-1/2 z-[199] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
                     initial={{ x: 135, opacity: 0 }}
                     animate={{ x: -135, opacity: 1 }}
                     exit={{ x: -405, opacity: 0 }}
@@ -1539,7 +1539,7 @@ const Briz: NextPage = () => {
           ) : null}
           <AnimatePresence>
             {gridOnOff && !brizLoading ? (
-              <div className="absolute left-1/2 z-[101] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
+              <div className="absolute left-1/2 z-[198] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
                     draggable
@@ -1802,7 +1802,7 @@ const Briz: NextPage = () => {
               {bucketClicked ? (
                 <>
                   <motion.div
-                    className="fixed top-0 left-0 z-[103] h-screen w-full bg-gray-500 "
+                    className="fixed top-0 left-0 z-[300] h-screen w-full bg-gray-500 "
                     initial={{ opacity: 0 }}
                     onClick={() => {
                       setBrizClicked(undefined);
@@ -1812,7 +1812,7 @@ const Briz: NextPage = () => {
                   ></motion.div>
                   <motion.div
                     layout
-                    className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                    className=" absolute left-0 right-0 z-[301] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                     style={{ top: scrollY.get() + 100 }}
                     exit={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -1867,7 +1867,7 @@ const Briz: NextPage = () => {
                 <>
                   {" "}
                   <motion.div
-                    className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 "
+                    className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 "
                     initial={{ opacity: 0 }}
                     onClick={onOverlayClick}
                     exit={{ opacity: 0 }}
@@ -1875,7 +1875,7 @@ const Briz: NextPage = () => {
                   ></motion.div>
                   <motion.div
                     layout
-                    className=" absolute left-0 right-0 z-[115] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                    className=" absolute left-0 right-0 z-[201] mx-auto max-w-lg rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                     style={{ top: scrollY.get() + 100 }}
                     exit={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -1959,13 +1959,13 @@ const Briz: NextPage = () => {
           {dragged ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[201]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -2318,13 +2318,13 @@ const Briz: NextPage = () => {
           {editClicked ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-0 right-0  z-[115]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[201]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -2626,13 +2626,13 @@ const Briz: NextPage = () => {
           {openAiOnOff ? (
             <>
               <motion.div
-                className="fixed top-0 left-0 z-[102] h-screen w-full bg-gray-500 opacity-0"
+                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
               <motion.div
-                className=" absolute  left-0 right-0  z-[115] mx-auto max-w-md rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                className=" absolute  left-0 right-0  z-[201] mx-auto max-w-md rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
                 style={{ top: scrollY.get() + 100 }}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
