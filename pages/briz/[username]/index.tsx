@@ -781,7 +781,11 @@ const Briz: NextPage = () => {
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
   }, [isLoggedIn]);
   if (meLoading) {
-    return <div>Loading</div>;
+    return (
+      <span className="fixed top-[15vw] w-full   py-2 text-center text-2xl font-extrabold text-gray-300">
+        Loading
+      </span>
+    );
   }
   return (
     <Layout title="Main - Briz" hasTabBar>
@@ -867,7 +871,32 @@ const Briz: NextPage = () => {
                       setBrizLoading(false);
                     }}
                   ></Image>
-                ) : null}
+                ) : (
+                  <motion.span
+                    className={cls(
+                      "left-0 right-0 z-[202] mx-auto block max-w-max  cursor-pointer rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold text-gray-300"
+                    )}
+                    onClick={() => {
+                      if (meData?.me.username !== brizUserName) {
+                        return null;
+                      } else {
+                        setValueEditProfile("editProfile", {
+                          username: meData?.me.username,
+                          email: meData?.me.email,
+                          biography: meData?.me.biography,
+                          name: meData?.me.name,
+                        });
+                        setEditProfileClicked(true);
+                      }
+                    }}
+                    style={{
+                      fontSize: `clamp(1px,
+                1.8vw,1.44rem)`,
+                    }}
+                  >
+                    Add your profile picture
+                  </motion.span>
+                )}
                 <motion.span
                   className={cls(
                     "left-0 right-0 z-[202] mx-auto block max-w-max  rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold",
@@ -1044,6 +1073,10 @@ const Briz: NextPage = () => {
               <motion.div
                 className="my-4 rounded-3xl border-4 border-gray-50 bg-white"
                 onClick={() => {
+                  if (meData?.me.username !== brizUserName) {
+                    return null;
+                  }
+
                   setDragged(true);
                 }}
                 onMouseEnter={() => {

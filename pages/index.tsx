@@ -45,7 +45,11 @@ const Home: NextPage = () => {
   }, [data, loading, error]);
 
   if (loading) {
-    return <div>Loading</div>;
+    return (
+      <span className="fixed top-[15vw] w-full   py-2 text-center text-2xl font-extrabold text-gray-300">
+        Loading
+      </span>
+    );
   }
   return !isLoggedIn ? (
     <Layout title="Home" hasTabBar>

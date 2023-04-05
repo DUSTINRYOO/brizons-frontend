@@ -253,10 +253,6 @@ const Briz: NextPage = () => {
   const brizUserName = router.query.username;
   const routerBrizId = router.query.brizid;
   const parentIdsUrl = router.query.brizid?.toString().replace(",", "/");
-  const previousParentIdsUrl = router.query.brizid
-    ?.slice(0, -1)
-    .toString()
-    .replace(",", "/");
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const [grid, setGrid] = useState<IGrid>({});
   const [dragIndex, setDragIndex] = useState<IDragIndex>({});
@@ -683,8 +679,13 @@ const Briz: NextPage = () => {
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
   }, [isLoggedIn]);
   if (meLoading) {
-    return <div>Loading</div>;
+    return (
+      <span className="fixed top-[15vw] w-full   py-2 text-center text-2xl font-extrabold text-gray-300">
+        Loading
+      </span>
+    );
   }
+
   return (
     <Layout
       title={`${getParentBrizData?.getParentBriz.getParentBriz.title} - Briz`}
@@ -845,6 +846,9 @@ const Briz: NextPage = () => {
                   <motion.div
                     className="my-4 rounded-3xl border-4 border-gray-50 bg-white"
                     onClick={() => {
+                      if (meData?.me.username !== brizUserName) {
+                        return null;
+                      }
                       setDragged(true);
                     }}
                     onMouseEnter={() => {
@@ -1075,6 +1079,11 @@ const Briz: NextPage = () => {
               </motion.span>
             </motion.div>
           </>
+        ) : null}
+        {!getParentBrizData && !getParentBrizLoading ? (
+          <span className="fixed top-[15vw] w-full  bg-red-400 py-2 text-center text-2xl font-extrabold text-white">
+            Nothing Found
+          </span>
         ) : null}
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
@@ -1349,7 +1358,50 @@ const Briz: NextPage = () => {
                 ) : null}
               </AnimatePresence>
             </>
-          ) : null}
+          ) : (
+            <motion.div
+              className="fixed bottom-16 left-1/2 z-[199] flex flex-row items-center justify-center rounded-2xl bg-white p-2 shadow-2xl"
+              initial={{ x: 225, opacity: 0 }}
+              animate={{ x: -45, opacity: 1 }}
+              exit={{ x: -315, opacity: 0 }}
+              drag
+              dragElastic={0.15}
+              dragConstraints={{
+                top: 0,
+                bottom: 0,
+                right: 65,
+                left: -155,
+              }}
+              transition={{
+                duration: 0.4,
+              }}
+            >
+              <button
+                onClick={() => {
+                  getParentBrizData?.getParentBriz.parentOfParentBriz?.id
+                    ? router.push(
+                        `/briz/${brizUserName}/${getParentBrizData.getParentBriz.parentOfParentBriz.id}`
+                      )
+                    : router.push(`/briz/${brizUserName}`);
+                }}
+                className={cls(
+                  "mx-2 flex aspect-square  cursor-pointer items-center justify-center rounded-2xl bg-orange-200 p-2 shadow-lg transition-all hover:bg-orange-300 active:scale-105"
+                )}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50"
+                  height="50"
+                  viewBox="-65 -35 580 580"
+                >
+                  <path
+                    d="M48 416c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80c-8.8 0-16 7.2-16 16l0 320zm16 64c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480zm64-224c0-6.7 2.8-13 7.7-17.6l112-104c7-6.5 17.2-8.2 25.9-4.4s14.4 12.5 14.4 22l0 208c0 9.5-5.7 18.2-14.4 22s-18.9 2.1-25.9-4.4l-112-104c-4.9-4.5-7.7-10.9-7.7-17.6z"
+                    fill="white"
+                  />
+                </svg>
+              </button>
+            </motion.div>
+          )}
           <AnimatePresence>
             {gridOnOff && !brizLoading ? (
               <div className="absolute left-1/2 z-[198] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
