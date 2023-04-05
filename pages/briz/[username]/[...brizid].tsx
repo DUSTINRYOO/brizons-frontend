@@ -263,6 +263,7 @@ const Briz: NextPage = () => {
   const [brizText, setBrizText] = useState<string>();
   const [brizLongPressed, setBrizLongPressed] = useState<EditBrizInputForm>();
   const [brizMouseOn, setBrizMouseOn] = useState<number>();
+  const [mouseOnBucketBtn, setMouseOnBucketBtn] = useState<boolean>(false);
   const [brizClicked, setBrizClicked] = useState<boolean>();
   const [bucketClicked, setBucketClicked] = useState<boolean>(false);
   const [parentBrizClicked, setParentBrizClicked] = useState<boolean>(false);
@@ -597,6 +598,7 @@ const Briz: NextPage = () => {
             brizId,
             grid: Object.keys(grid).length === 0 ? bucketGrid : grid,
             inBucket: Object.keys(grid).length === 0 ? true : false,
+            pinned: Object.keys(grid).length === 0 ? false : null,
           },
         },
       });
@@ -845,6 +847,12 @@ const Briz: NextPage = () => {
                     onClick={() => {
                       setDragged(true);
                     }}
+                    onMouseEnter={() => {
+                      setMouseOnBucketBtn(true);
+                    }}
+                    onMouseLeave={() => {
+                      setMouseOnBucketBtn(false);
+                    }}
                     whileHover={{
                       scale: 1.05,
                       borderColor: "rgb(252 165 165)",
@@ -861,13 +869,18 @@ const Briz: NextPage = () => {
                         fill={cls(
                           brizLongPressed ? "rgb(254 215 170)" : "",
                           getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                            .length !== 0 && !brizLongPressed
+                            .length !== 0 &&
+                            !brizLongPressed &&
+                            !mouseOnBucketBtn
                             ? "black"
                             : "",
                           getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                            .length === 0 && !brizLongPressed
+                            .length === 0 &&
+                            !brizLongPressed &&
+                            !mouseOnBucketBtn
                             ? "rgb(229 231 235)"
-                            : ""
+                            : "",
+                          mouseOnBucketBtn ? "rgb(252 165 165)" : ""
                         )}
                       />
                     </svg>
@@ -1310,6 +1323,10 @@ const Briz: NextPage = () => {
                     <button
                       onClick={() => {
                         setBrizLongPressed(undefined);
+                        setTextBold("500");
+                        setTextItalic(false);
+                        setTextRowAlign("center");
+                        setTextColAlign("center");
                         setGridOnOff((prev) => !prev);
                       }}
                       className={cls(
@@ -1530,6 +1547,10 @@ const Briz: NextPage = () => {
                             text: briz.text,
                             zindex: briz.zindex,
                           });
+                          setTextBold(briz.text?.bold!);
+                          setTextItalic(briz.text?.italic!);
+                          setTextRowAlign(briz.text?.textRowAlign!);
+                          setTextColAlign(briz.text?.textColAlign!);
                           setGridOnOff(true);
                         }
                       }, 400);
