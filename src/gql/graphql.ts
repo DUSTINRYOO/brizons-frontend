@@ -148,6 +148,17 @@ export type GetInBucketBrizOutput = {
   ok: Scalars['Boolean'];
 };
 
+export type GetOthersProfileInput = {
+  username: Scalars['String'];
+};
+
+export type GetOthersProfileOutput = {
+  __typename?: 'GetOthersProfileOutput';
+  error?: Maybe<Scalars['String']>;
+  ok: Scalars['Boolean'];
+  user?: Maybe<User>;
+};
+
 export type GetParentBrizInput = {
   brizUserName: Scalars['String'];
   parentId: Scalars['Int'];
@@ -265,6 +276,7 @@ export type Query = {
   examples: Array<Example>;
   getBriz: GetBrizOutput;
   getInBucketBriz: GetInBucketBrizOutput;
+  getOthersProfile: GetOthersProfileOutput;
   getParentBriz: GetParentBrizOutput;
   getPinnedBriz: GetPinnedBrizOutput;
   me: User;
@@ -279,6 +291,11 @@ export type QueryGetBrizArgs = {
 
 export type QueryGetInBucketBrizArgs = {
   getInBucketBrizInput: GetInBucketBrizInput;
+};
+
+
+export type QueryGetOthersProfileArgs = {
+  getOthersProfileInput: GetOthersProfileInput;
 };
 
 

@@ -21,6 +21,7 @@ import {
   EditProfileOutput,
   GetBrizOutput,
   GetInBucketBrizOutput,
+  GetOthersProfileOutput,
   GetPinnedBrizOutput,
 } from "@/src/gql/graphql";
 
@@ -34,6 +35,21 @@ const ME_QUERY = gql`
       profileImg
       biography
       name
+    }
+  }
+`;
+
+const OTHERS_PROFILE_QUERY = gql`
+  query getOthersProfile($getOthersProfileInput: GetOthersProfileInput!) {
+    getOthersProfile(getOthersProfileInput: $getOthersProfileInput) {
+      ok
+      error
+      user {
+        username
+        profileImg
+        biography
+        name
+      }
     }
   }
 `;
@@ -170,6 +186,11 @@ type meQueryList = {
 interface meQuery {
   me: meQueryList;
 }
+
+interface getOthersProfileQuery {
+  getOthersProfile: GetOthersProfileOutput;
+}
+
 interface IGrid {
   colStart?: number;
   colEnd?: number;
@@ -310,6 +331,16 @@ const Briz: NextPage = () => {
     error: meError,
     refetch: meRefetch,
   } = useQuery<meQuery>(ME_QUERY);
+
+  const {
+    data: getOthersProfileData,
+    loading: getOthersProfileLoading,
+    error: getOthersProfileError,
+    refetch: getOthersProfileRefetch,
+  } = useQuery<getOthersProfileQuery>(OTHERS_PROFILE_QUERY, {
+    variables: { getOthersProfileInput: { username: brizUserName } },
+  });
+
   const {
     data: getBrizData,
     loading: getBrizLoading,
@@ -341,8 +372,15 @@ const Briz: NextPage = () => {
       getBrizRefetch();
       getPinnedBrizRefetch();
       getInBucketBrizRefetch();
+      getOthersProfileRefetch();
     }
-  }, [meData, getBrizData, getPinnedBrizData, getInBucketBrizData]);
+  }, [
+    meData,
+    getBrizData,
+    getPinnedBrizData,
+    getInBucketBrizData,
+    getOthersProfileData,
+  ]);
 
   useEffect(() => {
     if (
@@ -793,599 +831,627 @@ const Briz: NextPage = () => {
   return (
     <Layout title="Main - Briz" hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
-        <motion.div
-          layout
-          className="relative mx-auto mb-6 flex  w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white  shadow-md"
-          initial={{ opacity: 0 }}
-          exit={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          style={{
-            height: `clamp(1px,
+        {getOthersProfileData?.getOthersProfile.ok ? (
+          <motion.div
+            layout
+            className="relative mx-auto mb-6 flex  w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white  shadow-md"
+            initial={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              height: `clamp(1px,
                 12vw,9.6rem)`,
-          }}
-        >
-          {bucketClicked ? (
-            <motion.div
-              className={cls(
-                "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
-              )}
-              onClick={onOverlayClick}
-              exit={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-            ></motion.div>
-          ) : null}
-          {profileClicked ? (
-            <>
+            }}
+          >
+            {bucketClicked ? (
               <motion.div
-                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
+                className={cls(
+                  "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
+                )}
                 onClick={onOverlayClick}
                 exit={{ opacity: 0 }}
                 animate={{ opacity: 0.5 }}
               ></motion.div>
-              <motion.div
-                className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
-                layout
-                layoutId="profile"
-                onClick={() => {
-                  setProfileClicked(false);
-                }}
-              >
-                <motion.span
-                  layout={true}
-                  className={cls(
-                    " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl",
-                    !meData?.me.name ? "cursor-pointer text-gray-300" : ""
-                  )}
+            ) : null}
+            {profileClicked ? (
+              <>
+                <motion.div
+                  className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
+                  onClick={onOverlayClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                ></motion.div>
+                <motion.div
+                  className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
+                  layout
+                  layoutId="profile"
                   onClick={() => {
-                    if (meData?.me.username !== brizUserName) {
-                      return null;
-                    } else {
-                      if (!meData?.me.name) {
-                        setValueEditProfile("editProfile", {
-                          username: meData?.me.username,
-                          email: meData?.me.email,
-                          biography: meData?.me.biography,
-                          name: meData?.me.name,
-                        });
-                        setEditProfileClicked(true);
-                      }
-                      return null;
-                    }
-                  }}
-                  style={{
-                    fontSize: `clamp(1px,
-                      3vw,2.4rem)`,
+                    setProfileClicked(false);
                   }}
                 >
-                  {meData?.me.name ? meData?.me.name : "Add your name"}
-                </motion.span>
-                {meData?.me.profileImg ? (
-                  <Image
-                    priority
-                    src={`${meData?.me.profileImg}`}
-                    alt={`${meData?.me.username}'s Briz`}
-                    fill
-                    style={{
-                      opacity: 0.8,
-                      objectFit: "cover",
-                    }}
-                    onLoadingComplete={() => {
-                      setGrid({});
-                      setBrizLoading(false);
-                    }}
-                  ></Image>
-                ) : (
                   <motion.span
+                    layout={true}
                     className={cls(
-                      "left-0 right-0 z-[202] mx-auto block max-w-max  cursor-pointer rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold text-gray-300"
+                      " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl",
+                      !getOthersProfileData?.getOthersProfile.user?.name
+                        ? "cursor-pointer text-gray-300"
+                        : ""
                     )}
                     onClick={() => {
                       if (meData?.me.username !== brizUserName) {
                         return null;
                       } else {
-                        setValueEditProfile("editProfile", {
-                          username: meData?.me.username,
-                          email: meData?.me.email,
-                          biography: meData?.me.biography,
-                          name: meData?.me.name,
-                        });
-                        setEditProfileClicked(true);
+                        if (!meData?.me.name) {
+                          setValueEditProfile("editProfile", {
+                            username: meData?.me.username,
+                            email: meData?.me.email,
+                            biography: meData?.me.biography,
+                            name: meData?.me.name,
+                          });
+                          setEditProfileClicked(true);
+                        }
+                        return null;
                       }
                     }}
                     style={{
                       fontSize: `clamp(1px,
-                1.8vw,1.44rem)`,
+                      3vw,2.4rem)`,
                     }}
                   >
-                    Add your profile picture
+                    {getOthersProfileData?.getOthersProfile.user?.name
+                      ? getOthersProfileData?.getOthersProfile.user?.name
+                      : "Add your name"}
                   </motion.span>
-                )}
-                <motion.span
-                  className={cls(
-                    "left-0 right-0 z-[202] mx-auto block max-w-max  rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold",
-                    !meData?.me.biography ? "cursor-pointer text-gray-300" : ""
-                  )}
-                  onClick={() => {
-                    if (meData?.me.username !== brizUserName) {
-                      return null;
-                    } else {
-                      if (!meData?.me.biography) {
-                        setValueEditProfile("editProfile", {
-                          username: meData?.me.username,
-                          email: meData?.me.email,
-                          biography: meData?.me.biography,
-                          name: meData?.me.name,
-                        });
-                        setEditProfileClicked(true);
-                      }
-                      return null;
-                    }
-                  }}
-                  style={{
-                    fontSize: `clamp(1px,
-                  1.8vw,1.44rem)`,
-                  }}
-                >
-                  {meData?.me.biography ? meData?.me.biography : "Add your bio"}
-                </motion.span>
-              </motion.div>
-            </>
-          ) : null}
-          {!profileClicked ? (
-            <>
-              {!profileLoading ? (
-                <motion.div
-                  layout
-                  layoutId="profile"
-                  className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-                  style={{
-                    height: `clamp(1px,10vw,8rem)`,
-                    top: `clamp(1px,3.2vw,2.56rem)`,
-                    left: `clamp(1px,2vw,1.6rem)`,
-                  }}
-                  whileHover={"hoverBox"}
-                  whileTap={{ scale: 1.08 }}
-                  variants={{
-                    hoverBox: {
-                      scale: 1.05,
-                    },
-                  }}
-                  onMouseDown={() => {
-                    longPressTimeOut.current = window.setTimeout(() => {
-                      if (meData?.me.username !== brizUserName) {
-                        return null;
-                      } else {
-                        setValueEditProfile("editProfile", {
-                          username: meData?.me.username,
-                          email: meData?.me.email,
-                          biography: meData?.me.biography,
-                          name: meData?.me.name,
-                        });
-                        setEditProfileClicked(true);
-                      }
-                    }, 400);
-                  }}
-                  onMouseUp={() => {
-                    clearTimeout(longPressTimeOut.current);
-                  }}
-                  onClick={() => {
-                    setProfileClicked(true);
-                  }}
-                >
-                  {meData?.me.profileImg ? (
+                  {getOthersProfileData?.getOthersProfile.user?.profileImg ? (
                     <Image
                       priority
-                      src={`${meData?.me.profileImg}`}
-                      alt={`${meData?.me.biography}`}
-                      fill
-                      placeholder="blur"
-                      blurDataURL={meData.me.profileImg}
-                      style={{
-                        objectFit: "contain",
-                      }}
-                    ></Image>
-                  ) : null}
-                </motion.div>
-              ) : (
-                <motion.div
-                  layout
-                  layoutId="profile"
-                  className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-red-300 bg-white shadow-lg"
-                  style={{
-                    height: `clamp(1px,10vw,8rem)`,
-                    top: `clamp(1px,3.2vw,2.56rem)`,
-                    left: `clamp(1px,2vw,1.6rem)`,
-                  }}
-                >
-                  <ThreeDotsWave />
-                </motion.div>
-              )}
-            </>
-          ) : null}
-          {editProfileClicked ? (
-            <>
-              <motion.div
-                className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
-                onClick={onOverlayClick}
-                exit={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
-              ></motion.div>
-              <motion.div
-                className=" absolute  left-0 right-0  z-[201]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
-                style={{ top: scrollY.get() + 100 }}
-                exit={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <h3 className="text-center text-3xl font-bold">Edit Profile</h3>
-                <div className="mt-4 px-4 max-sm:px-0 ">
-                  <form
-                    className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
-                    onSubmit={handleSubmitEditProfile(onSubmitEditProfile)}
-                  >
-                    <Input
-                      label="Image"
-                      name="profileImg"
-                      type="file"
-                      required={false}
-                      tab
-                      accept="image/*"
-                      register={registerEditProfile("editProfile.profileImg")}
-                    />
-                    <Input
-                      label="Name"
-                      name="name"
-                      type="text"
-                      placeholder="Name"
-                      required={false}
-                      register={registerEditProfile("editProfile.name")}
-                    />
-                    <Input
-                      label="Bio"
-                      name="bio"
-                      type="textarea"
-                      placeholder="Write a bio"
-                      required={false}
-                      register={registerEditProfile("editProfile.biography")}
-                    />
-                    <Input
-                      label="Username"
-                      name="username"
-                      type="text"
-                      placeholder="Username"
-                      required
-                      register={registerEditProfile("editProfile.username")}
-                    />
-                    <Input
-                      label="Email"
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      required
-                      register={registerEditProfile("editProfile.email")}
-                    />
-                    <Button text={"Edit profile"} />
-                  </form>
-                </div>
-              </motion.div>
-            </>
-          ) : null}
-
-          {bucketClicked ? (
-            <motion.div
-              className={cls(
-                "absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4  border-gray-50 bg-white px-4 pb-4 shadow-lg"
-              )}
-              key={"bucket"}
-              layout
-              layoutId={"bucket"}
-            >
-              {dragged ? (
-                <motion.div
-                  className={cls(
-                    "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
-                  )}
-                  onClick={() => {
-                    setDragged(false);
-                  }}
-                  exit={{ opacity: 0 }}
-                  animate={{ opacity: 0.5 }}
-                ></motion.div>
-              ) : null}
-              {brizLoading ? (
-                <motion.div className="my-4 h-[9vw] w-[9vw] rounded-3xl border-4 border-red-300 bg-white">
-                  <ThreeDotsWave />
-                </motion.div>
-              ) : null}
-              {!brizLoading ? (
-                <motion.div
-                  className="my-4 flex h-[9vw] w-[9vw] flex-col items-center justify-center rounded-3xl border-4 border-gray-50 bg-white"
-                  onClick={() => {
-                    if (meData?.me.username !== brizUserName) {
-                      return null;
-                    }
-                    setDragged(true);
-                  }}
-                  onMouseEnter={() => {
-                    setMouseOnBucketBtn(true);
-                  }}
-                  onMouseLeave={() => {
-                    setMouseOnBucketBtn(false);
-                  }}
-                  whileHover={{
-                    scale: 1.05,
-                    borderColor: "rgb(252 165 165)",
-                  }}
-                >
-                  <svg
-                    className="block"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="9vw"
-                    height="9vw"
-                    viewBox="-90 -160 800 800"
-                  >
-                    <path
-                      d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                      fill={cls(
-                        brizLongPressed ? "rgb(254 215 170)" : "",
-                        getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                          .length !== 0 &&
-                          !brizLongPressed &&
-                          !mouseOnBucketBtn
-                          ? "black"
-                          : "",
-                        getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                          .length === 0 &&
-                          !brizLongPressed &&
-                          !mouseOnBucketBtn
-                          ? "rgb(229 231 235)"
-                          : "",
-                        mouseOnBucketBtn ? "rgb(252 165 165)" : ""
-                      )}
-                    />
-                  </svg>
-                </motion.div>
-              ) : null}
-
-              <motion.div className="grid h-auto w-full grid-cols-3">
-                <AnimatePresence>
-                  {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
-                    (briz) => (
-                      <motion.div
-                        key={briz.id}
-                        layout
-                        layoutId={briz.id + ""}
-                        initial="initial"
-                        animate={
-                          brizLongPressed && brizLongPressed.id === briz.id
-                            ? "selected"
-                            : "normal"
-                        }
-                        exit="exit"
-                        whileHover="hoverBox"
-                        variants={{
-                          initial: { opacity: 0 },
-                          normal: { opacity: 1 },
-                          selected: { opacity: 0.3, scale: 1.05 },
-                          exit: { opacity: 0 },
-                          hoverBox: { scale: 1.03 },
-                        }}
-                        transition={{
-                          duration: 0.4,
-                        }}
-                        className={cls(
-                          `relative m-1 flex aspect-square items-center justify-center object-scale-down`,
-                          briz.id === brizMouseOn && brizClicked
-                            ? "opacity-0"
-                            : ""
-                        )}
-                        onMouseDown={() => {
-                          longPressTimeOut.current = window.setTimeout(() => {
-                            if (meData?.me.username !== brizUserName) {
-                              return null;
-                            } else {
-                              setBrizLongPressed({
-                                id: briz.id,
-                                title: briz.title,
-                                metatags: briz.metatags,
-                                description: briz.description,
-                                text: briz.text,
-                              });
-                              setGridOnOff(true);
-                              setBucketClicked(false);
-                            }
-                          }, 400);
-                        }}
-                        onMouseUp={() => {
-                          clearTimeout(longPressTimeOut.current);
-                        }}
-                      >
-                        {briz.coverImg !== "null" ? (
-                          <Image
-                            onMouseOver={() => {
-                              setBrizMouseOn(briz.id);
-                            }}
-                            onClick={() => {
-                              setBrizClicked(true);
-                            }}
-                            priority
-                            src={`${briz.coverImg}`}
-                            alt={`${briz.title}-${briz.description}`}
-                            fill
-                            placeholder="blur"
-                            blurDataURL={briz.coverImg}
-                            onLoadingComplete={() => {
-                              setGrid({});
-                              setBrizLoading(false);
-                            }}
-                            style={{
-                              borderRadius: "clamp(1px,1vw,0.8rem)",
-                              objectFit: "cover",
-                            }}
-                          ></Image>
-                        ) : (
-                          <motion.div className="relative h-full w-full ">
-                            {briz.text ? (
-                              <motion.span
-                                className="absolute flex h-full w-full flex-col break-words"
-                                style={{
-                                  fontSize: `clamp(1px,${
-                                    0.064 * (briz.text.fontSize + 10)
-                                  }vw,${0.052 * (briz.text.fontSize + 10)}rem)`,
-                                  color: briz.text.textColor,
-                                  backgroundColor: briz.text.boxColor
-                                    ? briz.text.boxColor
-                                    : "",
-                                  fontStyle: briz.text.italic ? "italic" : "",
-                                  fontWeight: briz.text.bold,
-                                  textAlign: briz.text
-                                    .textRowAlign as textRowAlign,
-                                  justifyContent: briz.text.textColAlign,
-                                  borderRadius: "clamp(1px,1vw,0.8rem)",
-                                }}
-                              >{`${briz.text.text}`}</motion.span>
-                            ) : null}
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    )
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </motion.div>
-          ) : (
-            <motion.div
-              className={cls(
-                "absolute  z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-              )}
-              style={{
-                height: `clamp(1px,10vw,8rem)`,
-                top: `clamp(1px,3.2vw,2.56rem)`,
-                right: `clamp(1px,2vw,1.6rem)`,
-              }}
-              whileHover={"hoverBox"}
-              whileTap={{ scale: 1.08 }}
-              variants={{
-                hoverBox: {
-                  scale: 1.05,
-                },
-              }}
-              onClick={() => {
-                if (brizLongPressed) {
-                  onSubmitGridEdit(
-                    brizLongPressed.id!,
-                    brizLongPressed.pinned!
-                  );
-                  setBrizLongPressed(undefined);
-                  setGridOnOff((prev) => !prev);
-                  setGrid({});
-                  setDragIndex({});
-                } else setBucketClicked(true);
-              }}
-              key={"bucket"}
-              layout
-              layoutId={"bucket"}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="8vw"
-                height="8vw"
-                viewBox="-110 -180 825 825"
-              >
-                <path
-                  d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
-                  fill={cls(
-                    brizLongPressed ? "rgb(254 215 170)" : "",
-                    getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                      .length !== 0 && !brizLongPressed
-                      ? "black"
-                      : "",
-                    getInBucketBrizData?.getInBucketBriz.getInBucketBriz
-                      .length === 0 && !brizLongPressed
-                      ? "rgb(229 231 235)"
-                      : ""
-                  )}
-                />
-              </svg>
-            </motion.div>
-          )}
-          {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
-            <AnimatePresence key={i}>
-              <motion.div
-                layout
-                initial={{ opacity: 0 }}
-                exit={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="relative"
-                whileHover="hoverBox"
-              >
-                <Link legacyBehavior href={`/briz/${brizUserName}/${briz.id}`}>
-                  <motion.div
-                    key={briz.id}
-                    layoutId={briz.id + "pinned"}
-                    className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
-                    style={{
-                      height: `clamp(1px,8vw,6.4rem)`,
-                      margin: `clamp(1px,0.8vw,0.64rem)`,
-                    }}
-                    whileTap={{ scale: 1.08 }}
-                    variants={{
-                      hoverBox: {
-                        scale: 1.05,
-                      },
-                    }}
-                  >
-                    <Image
-                      priority
-                      src={`${briz.coverImg}`}
-                      alt={`${briz.title}-${briz.description}`}
+                      src={`${getOthersProfileData?.getOthersProfile.user?.profileImg}`}
+                      alt={`${getOthersProfileData?.getOthersProfile.user?.username}'s Briz`}
                       fill
                       style={{
-                        objectFit: "contain",
+                        opacity: 0.8,
+                        objectFit: "cover",
                       }}
                       onLoadingComplete={() => {
                         setGrid({});
                         setBrizLoading(false);
                       }}
                     ></Image>
+                  ) : (
+                    <motion.span
+                      className={cls(
+                        "left-0 right-0 z-[202] mx-auto block max-w-max  cursor-pointer rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold text-gray-300"
+                      )}
+                      onClick={() => {
+                        if (meData?.me.username !== brizUserName) {
+                          return null;
+                        } else {
+                          setValueEditProfile("editProfile", {
+                            username: meData?.me.username,
+                            email: meData?.me.email,
+                            biography: meData?.me.biography,
+                            name: meData?.me.name,
+                          });
+                          setEditProfileClicked(true);
+                        }
+                      }}
+                      style={{
+                        fontSize: `clamp(1px,
+                1.8vw,1.44rem)`,
+                      }}
+                    >
+                      Add your profile picture
+                    </motion.span>
+                  )}
+                  <motion.span
+                    className={cls(
+                      "left-0 right-0 z-[202] mx-auto block max-w-max  rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold",
+                      !getOthersProfileData?.getOthersProfile.user?.biography
+                        ? "cursor-pointer text-gray-300"
+                        : ""
+                    )}
+                    onClick={() => {
+                      if (meData?.me.username !== brizUserName) {
+                        return null;
+                      } else {
+                        if (!meData?.me.biography) {
+                          setValueEditProfile("editProfile", {
+                            username: meData?.me.username,
+                            email: meData?.me.email,
+                            biography: meData?.me.biography,
+                            name: meData?.me.name,
+                          });
+                          setEditProfileClicked(true);
+                        }
+                        return null;
+                      }
+                    }}
+                    style={{
+                      fontSize: `clamp(1px,
+                  1.8vw,1.44rem)`,
+                    }}
+                  >
+                    {getOthersProfileData?.getOthersProfile.user?.biography
+                      ? getOthersProfileData?.getOthersProfile.user?.biography
+                      : "Add your bio"}
+                  </motion.span>
+                </motion.div>
+              </>
+            ) : null}
+            {!profileClicked ? (
+              <>
+                {!profileLoading ? (
+                  <motion.div
+                    layout
+                    layoutId="profile"
+                    className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                    style={{
+                      height: `clamp(1px,10vw,8rem)`,
+                      top: `clamp(1px,3.2vw,2.56rem)`,
+                      left: `clamp(1px,2vw,1.6rem)`,
+                    }}
+                    whileHover={"hoverBox"}
+                    whileTap={{ scale: 1.08 }}
+                    variants={{
+                      hoverBox: {
+                        scale: 1.05,
+                      },
+                    }}
+                    onMouseDown={() => {
+                      longPressTimeOut.current = window.setTimeout(() => {
+                        if (meData?.me.username !== brizUserName) {
+                          return null;
+                        } else {
+                          setValueEditProfile("editProfile", {
+                            username: meData?.me.username,
+                            email: meData?.me.email,
+                            biography: meData?.me.biography,
+                            name: meData?.me.name,
+                          });
+                          setEditProfileClicked(true);
+                        }
+                      }, 400);
+                    }}
+                    onMouseUp={() => {
+                      clearTimeout(longPressTimeOut.current);
+                    }}
+                    onClick={() => {
+                      setProfileClicked(true);
+                    }}
+                  >
+                    {getOthersProfileData?.getOthersProfile.user?.profileImg ? (
+                      <Image
+                        priority
+                        src={`${getOthersProfileData?.getOthersProfile.user?.profileImg}`}
+                        alt={`${getOthersProfileData?.getOthersProfile.user?.biography}`}
+                        fill
+                        placeholder="blur"
+                        blurDataURL={
+                          getOthersProfileData?.getOthersProfile.user
+                            ?.profileImg
+                        }
+                        style={{
+                          objectFit: "contain",
+                        }}
+                      ></Image>
+                    ) : null}
                   </motion.div>
-                </Link>
+                ) : (
+                  <motion.div
+                    layout
+                    layoutId="profile"
+                    className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-red-300 bg-white shadow-lg"
+                    style={{
+                      height: `clamp(1px,10vw,8rem)`,
+                      top: `clamp(1px,3.2vw,2.56rem)`,
+                      left: `clamp(1px,2vw,1.6rem)`,
+                    }}
+                  >
+                    <ThreeDotsWave />
+                  </motion.div>
+                )}
+              </>
+            ) : null}
+            {editProfileClicked ? (
+              <>
+                <motion.div
+                  className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
+                  onClick={onOverlayClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                ></motion.div>
+                <motion.div
+                  className=" absolute  left-0 right-0  z-[201]  mx-auto max-w-md  rounded-3xl bg-white p-6 pb-8 opacity-0 shadow-lg"
+                  style={{ top: scrollY.get() + 100 }}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <h3 className="text-center text-3xl font-bold">
+                    Edit Profile
+                  </h3>
+                  <div className="mt-4 px-4 max-sm:px-0 ">
+                    <form
+                      className="mx-auto mt-6 flex w-80 flex-col space-y-4  max-sm:w-72 "
+                      onSubmit={handleSubmitEditProfile(onSubmitEditProfile)}
+                    >
+                      <Input
+                        label="Image"
+                        name="profileImg"
+                        type="file"
+                        required={false}
+                        tab
+                        accept="image/*"
+                        register={registerEditProfile("editProfile.profileImg")}
+                      />
+                      <Input
+                        label="Name"
+                        name="name"
+                        type="text"
+                        placeholder="Name"
+                        required={false}
+                        register={registerEditProfile("editProfile.name")}
+                      />
+                      <Input
+                        label="Bio"
+                        name="bio"
+                        type="textarea"
+                        placeholder="Write a bio"
+                        required={false}
+                        register={registerEditProfile("editProfile.biography")}
+                      />
+                      <Input
+                        label="Username"
+                        name="username"
+                        type="text"
+                        placeholder="Username"
+                        required
+                        register={registerEditProfile("editProfile.username")}
+                      />
+                      <Input
+                        label="Email"
+                        name="email"
+                        type="email"
+                        placeholder="Email"
+                        required
+                        register={registerEditProfile("editProfile.email")}
+                      />
+                      <Button text={"Edit profile"} />
+                    </form>
+                  </div>
+                </motion.div>
+              </>
+            ) : null}
+
+            {bucketClicked ? (
+              <motion.div
+                className={cls(
+                  "absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-auto min-h-[50vh] w-3/5 flex-col items-center justify-start overflow-hidden rounded-3xl border-4  border-gray-50 bg-white px-4 pb-4 shadow-lg"
+                )}
+                key={"bucket"}
+                layout
+                layoutId={"bucket"}
+              >
+                {dragged ? (
+                  <motion.div
+                    className={cls(
+                      "fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 opacity-0"
+                    )}
+                    onClick={() => {
+                      setDragged(false);
+                    }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                  ></motion.div>
+                ) : null}
+                {brizLoading ? (
+                  <motion.div className="my-4 h-[9vw] w-[9vw] rounded-3xl border-4 border-red-300 bg-white">
+                    <ThreeDotsWave />
+                  </motion.div>
+                ) : null}
+                {!brizLoading ? (
+                  <motion.div
+                    className="my-4 flex h-[9vw] w-[9vw] flex-col items-center justify-center rounded-3xl border-4 border-gray-50 bg-white"
+                    onClick={() => {
+                      if (meData?.me.username !== brizUserName) {
+                        return null;
+                      }
+                      setDragged(true);
+                    }}
+                    onMouseEnter={() => {
+                      setMouseOnBucketBtn(true);
+                    }}
+                    onMouseLeave={() => {
+                      setMouseOnBucketBtn(false);
+                    }}
+                    whileHover={{
+                      scale: 1.05,
+                      borderColor: "rgb(252 165 165)",
+                    }}
+                  >
+                    <svg
+                      className="block"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="9vw"
+                      height="9vw"
+                      viewBox="-90 -160 800 800"
+                    >
+                      <path
+                        d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                        fill={cls(
+                          brizLongPressed ? "rgb(254 215 170)" : "",
+                          getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                            .length !== 0 &&
+                            !brizLongPressed &&
+                            !mouseOnBucketBtn
+                            ? "black"
+                            : "",
+                          getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                            .length === 0 &&
+                            !brizLongPressed &&
+                            !mouseOnBucketBtn
+                            ? "rgb(229 231 235)"
+                            : "",
+                          mouseOnBucketBtn ? "rgb(252 165 165)" : ""
+                        )}
+                      />
+                    </svg>
+                  </motion.div>
+                ) : null}
+
+                <motion.div className="grid h-auto w-full grid-cols-3">
+                  <AnimatePresence>
+                    {getInBucketBrizData?.getInBucketBriz.getInBucketBriz.map(
+                      (briz) => (
+                        <motion.div
+                          key={briz.id}
+                          layout
+                          layoutId={briz.id + ""}
+                          initial="initial"
+                          animate={
+                            brizLongPressed && brizLongPressed.id === briz.id
+                              ? "selected"
+                              : "normal"
+                          }
+                          exit="exit"
+                          whileHover="hoverBox"
+                          variants={{
+                            initial: { opacity: 0 },
+                            normal: { opacity: 1 },
+                            selected: { opacity: 0.3, scale: 1.05 },
+                            exit: { opacity: 0 },
+                            hoverBox: { scale: 1.03 },
+                          }}
+                          transition={{
+                            duration: 0.4,
+                          }}
+                          className={cls(
+                            `relative m-1 flex aspect-square items-center justify-center object-scale-down`,
+                            briz.id === brizMouseOn && brizClicked
+                              ? "opacity-0"
+                              : ""
+                          )}
+                          onMouseDown={() => {
+                            longPressTimeOut.current = window.setTimeout(() => {
+                              if (meData?.me.username !== brizUserName) {
+                                return null;
+                              } else {
+                                setBrizLongPressed({
+                                  id: briz.id,
+                                  title: briz.title,
+                                  metatags: briz.metatags,
+                                  description: briz.description,
+                                  text: briz.text,
+                                });
+                                setGridOnOff(true);
+                                setBucketClicked(false);
+                              }
+                            }, 400);
+                          }}
+                          onMouseUp={() => {
+                            clearTimeout(longPressTimeOut.current);
+                          }}
+                        >
+                          {briz.coverImg !== "null" ? (
+                            <Image
+                              onMouseOver={() => {
+                                setBrizMouseOn(briz.id);
+                              }}
+                              onClick={() => {
+                                setBrizClicked(true);
+                              }}
+                              priority
+                              src={`${briz.coverImg}`}
+                              alt={`${briz.title}-${briz.description}`}
+                              fill
+                              placeholder="blur"
+                              blurDataURL={briz.coverImg}
+                              onLoadingComplete={() => {
+                                setGrid({});
+                                setBrizLoading(false);
+                              }}
+                              style={{
+                                borderRadius: "clamp(1px,1vw,0.8rem)",
+                                objectFit: "cover",
+                              }}
+                            ></Image>
+                          ) : (
+                            <motion.div className="relative h-full w-full ">
+                              {briz.text ? (
+                                <motion.span
+                                  className="absolute flex h-full w-full flex-col break-words"
+                                  style={{
+                                    fontSize: `clamp(1px,${
+                                      0.064 * (briz.text.fontSize + 10)
+                                    }vw,${
+                                      0.052 * (briz.text.fontSize + 10)
+                                    }rem)`,
+                                    color: briz.text.textColor,
+                                    backgroundColor: briz.text.boxColor
+                                      ? briz.text.boxColor
+                                      : "",
+                                    fontStyle: briz.text.italic ? "italic" : "",
+                                    fontWeight: briz.text.bold,
+                                    textAlign: briz.text
+                                      .textRowAlign as textRowAlign,
+                                    justifyContent: briz.text.textColAlign,
+                                    borderRadius: "clamp(1px,1vw,0.8rem)",
+                                  }}
+                                >{`${briz.text.text}`}</motion.span>
+                              ) : null}
+                            </motion.div>
+                          )}
+                        </motion.div>
+                      )
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                className={cls(
+                  "absolute  z-[101] flex aspect-square items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
+                )}
+                style={{
+                  height: `clamp(1px,10vw,8rem)`,
+                  top: `clamp(1px,3.2vw,2.56rem)`,
+                  right: `clamp(1px,2vw,1.6rem)`,
+                }}
+                whileHover={"hoverBox"}
+                whileTap={{ scale: 1.08 }}
+                variants={{
+                  hoverBox: {
+                    scale: 1.05,
+                  },
+                }}
+                onClick={() => {
+                  if (brizLongPressed) {
+                    onSubmitGridEdit(
+                      brizLongPressed.id!,
+                      brizLongPressed.pinned!
+                    );
+                    setBrizLongPressed(undefined);
+                    setGridOnOff((prev) => !prev);
+                    setGrid({});
+                    setDragIndex({});
+                  } else setBucketClicked(true);
+                }}
+                key={"bucket"}
+                layout
+                layoutId={"bucket"}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="8vw"
+                  height="8vw"
+                  viewBox="-110 -180 825 825"
+                >
+                  <path
+                    d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
+                    fill={cls(
+                      brizLongPressed ? "rgb(254 215 170)" : "",
+                      getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                        .length !== 0 && !brizLongPressed
+                        ? "black"
+                        : "",
+                      getInBucketBrizData?.getInBucketBriz.getInBucketBriz
+                        .length === 0 && !brizLongPressed
+                        ? "rgb(229 231 235)"
+                        : ""
+                    )}
+                  />
+                </svg>
+              </motion.div>
+            )}
+            {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.map((briz, i) => (
+              <AnimatePresence key={i}>
+                <motion.div
+                  layout
+                  initial={{ opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="relative"
+                  whileHover="hoverBox"
+                >
+                  <Link
+                    legacyBehavior
+                    href={`/briz/${brizUserName}/${briz.id}`}
+                  >
+                    <motion.div
+                      key={briz.id}
+                      layoutId={briz.id + "pinned"}
+                      className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
+                      style={{
+                        height: `clamp(1px,8vw,6.4rem)`,
+                        margin: `clamp(1px,0.8vw,0.64rem)`,
+                      }}
+                      whileTap={{ scale: 1.08 }}
+                      variants={{
+                        hoverBox: {
+                          scale: 1.05,
+                        },
+                      }}
+                    >
+                      <Image
+                        priority
+                        src={`${briz.coverImg}`}
+                        alt={`${briz.title}-${briz.description}`}
+                        fill
+                        style={{
+                          objectFit: "contain",
+                        }}
+                        onLoadingComplete={() => {
+                          setGrid({});
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    </motion.div>
+                  </Link>
+                  <motion.span
+                    className="absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-4 border-gray-50 bg-white px-4 py-1 font-bold  opacity-0 shadow-lg"
+                    style={{
+                      fontSize: `clamp(1px,
+                      2vw,1.6rem)`,
+                      bottom: `clamp(-2.4rem,
+                        -3vw, -1px)`,
+                    }}
+                    variants={{
+                      hoverBox: { opacity: 1 },
+                    }}
+                  >
+                    {briz.title}
+                  </motion.span>
+                </motion.div>
+              </AnimatePresence>
+            ))}
+            {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.length === 0 ? (
+              <AnimatePresence>
                 <motion.span
-                  className="absolute left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl border-4 border-gray-50 bg-white px-4 py-1 font-bold  opacity-0 shadow-lg"
+                  layout
+                  className={cls(
+                    " absolute left-0 right-0 mx-auto border-4 border-white text-center font-extrabold"
+                  )}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   style={{
                     fontSize: `clamp(1px,
-                      2vw,1.6rem)`,
-                    bottom: `clamp(-2.4rem,
-                        -3vw, -1px)`,
-                  }}
-                  variants={{
-                    hoverBox: { opacity: 1 },
+                   5vw,4rem)`,
                   }}
                 >
-                  {briz.title}
+                  {capitalizeFirstLetter(
+                    `${getOthersProfileData?.getOthersProfile.user?.username}`
+                  ) + "'s Briz"}
                 </motion.span>
-              </motion.div>
-            </AnimatePresence>
-          ))}
-          {getPinnedBrizData?.getPinnedBriz.getPinnedBriz.length === 0 ? (
-            <AnimatePresence>
-              <motion.span
-                layout
-                className={cls(
-                  " absolute left-0 right-0 mx-auto border-4 border-white text-center font-extrabold"
-                )}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  fontSize: `clamp(1px,
-                   5vw,4rem)`,
-                }}
-              >
-                {capitalizeFirstLetter(`${meData?.me.username}`) + "'s Briz"}
-              </motion.span>
-            </AnimatePresence>
-          ) : null}
-        </motion.div>
+              </AnimatePresence>
+            ) : null}
+          </motion.div>
+        ) : null}
+        {!getOthersProfileData?.getOthersProfile.ok &&
+        !getOthersProfileLoading ? (
+          <span className="fixed top-[15vw] w-full  bg-red-400 py-2 text-center text-2xl font-extrabold text-white">
+            Nothing Found
+          </span>
+        ) : null}
 
         <motion.div className="relative mx-auto mt-0 h-auto max-w-7xl">
           {meData?.me.username === brizUserName ? (
