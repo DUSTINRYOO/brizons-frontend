@@ -850,7 +850,7 @@ const Briz: NextPage = () => {
                   ) : null}
                   {!brizLoading ? (
                     <motion.div
-                      className="my-4 h-[9vw] w-[9vw] rounded-3xl border-4 border-gray-50 bg-white"
+                      className="my-4 flex h-[9vw] w-[9vw] flex-col items-center justify-center rounded-3xl border-4 border-gray-50 bg-white"
                       onClick={() => {
                         if (meData?.me.username !== brizUserName) {
                           return null;
@@ -869,10 +869,11 @@ const Briz: NextPage = () => {
                       }}
                     >
                       <svg
+                        className="block"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="8vw"
-                        height="8vw"
-                        viewBox="-110 -180 825 825"
+                        width="9vw"
+                        height="9vw"
+                        viewBox="-90 -160 800 800"
                       >
                         <path
                           d="M45.9 42.1c3-6.1 9.6-9.6 16.3-8.7L307 64 551.8 33.4c6.7-.8 13.3 2.7 16.3 8.7l41.7 83.4c9 17.9-.6 39.6-19.8 45.1L426.6 217.3c-13.9 4-28.8-1.9-36.2-14.3L307 64 223.6 203c-7.4 12.4-22.3 18.3-36.2 14.3L24.1 170.6C4.8 165.1-4.7 143.4 4.2 125.5L45.9 42.1zM308.1 128l54.9 91.4c14.9 24.8 44.6 36.6 72.5 28.6L563 211.6v167c0 22-15 41.2-36.4 46.6l-204.1 51c-10.2 2.6-20.9 2.6-31 0l-204.1-51C66 419.7 51 400.5 51 378.5v-167L178.6 248c27.8 8 57.6-3.8 72.5-28.6L305.9 128h2.2z"
@@ -1070,7 +1071,7 @@ const Briz: NextPage = () => {
                 className={cls(
                   " absolute left-0 right-0 mx-auto max-w-max border-4 border-white text-center font-extrabold transition-all",
                   parentBrizClicked
-                    ? "z-[103] max-w-max rounded-2xl border-4 border-gray-50  bg-white px-6 "
+                    ? "z-[201] rounded-2xl border-4 border-gray-50  bg-white px-6 "
                     : ""
                 )}
                 style={
