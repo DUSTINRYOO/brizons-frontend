@@ -577,7 +577,7 @@ const Briz: NextPage = () => {
     setEditClicked(undefined);
   };
 
-  const onSubmitGridEdit = async (brizId: number) => {
+  const onSubmitGridEdit = async (brizId: number, pinnedStatus: boolean) => {
     if (meData?.me.username !== brizUserName) {
       return null;
     }
@@ -594,7 +594,7 @@ const Briz: NextPage = () => {
             brizId,
             grid: Object.keys(grid).length === 0 ? bucketGrid : grid,
             inBucket: Object.keys(grid).length === 0 ? true : false,
-            pinned: Object.keys(grid).length === 0 ? false : null,
+            pinned: Object.keys(grid).length === 0 ? false : pinnedStatus,
           },
         },
       });
@@ -1028,7 +1028,10 @@ const Briz: NextPage = () => {
                   }}
                   onClick={() => {
                     if (brizLongPressed) {
-                      onSubmitGridEdit(brizLongPressed.id!);
+                      onSubmitGridEdit(
+                        brizLongPressed.id!,
+                        brizLongPressed.pinned!
+                      );
                       setBrizLongPressed(undefined);
                       setGridOnOff((prev) => !prev);
                       setGrid({});
@@ -1475,7 +1478,10 @@ const Briz: NextPage = () => {
                     }}
                     onDragEnd={() => {
                       if (brizLongPressed) {
-                        onSubmitGridEdit(brizLongPressed.id!);
+                        onSubmitGridEdit(
+                          brizLongPressed.id!,
+                          brizLongPressed.pinned!
+                        );
                         setBrizLongPressed(undefined);
                         setGridOnOff((prev) => !prev);
                         setGrid({});
