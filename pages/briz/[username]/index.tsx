@@ -296,6 +296,7 @@ const Briz: NextPage = () => {
   const [gridOnOff, setGridOnOff] = useState<boolean>(false);
   const [boxColorOnOff, setBoxColorOnOff] = useState<boolean>(false);
   const [brizLoading, setBrizLoading] = useState<boolean>(false);
+  const [profileLoading, setProfileLoading] = useState<boolean>(false);
   const [openAiOnOff, setOpenAiOnOff] = useState<boolean>(false);
   const [inputToggle, setInputToggle] = useState<boolean>(false);
   const [textBold, setTextBold] = useState<string>("500");
@@ -492,9 +493,11 @@ const Briz: NextPage = () => {
         editProfile: { ok, error },
       } = data;
       meRefetch();
+      setProfileLoading(false);
       return resetEditProfile();
     },
   });
+  console.log(meData?.me.profileImg);
   const onOverlayClick = () => {
     setBucketClicked(false);
     setProfileClicked(false);
@@ -644,6 +647,7 @@ const Briz: NextPage = () => {
     if (meData?.me.username !== brizUserName) {
       return null;
     }
+    setProfileLoading(true);
     setEditProfileClicked(false);
     let profileImg: string | null = null;
     if (data.editProfile.profileImg) {
@@ -927,62 +931,78 @@ const Briz: NextPage = () => {
                 </motion.span>
               </motion.div>
             </>
-          ) : (
-            <motion.div
-              layout
-              layoutId="profile"
-              className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
-              style={{
-                height: `clamp(1px,10vw,8rem)`,
-                top: `clamp(1px,3.2vw,2.56rem)`,
-                left: `clamp(1px,2vw,1.6rem)`,
-              }}
-              whileHover={"hoverBox"}
-              whileTap={{ scale: 1.08 }}
-              variants={{
-                hoverBox: {
-                  scale: 1.05,
-                },
-              }}
-              onMouseDown={() => {
-                longPressTimeOut.current = window.setTimeout(() => {
-                  if (meData?.me.username !== brizUserName) {
-                    return null;
-                  } else {
-                    setValueEditProfile("editProfile", {
-                      username: meData?.me.username,
-                      email: meData?.me.email,
-                      biography: meData?.me.biography,
-                      name: meData?.me.name,
-                    });
-                    setEditProfileClicked(true);
-                  }
-                }, 400);
-              }}
-              onMouseUp={() => {
-                clearTimeout(longPressTimeOut.current);
-              }}
-              onClick={() => {
-                setProfileClicked(true);
-              }}
-            >
-              {meData?.me.profileImg ? (
-                <Image
-                  priority
-                  src={`${meData?.me.profileImg}`}
-                  alt={`${meData?.me.biography}`}
-                  fill
+          ) : null}
+          {!profileClicked ? (
+            <>
+              {!profileLoading ? (
+                <motion.div
+                  layout
+                  layoutId="profile"
+                  className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-gray-50 bg-white shadow-lg"
                   style={{
-                    objectFit: "contain",
+                    height: `clamp(1px,10vw,8rem)`,
+                    top: `clamp(1px,3.2vw,2.56rem)`,
+                    left: `clamp(1px,2vw,1.6rem)`,
                   }}
-                  onLoadingComplete={() => {
-                    setGrid({});
-                    setBrizLoading(false);
+                  whileHover={"hoverBox"}
+                  whileTap={{ scale: 1.08 }}
+                  variants={{
+                    hoverBox: {
+                      scale: 1.05,
+                    },
                   }}
-                ></Image>
-              ) : null}
-            </motion.div>
-          )}
+                  onMouseDown={() => {
+                    longPressTimeOut.current = window.setTimeout(() => {
+                      if (meData?.me.username !== brizUserName) {
+                        return null;
+                      } else {
+                        setValueEditProfile("editProfile", {
+                          username: meData?.me.username,
+                          email: meData?.me.email,
+                          biography: meData?.me.biography,
+                          name: meData?.me.name,
+                        });
+                        setEditProfileClicked(true);
+                      }
+                    }, 400);
+                  }}
+                  onMouseUp={() => {
+                    clearTimeout(longPressTimeOut.current);
+                  }}
+                  onClick={() => {
+                    setProfileClicked(true);
+                  }}
+                >
+                  {meData?.me.profileImg ? (
+                    <Image
+                      priority
+                      src={`${meData?.me.profileImg}`}
+                      alt={`${meData?.me.biography}`}
+                      fill
+                      placeholder="blur"
+                      blurDataURL={meData.me.profileImg}
+                      style={{
+                        objectFit: "contain",
+                      }}
+                    ></Image>
+                  ) : null}
+                </motion.div>
+              ) : (
+                <motion.div
+                  layout
+                  layoutId="profile"
+                  className="absolute z-[101] aspect-square overflow-hidden rounded-3xl border-4 border-red-300 bg-white shadow-lg"
+                  style={{
+                    height: `clamp(1px,10vw,8rem)`,
+                    top: `clamp(1px,3.2vw,2.56rem)`,
+                    left: `clamp(1px,2vw,1.6rem)`,
+                  }}
+                >
+                  <ThreeDotsWave />
+                </motion.div>
+              )}
+            </>
+          ) : null}
           {editProfileClicked ? (
             <>
               <motion.div
