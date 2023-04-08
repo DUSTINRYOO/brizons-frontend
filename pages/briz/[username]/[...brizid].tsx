@@ -696,7 +696,7 @@ const Briz: NextPage = () => {
           <>
             <motion.div
               layout
-              className="relative mx-auto mb-6 flex w-11/12 max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white shadow-md"
+              className="relative mx-auto mb-6 flex w-[92vw] max-w-7xl flex-row items-center justify-center rounded-3xl border-[0.2vw] border-gray-50 bg-white shadow-md"
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1415,7 +1415,7 @@ const Briz: NextPage = () => {
           )}
           <AnimatePresence>
             {gridOnOff && !brizLoading ? (
-              <div className="absolute left-1/2 z-[198] grid -translate-x-1/2 grid-cols-[repeat(24,3.8vw)] ">
+              <div className="absolute left-1/2 z-[198] grid -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
                     draggable
@@ -1539,8 +1539,10 @@ const Briz: NextPage = () => {
             ) : null}
           </AnimatePresence>
           <motion.div
-            className="absolute left-1/2 grid  -translate-x-1/2 grid-cols-[repeat(24,3.8vw)] pb-10"
-            style={{ gridTemplateRows: `repeat(${gridRowNumber},3.8vw)` }}
+            className="absolute left-1/2 grid  -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] pb-10"
+            style={{
+              gridTemplateRows: `repeat(${gridRowNumber},clamp(0px,3.8vw,3.34rem))`,
+            }}
           >
             <>
               <AnimatePresence>
