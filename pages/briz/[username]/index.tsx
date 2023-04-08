@@ -1706,7 +1706,7 @@ const Briz: NextPage = () => {
           ) : null}
           <AnimatePresence>
             {gridOnOff && !brizLoading ? (
-              <div className="absolute left-1/2 z-[198] grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)] ">
+              <div className="absolute left-1/2 z-[198] grid  -translate-x-1/2 grid-cols-[repeat(24,3.8vw)] ">
                 {baseGrid.map((id, i) => (
                   <motion.div
                     draggable
@@ -1831,16 +1831,10 @@ const Briz: NextPage = () => {
           </AnimatePresence>
 
           <motion.div
-            className="absolute left-1/2 grid w-11/12 -translate-x-1/2 grid-cols-[repeat(24,_1fr)]"
-            style={{ gridTemplateRows: `repeat(${gridRowNumber},1fr)` }}
+            className="absolute left-1/2 grid -translate-x-1/2 grid-cols-[repeat(24,3.8vw)] pb-10"
+            style={{ gridTemplateRows: `repeat(${gridRowNumber},3.8vw)` }}
           >
             <>
-              {baseGrid.map((id, i) => (
-                <motion.div
-                  key={i}
-                  className="z-[-10000] aspect-square w-full"
-                ></motion.div>
-              ))}
               <AnimatePresence>
                 <motion.div
                   layout
@@ -1884,7 +1878,7 @@ const Briz: NextPage = () => {
                       duration: 0.4,
                     }}
                     className={cls(
-                      `relative m-1 flex items-center justify-center object-scale-down`,
+                      `relative m-[0.6vw] flex items-center justify-center object-scale-down`,
                       briz.id === brizMouseOn && brizClicked ? "hidden" : ""
                     )}
                     style={{
