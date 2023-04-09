@@ -12,6 +12,7 @@ import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import { useEffect } from "react";
 import { LoginInput, LoginOutput } from "@/src/gql/graphql";
+import { motion } from "framer-motion";
 
 const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
@@ -135,9 +136,7 @@ const Login: NextPage = () => {
                 required
                 register={register("username")}
               />
-              {/*        {errors.username && (
-                <span>Don't forget to add your username.</span>
-              )} */}
+
               <Input
                 label="Password"
                 name="password"
@@ -145,9 +144,7 @@ const Login: NextPage = () => {
                 required
                 register={register("password")}
               />
-              {/*     {errors.password && (
-                <span>Don't forget to add your username.</span>
-              )} */}
+
               <Link legacyBehavior href="/forgot">
                 <a className="w-fit border-b-2 border-gray-500 text-sm font-bold text-gray-700">
                   <span>Forgot your password?</span>
@@ -156,10 +153,20 @@ const Login: NextPage = () => {
               <Button text={"Log in"} />
             </form>
             <Link legacyBehavior href="/signup">
-              <a className="text-md mx-auto mt-4 flex  w-fit items-center justify-center border-b-2 border-gray-500 font-bold text-gray-700">
+              <a className="text-md mx-auto mt-4 mb-2  flex w-fit items-center justify-center border-b-2 border-gray-500 font-bold text-gray-700">
                 <span>Create Account</span>
               </a>
             </Link>
+            <motion.span
+              className="absolute left-0 right-0 mx-auto w-[22rem]  text-center font-semibold text-red-500"
+              layout
+            >
+              <span className="block">
+                {!loginMutationResult?.login.ok
+                  ? loginMutationResult?.login.error
+                  : null}
+              </span>
+            </motion.span>
             {/*  <div className="mt-8">
               <div className="relative">
                 <div className="absolute w-full border-t border-gray-300" />

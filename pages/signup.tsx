@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
 import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {
@@ -168,7 +168,7 @@ const Signup: NextPage = () => {
               </a>
             </Link>
             <motion.span
-              className="absolute left-0 right-0 mx-auto w-[22rem] rounded-xl text-center font-semibold text-gray-700"
+              className="absolute left-0 right-0 mx-auto w-[22rem]  text-center font-semibold text-red-500"
               layout
             >
               <span className="block">
