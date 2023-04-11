@@ -867,7 +867,7 @@ const Briz: NextPage = () => {
                   animate={{ opacity: 0.5 }}
                 ></motion.div>
                 <motion.div
-                  className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
+                  className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] max-h-max w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
                   layout
                   layoutId="profile"
                   onClick={() => {
@@ -877,7 +877,7 @@ const Briz: NextPage = () => {
                   <motion.span
                     layout={true}
                     className={cls(
-                      " absolute left-0 right-0 top-2 z-[202] mx-auto  max-w-max rounded-2xl  border-4 border-gray-50 bg-white  px-6 text-center font-extrabold shadow-2xl",
+                      " absolute left-0 right-0  z-[202] mx-auto  max-w-max rounded-2xl  bg-white px-6 text-center font-extrabold shadow-2xl",
                       !getOthersProfileData?.getOthersProfile.user?.name
                         ? "cursor-pointer text-gray-300"
                         : ""
@@ -899,58 +899,76 @@ const Briz: NextPage = () => {
                       }
                     }}
                     style={{
+                      top: `clamp(1px,
+                        11vw,8.8rem)`,
                       fontSize: `clamp(1px,
-                      3vw,2.4rem)`,
+                      2vw,1.6rem)`,
                     }}
                   >
                     {getOthersProfileData?.getOthersProfile.user?.name
                       ? getOthersProfileData?.getOthersProfile.user?.name
                       : "Add your name"}
                   </motion.span>
-                  {getOthersProfileData?.getOthersProfile.user?.profileImg ? (
-                    <Image
-                      priority
-                      src={`${getOthersProfileData?.getOthersProfile.user?.profileImg}`}
-                      alt={`${getOthersProfileData?.getOthersProfile.user?.username}'s Briz`}
-                      fill
-                      style={{
-                        opacity: 0.8,
-                        objectFit: "cover",
-                      }}
-                      onLoadingComplete={() => {
-                        setGrid({});
-                        setBrizLoading(false);
-                      }}
-                    ></Image>
-                  ) : (
-                    <motion.span
-                      className={cls(
-                        "left-0 right-0 z-[202] mx-auto block max-w-max  cursor-pointer rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold text-gray-300"
-                      )}
-                      onClick={() => {
-                        if (meData?.me.username !== brizUserName) {
-                          return null;
-                        } else {
-                          setValueEditProfile("editProfile", {
-                            username: meData?.me.username,
-                            email: meData?.me.email,
-                            biography: meData?.me.biography,
-                            name: meData?.me.name,
-                          });
-                          setEditProfileClicked(true);
-                        }
-                      }}
-                      style={{
-                        fontSize: `clamp(1px,
-                1.8vw,1.44rem)`,
-                      }}
-                    >
-                      Add your profile picture
-                    </motion.span>
-                  )}
+                  <motion.div
+                    className="absolute left-0 right-0 top-2 z-[202] mx-auto flex flex-col items-center justify-center overflow-hidden rounded-full  border-4 border-gray-50 bg-white"
+                    style={{
+                      width: `clamp(1px,
+                        10vw,8rem)`,
+                      height: `clamp(1px,
+                          10vw,8rem)`,
+                    }}
+                  >
+                    {getOthersProfileData?.getOthersProfile.user?.profileImg ? (
+                      <Image
+                        priority
+                        src={`${getOthersProfileData?.getOthersProfile.user?.profileImg}`}
+                        alt={`${getOthersProfileData?.getOthersProfile.user?.username}'s Briz`}
+                        fill
+                        style={{
+                          objectFit: "cover",
+                        }}
+                        onLoadingComplete={() => {
+                          setGrid({});
+                          setBrizLoading(false);
+                        }}
+                      ></Image>
+                    ) : (
+                      <motion.span
+                        className={cls(
+                          "mx-auto block max-w-max  cursor-pointer text-center font-semibold text-gray-300 shadow-2xl"
+                        )}
+                        onClick={() => {
+                          if (meData?.me.username !== brizUserName) {
+                            return null;
+                          } else {
+                            setValueEditProfile("editProfile", {
+                              username: meData?.me.username,
+                              email: meData?.me.email,
+                              biography: meData?.me.biography,
+                              name: meData?.me.name,
+                            });
+                            setEditProfileClicked(true);
+                          }
+                        }}
+                      >
+                        <svg
+                          className="block"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="10vw"
+                          height="10vw"
+                          viewBox="-275 -250 1000 1000"
+                        >
+                          <path
+                            d="M384 64c0-35.3-28.7-64-64-64H64C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64l0-384zM128 192a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM80 356.6c0-37.9 30.7-68.6 68.6-68.6h86.9c37.9 0 68.6 30.7 68.6 68.6c0 15.1-12.3 27.4-27.4 27.4H107.4C92.3 384 80 371.7 80 356.6z"
+                            fill="rgb(229 231 235)"
+                          />
+                        </svg>
+                      </motion.span>
+                    )}
+                  </motion.div>
                   <motion.span
                     className={cls(
-                      "left-0 right-0 z-[202] mx-auto block max-w-max  rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold",
+                      "absolute left-0 right-0 z-[202] mx-auto block h-full w-full rounded-xl bg-white px-4 py-2 text-left font-medium",
                       !getOthersProfileData?.getOthersProfile.user?.biography
                         ? "cursor-pointer text-gray-300"
                         : ""
@@ -972,13 +990,15 @@ const Briz: NextPage = () => {
                       }
                     }}
                     style={{
+                      top: `clamp(1px,
+                        15vw,12rem)`,
                       fontSize: `clamp(1px,
-                  1.8vw,1.44rem)`,
+                  1.6vw,1.28rem)`,
                     }}
                   >
                     {getOthersProfileData?.getOthersProfile.user?.biography
                       ? getOthersProfileData?.getOthersProfile.user?.biography
-                      : "Add your bio"}
+                      : "Add your biography"}
                   </motion.span>
                 </motion.div>
               </>
@@ -1034,7 +1054,20 @@ const Briz: NextPage = () => {
                           objectFit: "contain",
                         }}
                       ></Image>
-                    ) : null}
+                    ) : (
+                      <svg
+                        className="block"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="10vw"
+                        height="10vw"
+                        viewBox="-275 -230 1000 1000"
+                      >
+                        <path
+                          d="M384 64c0-35.3-28.7-64-64-64H64C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64l0-384zM128 192a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM80 356.6c0-37.9 30.7-68.6 68.6-68.6h86.9c37.9 0 68.6 30.7 68.6 68.6c0 15.1-12.3 27.4-27.4 27.4H107.4C92.3 384 80 371.7 80 356.6z"
+                          fill="rgb(229 231 235)"
+                        />
+                      </svg>
+                    )}
                   </motion.div>
                 ) : (
                   <motion.div
