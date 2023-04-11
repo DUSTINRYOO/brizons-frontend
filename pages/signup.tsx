@@ -12,8 +12,9 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
-import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
+
 import { motion } from "framer-motion";
+import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
 
 const CREATE_ACCOUNT_MUTATION = gql`
   mutation createAccountMutation($createAccountInput: CreateAccountInput!) {

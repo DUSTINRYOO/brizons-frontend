@@ -13,7 +13,6 @@ import { capitalizeFirstLetter, cls } from "@/libs/utils";
 import Image from "next/image";
 import ThreeDotsWave from "@/components/loading";
 import Link from "next/link";
-
 import {
   CreateBrizOutput,
   DeleteBrizOutput,
@@ -161,6 +160,8 @@ const EDIT_PROFILE_MUTATION = gql`
     editProfile(editProfileInput: $editProfileInput) {
       ok
       error
+      username
+      profileImg
     }
   }
 `;
@@ -528,19 +529,19 @@ const Briz: NextPage = () => {
   ] = useMutation<editProfileMutation>(EDIT_PROFILE_MUTATION, {
     onCompleted(data: editProfileMutation) {
       const {
-        editProfile: { ok, error },
+        editProfile: { ok, error, username, profileImg },
       } = data;
-      console.log(editProfileMutationResult?.editProfile.ok);
-      if (!editProfileMutationResult?.editProfile.ok) {
+      if (!ok) {
         return setProfileLoading(false);
-      } else {
-        setEditProfileClicked(false);
-        meRefetch();
-        console.log("Clicked");
-        router.replace(`/briz/${meData?.me.username}`);
-        setProfileLoading(false);
-        return resetEditProfile();
       }
+      meRefetch();
+      getOthersProfileRefetch();
+      setEditProfileClicked(false);
+      if (brizUserName !== username) {
+        router.replace(`/briz/${username}`);
+      }
+      setProfileLoading(false);
+      return resetEditProfile();
     },
   });
   const onOverlayClick = () => {
@@ -1029,11 +1030,6 @@ const Briz: NextPage = () => {
                         src={`${getOthersProfileData?.getOthersProfile.user?.profileImg}`}
                         alt={`${getOthersProfileData?.getOthersProfile.user?.biography}`}
                         fill
-                        placeholder="blur"
-                        blurDataURL={
-                          getOthersProfileData?.getOthersProfile.user
-                            ?.profileImg
-                        }
                         style={{
                           objectFit: "contain",
                         }}
@@ -1127,13 +1123,13 @@ const Briz: NextPage = () => {
                         className="absolute left-0 right-0 bottom-1 mx-auto w-[22rem]  text-center font-semibold text-red-500"
                         layout
                       >
-                        <span className="block">
+                        <span className="absolute left-0 right-0 z-10 mx-auto block w-full bg-white transition-all">
                           {errorsEditProfile.editProfile?.email?.type ===
                           "pattern"
                             ? "Please enter a valid email."
                             : null}
                         </span>
-                        <span className="block">
+                        <span className="relative block">
                           {!editProfileMutationResult?.editProfile.ok
                             ? editProfileMutationResult?.editProfile.error
                             : null}

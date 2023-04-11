@@ -113,6 +113,8 @@ export type EditProfileOutput = {
   __typename?: 'EditProfileOutput';
   error?: Maybe<Scalars['String']>;
   ok: Scalars['Boolean'];
+  profileImg?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
 };
 
 export type Example = {
