@@ -1539,7 +1539,7 @@ const Briz: NextPage = () => {
             ) : null}
           </AnimatePresence>
           <motion.div
-            className="absolute left-1/2 grid  -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] pb-10"
+            className="absolute left-1/2 grid  -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] pb-[13rem]"
             style={{
               gridTemplateRows: `repeat(${gridRowNumber},clamp(0px,3.8vw,3.34rem))`,
             }}

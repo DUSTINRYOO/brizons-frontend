@@ -530,9 +530,17 @@ const Briz: NextPage = () => {
       const {
         editProfile: { ok, error },
       } = data;
-      meRefetch();
-      setProfileLoading(false);
-      return resetEditProfile();
+      console.log(editProfileMutationResult?.editProfile.ok);
+      if (!editProfileMutationResult?.editProfile.ok) {
+        return setProfileLoading(false);
+      } else {
+        setEditProfileClicked(false);
+        meRefetch();
+        console.log("Clicked");
+        router.replace(`/briz/${meData?.me.username}`);
+        setProfileLoading(false);
+        return resetEditProfile();
+      }
     },
   });
   const onOverlayClick = () => {
@@ -685,7 +693,6 @@ const Briz: NextPage = () => {
       return null;
     }
     setProfileLoading(true);
-    setEditProfileClicked(false);
     let profileImg: string | null = null;
     if (data.editProfile.profileImg) {
       if (data.editProfile.profileImg.length !== 0) {
@@ -700,9 +707,6 @@ const Briz: NextPage = () => {
         ).json();
         profileImg = fetchProfileImg;
       }
-    }
-    if (data.editProfile.username !== brizUserName) {
-      router.replace(`/briz/${data.editProfile.username}`);
     }
     if (!meLoading) {
       editProfileMutation({
@@ -1113,9 +1117,28 @@ const Briz: NextPage = () => {
                         type="email"
                         placeholder="Email"
                         required
-                        register={registerEditProfile("editProfile.email")}
+                        register={registerEditProfile("editProfile.email", {
+                          pattern:
+                            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                        })}
                       />
                       <Button text={"Edit profile"} />
+                      <motion.span
+                        className="absolute left-0 right-0 bottom-1 mx-auto w-[22rem]  text-center font-semibold text-red-500"
+                        layout
+                      >
+                        <span className="block">
+                          {errorsEditProfile.editProfile?.email?.type ===
+                          "pattern"
+                            ? "Please enter a valid email."
+                            : null}
+                        </span>
+                        <span className="block">
+                          {!editProfileMutationResult?.editProfile.ok
+                            ? editProfileMutationResult?.editProfile.error
+                            : null}
+                        </span>
+                      </motion.span>
                     </form>
                   </div>
                 </motion.div>
@@ -1831,7 +1854,7 @@ const Briz: NextPage = () => {
           </AnimatePresence>
 
           <motion.div
-            className="absolute left-1/2 grid -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] pb-10"
+            className="absolute left-1/2 grid -translate-x-1/2 grid-cols-[repeat(24,clamp(0px,3.8vw,3.34rem))] pb-[13rem]"
             style={{
               gridTemplateRows: `repeat(${gridRowNumber},clamp(0px,3.8vw,3.34rem))`,
             }}
