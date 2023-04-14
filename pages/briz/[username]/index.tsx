@@ -525,6 +525,7 @@ const Briz: NextPage = () => {
       data: editProfileMutationResult,
       loading: editProfileMutationLoading,
       error: editProfileMutationError,
+      reset: editProfileMutationReset,
     },
   ] = useMutation<editProfileMutation>(EDIT_PROFILE_MUTATION, {
     onCompleted(data: editProfileMutation) {
@@ -554,6 +555,7 @@ const Briz: NextPage = () => {
     setBrizClicked(false);
     setEditClicked(undefined);
     setOpenAiOnOff(false);
+    editProfileMutationReset();
     setOpenAI("Hello! What do you want to know?");
   };
 
@@ -709,11 +711,12 @@ const Briz: NextPage = () => {
         profileImg = fetchProfileImg;
       }
     }
+
     if (!meLoading) {
       editProfileMutation({
         variables: {
           editProfileInput: {
-            username: data.editProfile.username,
+            username: data.editProfile.username?.toLowerCase(),
             name: data.editProfile.name,
             email: data.editProfile.email,
             biography: data.editProfile.biography,
@@ -1138,7 +1141,11 @@ const Briz: NextPage = () => {
                         type="text"
                         placeholder="Username"
                         required
-                        register={registerEditProfile("editProfile.username")}
+                        register={registerEditProfile("editProfile.username", {
+                          onChange: () => {
+                            editProfileMutationReset();
+                          },
+                        })}
                       />
                       <Input
                         label="Email"
@@ -1153,20 +1160,22 @@ const Briz: NextPage = () => {
                       />
                       <Button text={"Edit profile"} />
                       <motion.span
-                        className="absolute left-0 right-0 bottom-1 mx-auto w-[22rem]  text-center font-semibold text-red-500"
+                        className="absolute left-0 right-0 bottom-0 mx-auto w-[22rem]  text-center font-semibold text-red-500"
                         layout
                       >
-                        <span className="absolute left-0 right-0 z-10 mx-auto block w-full bg-white transition-all">
+                        <motion.span layout className="block">
                           {errorsEditProfile.editProfile?.email?.type ===
                           "pattern"
                             ? "Please enter a valid email."
                             : null}
-                        </span>
-                        <span className="relative block">
-                          {!editProfileMutationResult?.editProfile.ok
+                        </motion.span>
+                        <motion.span layout className="block">
+                          {!editProfileMutationResult?.editProfile.ok &&
+                          errorsEditProfile.editProfile?.email?.type !==
+                            "pattern"
                             ? editProfileMutationResult?.editProfile.error
                             : null}
-                        </span>
+                        </motion.span>
                       </motion.span>
                     </form>
                   </div>
