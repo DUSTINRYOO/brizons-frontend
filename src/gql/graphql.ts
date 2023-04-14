@@ -185,6 +185,17 @@ export type GetPinnedBrizOutput = {
   ok: Scalars['Boolean'];
 };
 
+export type GetRecentBrizInput = {
+  scrollPage: Scalars['Float'];
+};
+
+export type GetRecentBrizOutput = {
+  __typename?: 'GetRecentBrizOutput';
+  error?: Maybe<Scalars['String']>;
+  getRecentBriz: Array<Briz>;
+  ok: Scalars['Boolean'];
+};
+
 export type Grid = {
   __typename?: 'Grid';
   colEnd: Scalars['Float'];
@@ -281,6 +292,7 @@ export type Query = {
   getOthersProfile: GetOthersProfileOutput;
   getParentBriz: GetParentBrizOutput;
   getPinnedBriz: GetPinnedBrizOutput;
+  getRecentBriz: GetRecentBrizOutput;
   me: User;
   userProfile: UserProfileOutput;
 };
@@ -308,6 +320,11 @@ export type QueryGetParentBrizArgs = {
 
 export type QueryGetPinnedBrizArgs = {
   getPinnedBrizInput: GetPinnedBrizInput;
+};
+
+
+export type QueryGetRecentBrizArgs = {
+  getRecentBrizInput: GetRecentBrizInput;
 };
 
 
