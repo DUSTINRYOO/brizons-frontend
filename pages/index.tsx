@@ -15,6 +15,7 @@ import { capitalizeFirstLetter, cls } from "@/libs/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput } from "@/src/gql/graphql";
+import { useRouter } from "next/router";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -64,6 +65,7 @@ interface getRecentBrizQuery {
 }
 
 const Home: NextPage = () => {
+  const router = useRouter();
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
   const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -183,13 +185,16 @@ const Home: NextPage = () => {
               Search
             </motion.span>
           </motion.div>
-          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-8 ">
+          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-4 ">
             {getRecentBrizData?.getRecentBriz.getRecentBriz.map((briz) => (
               <motion.div
                 key={briz.id}
                 className={cls("relative block")}
                 onHoverStart={() => setMouseOnBriz(briz.id)}
                 onHoverEnd={() => setMouseOnBriz(undefined)}
+                style={{
+                  paddingBottom: "clamp(1px,3vw,2.4rem)",
+                }}
               >
                 <Image
                   priority
@@ -204,11 +209,13 @@ const Home: NextPage = () => {
                   }}
                 ></Image>
                 <motion.span
-                  className="absolute
-                     w-full truncate break-words px-2 font-bold "
+                  className={cls(
+                    "absolute                  w-full truncate break-words px-2 font-bold transition-all",
+                    mouseOnBriz === briz.id ? "z-10 text-center text-white" : ""
+                  )}
                   style={{
-                    bottom: `clamp(-1.6em,
-                        -2vw,-1px)`,
+                    bottom: `clamp(1px,
+                      0.8vw,0.64rem)`,
                     fontSize: `clamp(1px,
                      1.2vw,0.96rem)`,
                   }}
@@ -218,7 +225,10 @@ const Home: NextPage = () => {
                 {mouseOnBriz === briz.id ? (
                   <>
                     <motion.div
-                      className="absolute top-0 h-full w-full bg-black opacity-50"
+                      className="absolute top-0 h-full w-full bg-black opacity-40"
+                      onClick={() => {
+                        router.push(`/briz/${briz.owner.username}/${briz.id}`);
+                      }}
                       style={{
                         borderRadius: "clamp(1px,2vw,1.6rem)",
                       }}
