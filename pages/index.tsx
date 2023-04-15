@@ -12,7 +12,7 @@ import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { capitalizeFirstLetter, cls } from "@/libs/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput } from "@/src/gql/graphql";
 
@@ -64,6 +64,7 @@ interface getRecentBrizQuery {
 }
 
 const Home: NextPage = () => {
+  const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
   const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
@@ -182,21 +183,13 @@ const Home: NextPage = () => {
               Search
             </motion.span>
           </motion.div>
-          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-10 ">
+          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-8 ">
             {getRecentBrizData?.getRecentBriz.getRecentBriz.map((briz) => (
               <motion.div
                 key={briz.id}
-                whileHover="hoverBox"
-                variants={{
-                  initial: { opacity: 0 },
-                  normal: { opacity: 1 },
-                  exit: { opacity: 0 },
-                  hoverBox: { scale: 1.03 },
-                }}
-                transition={{
-                  duration: 0.4,
-                }}
-                className="block"
+                className={cls("relative block")}
+                onHoverStart={() => setMouseOnBriz(briz.id)}
+                onHoverEnd={() => setMouseOnBriz(undefined)}
               >
                 <Image
                   priority
@@ -211,14 +204,38 @@ const Home: NextPage = () => {
                   }}
                 ></Image>
                 <motion.span
-                  className="absolute w-1/4 truncate break-words px-4 pt-1 font-bold"
+                  className="absolute
+                     w-full truncate break-words px-2 font-bold "
                   style={{
+                    bottom: `clamp(-1.6em,
+                        -2vw,-1px)`,
                     fontSize: `clamp(1px,
-                    1vw,0.8rem)`,
+                     1.2vw,0.96rem)`,
                   }}
                 >
                   {briz.title}
                 </motion.span>
+                {mouseOnBriz === briz.id ? (
+                  <>
+                    <motion.div
+                      className="absolute top-0 h-full w-full bg-black opacity-50"
+                      style={{
+                        borderRadius: "clamp(1px,2vw,1.6rem)",
+                      }}
+                    ></motion.div>
+                    <motion.span
+                      className="absolute px-3 font-bold text-white"
+                      style={{
+                        top: `clamp(1px,
+                      1.2vw,0.96rem)`,
+                        fontSize: `clamp(1px,
+                     1.2vw,0.96rem)`,
+                      }}
+                    >
+                      {briz.description}
+                    </motion.span>
+                  </>
+                ) : null}
               </motion.div>
             ))}
           </motion.div>
