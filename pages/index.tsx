@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput } from "@/src/gql/graphql";
 import { useRouter } from "next/router";
+import Input from "@/components/input";
+import { useForm } from "react-hook-form";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -64,6 +66,10 @@ interface getRecentBrizQuery {
   getRecentBriz: GetRecentBrizOutput;
 }
 
+interface SearchForm {
+  search?: string;
+}
+
 const Home: NextPage = () => {
   const router = useRouter();
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
@@ -77,6 +83,17 @@ const Home: NextPage = () => {
     refetch: getRecentBrizRefetch,
   } = useQuery<getRecentBrizQuery>(RECENT_BRIZ_QUERY, {
     variables: { getRecentBrizInput: { scrollPage: 1 } },
+  });
+
+  const {
+    register: registerSearch,
+    handleSubmit: handleSubmitSearch,
+    resetField: resetFieldSearch,
+    formState: { errors: errorsSearch },
+    setValue: setValueSearch,
+    reset: resetSearch,
+  } = useForm<SearchForm>({
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -160,30 +177,44 @@ const Home: NextPage = () => {
     <Layout title="Home" hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
         <motion.div className="relative mx-auto mt-0 h-auto w-[92vw] max-w-7xl ">
-          <motion.div className="left-0 right-0 mx-auto mb-4 flex h-14 w-1/2 flex-row items-center justify-start rounded-full border-2 border-red-300 px-2">
+          <motion.div
+            className="left-0 right-0 mx-auto mb-4 flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-red-300"
+            style={{
+              height: `clamp(1px,
+                  4vw,3.2rem)`,
+            }}
+          >
             <svg
-              className="block"
+              className="absolute block"
               xmlns="http://www.w3.org/2000/svg"
               width="clamp(1px,
                 3vw,2.4rem)"
               height="clamp(1px,
                 3vw,2.4rem)"
-              viewBox="-180 -130 800 800"
+              viewBox="-220 -160 800 800"
             >
               <path
                 d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
                 fill="rgb(252 165 165)"
               />
             </svg>
-            <motion.span
-              className="font-semibold text-gray-800"
+            <input
+              id="search"
+              required
+              type="text"
+              placeholder="Search"
+              className=" h-full w-full rounded-full font-semibold text-black placeholder:font-semibold 
+                placeholder:text-gray-300
+               focus:outline-none"
               style={{
                 fontSize: `clamp(1px,
-                    1.4vw,1.12rem)`,
+                  2vw,1.6rem)`,
+                paddingLeft: `clamp(1px,
+                3vw,2.4rem)`,
+                paddingRight: `clamp(1px,
+                  2vw,1.6rem)`,
               }}
-            >
-              Search
-            </motion.span>
+            />
           </motion.div>
           <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-4 ">
             {getRecentBrizData?.getRecentBriz.getRecentBriz.map((briz) => (
