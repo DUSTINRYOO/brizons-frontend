@@ -70,8 +70,26 @@ interface SearchForm {
   search?: string;
 }
 
+const rowVariants = {
+  hidden: (direction: boolean) => ({
+    x: direction ? window.outerWidth + 500 : -window.outerWidth - 500,
+  }),
+  visible: {
+    x: 0,
+  },
+  exit: (direction: boolean) => ({
+    x: direction ? -window.outerWidth - 500 : window.outerWidth + 500,
+  }),
+};
+
+const offset = 6;
+
 const Home: NextPage = () => {
   const router = useRouter();
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [slider, setSlider] = useState("");
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
   const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -95,6 +113,27 @@ const Home: NextPage = () => {
   } = useForm<SearchForm>({
     mode: "onChange",
   });
+  const toggleLeaving = () => setLeaving((prev) => !prev);
+  const increaseIndex = async () => {
+    if (data) {
+      if (leaving) return;
+      await setDirection(true);
+      toggleLeaving();
+      const totalMovies = data.results.length - 1;
+      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
+    }
+  };
+  const decreaseIndex = async () => {
+    if (data) {
+      if (leaving) return;
+      await setDirection(false);
+      toggleLeaving();
+      const totalMovies = data.results.length - 1;
+      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
+    }
+  };
 
   useEffect(() => {
     refetch();
@@ -208,7 +247,7 @@ const Home: NextPage = () => {
                focus:outline-none"
               style={{
                 fontSize: `clamp(1px,
-                  2vw,1.6rem)`,
+                  1.6vw,1.28rem)`,
                 paddingLeft: `clamp(1px,
                 3vw,2.4rem)`,
                 paddingRight: `clamp(1px,
@@ -216,6 +255,142 @@ const Home: NextPage = () => {
               }}
             />
           </motion.div>
+          <motion.div className="relative h-auto w-full bg-red-400">
+            <AnimatePresence
+              initial={false}
+              onExitComplete={toggleLeaving}
+              custom={direction}
+            >
+              <motion.div onClick={decreaseIndex}>
+                <svg
+                  className="absolute block"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="clamp(1px,
+                3vw,2.4rem)"
+                  height="clamp(1px,
+                3vw,2.4rem)"
+                  viewBox="-220 -160 800 800"
+                >
+                  <path d="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z" />
+                </svg>
+              </motion.div>
+              <motion.div onClick={increaseIndex}>
+                <svg
+                  className="absolute block"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="clamp(1px,
+                3vw,2.4rem)"
+                  height="clamp(1px,
+                3vw,2.4rem)"
+                  viewBox="-220 -160 800 800"
+                >
+                  <path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z" />
+                </svg>
+              </motion.div>
+              <motion.div
+                className="grid grid-cols-6"
+                custom={direction}
+                variants={rowVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ type: "tween", duration: 1 }}
+                key={index}
+              >
+                {getRecentBrizData?.getRecentBriz.getRecentBriz
+                  .slice(offset * index, offset * index + offset)
+                  .map((briz) =>
+                    briz.owner.profileImg ? (
+                      <motion.div
+                        key={briz.id}
+                        className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
+                        style={{
+                          height: `clamp(1px,8vw,6.4rem)`,
+                          margin: `clamp(1px,0.8vw,0.64rem)`,
+                        }}
+                        onHoverStart={() => setMouseOnBriz(briz.id)}
+                        onHoverEnd={() => setMouseOnBriz(undefined)}
+                      >
+                        <Image
+                          priority
+                          src={`${briz.owner.profileImg}`}
+                          alt={`${briz.title}-${briz.description}`}
+                          placeholder="blur"
+                          blurDataURL={briz.coverImg}
+                          width="1000"
+                          height="1000"
+                          style={{
+                            borderRadius: "clamp(1px,2vw,1.6rem)",
+                          }}
+                        ></Image>
+                        <motion.span
+                          className={cls(
+                            "absolute                  w-full truncate break-words px-2 font-bold transition-all",
+                            mouseOnBriz === briz.id
+                              ? "z-10 text-center text-white"
+                              : ""
+                          )}
+                          style={{
+                            bottom: `clamp(1px,
+                  0.8vw,0.64rem)`,
+                            fontSize: `clamp(1px,
+                 1.2vw,0.96rem)`,
+                          }}
+                        >
+                          {briz.title}
+                        </motion.span>
+                        {mouseOnBriz === briz.id ? (
+                          <>
+                            <motion.div
+                              className="absolute top-0 h-full w-full bg-black opacity-40"
+                              onClick={() => {
+                                router.push(
+                                  `/briz/${briz.owner.username}/${briz.id}`
+                                );
+                              }}
+                              style={{
+                                borderRadius: "clamp(1px,2vw,1.6rem)",
+                              }}
+                            ></motion.div>
+                            <motion.span
+                              className="absolute px-3 font-bold text-white"
+                              style={{
+                                top: `clamp(1px,
+                  1.2vw,0.96rem)`,
+                                fontSize: `clamp(1px,
+                 1.2vw,0.96rem)`,
+                              }}
+                            >
+                              {briz.description}
+                            </motion.span>
+                          </>
+                        ) : null}
+                      </motion.div>
+                    ) : null
+                  )}
+                {/*    {data?.results
+                  .slice(1)
+                  .slice(offset * index, offset * index + offset)
+                  .map((movie) => (
+                    <motion.div
+                      layoutId={movie.id + ""}
+                      key={movie.id}
+                      whileHover="hover"
+                      initial="normal"
+                      variants={boxVariants}
+                      onClick={() => onBoxClicked(movie.id, "")}
+                      transition={{ type: "tween" }}
+                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                    >
+                      <motion.div variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </motion.div>
+                    </motion.div>
+                  ))} */}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
           <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-4 ">
             {getRecentBrizData?.getRecentBriz.getRecentBriz.map((briz) => (
               <motion.div
