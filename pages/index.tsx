@@ -14,7 +14,7 @@ import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
 import { capitalizeFirstLetter, cls } from "@/libs/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GetRecentBrizOutput } from "@/src/gql/graphql";
+import { GetRecentBrizOutput, GetUserProfilesOutput } from "@/src/gql/graphql";
 import { useRouter } from "next/router";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
@@ -51,6 +51,21 @@ const RECENT_BRIZ_QUERY = gql`
   }
 `;
 
+const USER_PROFILES_QUERY = gql`
+  query userProfilesQuery($getUserProfilesInput: GetUserProfilesInput!) {
+    getUserProfiles(getUserProfilesInput: $getUserProfilesInput) {
+      ok
+      error
+      getUserProfiles {
+        id
+        username
+        biography
+        profileImg
+      }
+    }
+  }
+`;
+
 type meQueryList = {
   id: string;
   email: string;
@@ -64,6 +79,10 @@ interface meQuery {
 
 interface getRecentBrizQuery {
   getRecentBriz: GetRecentBrizOutput;
+}
+
+interface getUserProfilesQuery {
+  getUserProfiles: GetUserProfilesOutput;
 }
 
 interface SearchForm {
@@ -91,9 +110,20 @@ const Home: NextPage = () => {
   const [leaving, setLeaving] = useState(false);
   const [slider, setSlider] = useState("");
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
+  const [mouseOnUser, setMouseOnUser] = useState<number | undefined>(undefined);
   const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
+
+  const {
+    data: getUserProfilesData,
+    loading: getUserProfilesLoading,
+    error: getUserProfilesError,
+    refetch: getUserProfilesRefetch,
+  } = useQuery<getUserProfilesQuery>(USER_PROFILES_QUERY, {
+    variables: { getUserProfilesInput: { scrollPage: 1 } },
+  });
+
   const {
     data: getRecentBrizData,
     loading: getRecentBrizLoading,
@@ -115,22 +145,24 @@ const Home: NextPage = () => {
   });
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const increaseIndex = async () => {
-    if (data) {
+    if (getRecentBrizData) {
       if (leaving) return;
       await setDirection(true);
       toggleLeaving();
-      const totalMovies = data.results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      const totalUsers =
+        getRecentBrizData.getRecentBriz.getRecentBriz.length - 1;
+      const maxIndex = Math.floor(totalUsers / offset) - 1;
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
   const decreaseIndex = async () => {
-    if (data) {
+    if (getRecentBrizData) {
       if (leaving) return;
       await setDirection(false);
       toggleLeaving();
-      const totalMovies = data.results.length - 1;
-      const maxIndex = Math.floor(totalMovies / offset) - 1;
+      const totalUsers =
+        getRecentBrizData.getRecentBriz.getRecentBriz.length - 1;
+      const maxIndex = Math.floor(totalUsers / offset) - 1;
       setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
     }
   };
@@ -217,10 +249,12 @@ const Home: NextPage = () => {
       <motion.div className="h-auto w-full py-20 ">
         <motion.div className="relative mx-auto mt-0 h-auto w-[92vw] max-w-7xl ">
           <motion.div
-            className="left-0 right-0 mx-auto mb-4 flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-red-300"
+            className="left-0 right-0 mx-auto  flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-red-300"
             style={{
               height: `clamp(1px,
                   4vw,3.2rem)`,
+              marginBottom: `clamp(1px,
+                    2vw,1.6rem)`,
             }}
           >
             <svg
@@ -255,40 +289,20 @@ const Home: NextPage = () => {
               }}
             />
           </motion.div>
-          <motion.div className="relative h-auto w-full bg-red-400">
+          <motion.div
+            className="relative h-auto w-full"
+            style={{
+              marginBottom: `clamp(1px,
+                    2vw,1.6rem)`,
+            }}
+          >
             <AnimatePresence
               initial={false}
               onExitComplete={toggleLeaving}
               custom={direction}
             >
-              <motion.div onClick={decreaseIndex}>
-                <svg
-                  className="absolute block"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="clamp(1px,
-                3vw,2.4rem)"
-                  height="clamp(1px,
-                3vw,2.4rem)"
-                  viewBox="-220 -160 800 800"
-                >
-                  <path d="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z" />
-                </svg>
-              </motion.div>
-              <motion.div onClick={increaseIndex}>
-                <svg
-                  className="absolute block"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="clamp(1px,
-                3vw,2.4rem)"
-                  height="clamp(1px,
-                3vw,2.4rem)"
-                  viewBox="-220 -160 800 800"
-                >
-                  <path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z" />
-                </svg>
-              </motion.div>
               <motion.div
-                className="grid grid-cols-6"
+                className="relative left-0 right-0 mx-auto grid w-3/4 grid-cols-6"
                 custom={direction}
                 variants={rowVariants}
                 initial="hidden"
@@ -297,26 +311,82 @@ const Home: NextPage = () => {
                 transition={{ type: "tween", duration: 1 }}
                 key={index}
               >
-                {getRecentBrizData?.getRecentBriz.getRecentBriz
+                <motion.div
+                  className="absolute flex h-full w-auto flex-col items-center justify-center"
+                  style={{
+                    left: `clamp(-4.8rem,
+                    -6vw,1px)`,
+                  }}
+                >
+                  <motion.svg
+                    id={"1"}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="clamp(1px,
+                4vw,3.2rem)"
+                    height="clamp(1px,
+                4vw,3.2rem)"
+                    onClick={decreaseIndex}
+                    whileHover={{
+                      scale: 1.05,
+                    }}
+                    whileTap={{ scale: 1.1 }}
+                    viewBox="-180 -50 600 600"
+                    className="rounded-xl bg-red-300 focus:outline-none"
+                  >
+                    <path
+                      d="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z"
+                      fill="white"
+                    />
+                  </motion.svg>
+                </motion.div>
+                <motion.div
+                  className="absolute flex h-full w-auto flex-col items-center justify-center"
+                  style={{
+                    right: `clamp(-4.8rem,
+                    -6vw,1px)`,
+                  }}
+                >
+                  <motion.svg
+                    id={"2"}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="clamp(1px,
+                4vw,3.2rem)"
+                    height="clamp(1px,
+                4vw,3.2rem)"
+                    onClick={increaseIndex}
+                    whileHover={{
+                      scale: 1.05,
+                    }}
+                    whileTap={{ scale: 1.1 }}
+                    viewBox="-160 -50 600 600"
+                    className="rounded-xl bg-red-300 focus:outline-none"
+                  >
+                    <path
+                      d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"
+                      fill="white"
+                    />
+                  </motion.svg>
+                </motion.div>
+                {getUserProfilesData?.getUserProfiles.getUserProfiles
                   .slice(offset * index, offset * index + offset)
-                  .map((briz) =>
-                    briz.owner.profileImg ? (
+                  .map((user) =>
+                    user.profileImg ? (
                       <motion.div
-                        key={briz.id}
+                        key={user.id}
                         className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
                         style={{
-                          height: `clamp(1px,8vw,6.4rem)`,
+                          height: `clamp(1px,10vw,8rem)`,
                           margin: `clamp(1px,0.8vw,0.64rem)`,
                         }}
-                        onHoverStart={() => setMouseOnBriz(briz.id)}
-                        onHoverEnd={() => setMouseOnBriz(undefined)}
+                        onHoverStart={() => setMouseOnUser(user.id)}
+                        onHoverEnd={() => setMouseOnUser(undefined)}
                       >
                         <Image
                           priority
-                          src={`${briz.owner.profileImg}`}
-                          alt={`${briz.title}-${briz.description}`}
+                          src={`${user.profileImg}`}
+                          alt={`${user.biography}`}
                           placeholder="blur"
-                          blurDataURL={briz.coverImg}
+                          blurDataURL={user.profileImg}
                           width="1000"
                           height="1000"
                           style={{
@@ -326,7 +396,7 @@ const Home: NextPage = () => {
                         <motion.span
                           className={cls(
                             "absolute                  w-full truncate break-words px-2 font-bold transition-all",
-                            mouseOnBriz === briz.id
+                            mouseOnUser === user.id
                               ? "z-10 text-center text-white"
                               : ""
                           )}
@@ -337,16 +407,14 @@ const Home: NextPage = () => {
                  1.2vw,0.96rem)`,
                           }}
                         >
-                          {briz.title}
+                          {user.username}
                         </motion.span>
-                        {mouseOnBriz === briz.id ? (
+                        {mouseOnUser === user.id ? (
                           <>
                             <motion.div
                               className="absolute top-0 h-full w-full bg-black opacity-40"
                               onClick={() => {
-                                router.push(
-                                  `/briz/${briz.owner.username}/${briz.id}`
-                                );
+                                router.push(`/briz/${user.username}`);
                               }}
                               style={{
                                 borderRadius: "clamp(1px,2vw,1.6rem)",
@@ -361,7 +429,7 @@ const Home: NextPage = () => {
                  1.2vw,0.96rem)`,
                               }}
                             >
-                              {briz.description}
+                              {user.biography}
                             </motion.span>
                           </>
                         ) : null}
