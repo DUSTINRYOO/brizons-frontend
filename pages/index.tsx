@@ -290,7 +290,7 @@ const Home: NextPage = () => {
             />
           </motion.div>
           <motion.div
-            className="relative  w-full "
+            className="relative  w-full overflow-hidden rounded-full "
             style={{
               height: `clamp(1px,11.6vw,9.28rem)`,
               marginBottom: `clamp(1px,
@@ -391,9 +391,9 @@ const Home: NextPage = () => {
                             alt={`${user.biography}`}
                             placeholder="blur"
                             blurDataURL={user.profileImg}
-                            width="1000"
-                            height="1000"
+                            fill
                             style={{
+                              objectFit: "contain",
                               borderRadius: "clamp(1px,2vw,1.6rem)",
                             }}
                           ></Image>
@@ -447,8 +447,7 @@ const Home: NextPage = () => {
               </motion.div>
             </AnimatePresence>
           </motion.div>
-
-          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-4 ">
+          <motion.div className="absolute left-1/2 mx-auto w-full -translate-x-1/2 columns-4 space-y-4  pb-[4rem]">
             {getRecentBrizData?.getRecentBriz.getRecentBriz.map((briz) => (
               <motion.div
                 key={briz.id}
