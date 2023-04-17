@@ -804,6 +804,18 @@ const Briz: NextPage = () => {
 
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
+
+    const test = await fetch("http://localhost:4000/openai", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
+    console.log(test);
+    /* 
     const { openAi } = await (
       await fetch("http://localhost:4000/openai", {
         method: "POST",
@@ -814,8 +826,8 @@ const Briz: NextPage = () => {
           prompt,
         }),
       })
-    ).json();
-    setOpenAI(openAi);
+    ).json(); */
+    /*     setOpenAI(openAi); */
   };
 
   const gridOnOffVar = {

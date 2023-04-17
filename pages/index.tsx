@@ -249,7 +249,7 @@ const Home: NextPage = () => {
       <motion.div className="h-auto w-full py-20 ">
         <motion.div className="relative mx-auto mt-0 h-auto w-[92vw] max-w-7xl ">
           <motion.div
-            className="left-0 right-0 mx-auto  flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-red-300"
+            className="left-0 right-0 mx-auto  flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-gray-300"
             style={{
               height: `clamp(1px,
                   4vw,3.2rem)`,
@@ -264,7 +264,7 @@ const Home: NextPage = () => {
                 3vw,2.4rem)"
               height="clamp(1px,
                 3vw,2.4rem)"
-              viewBox="-220 -160 800 800"
+              viewBox="-230 -140 800 800"
             >
               <path
                 d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
@@ -283,26 +283,83 @@ const Home: NextPage = () => {
                 fontSize: `clamp(1px,
                   1.6vw,1.28rem)`,
                 paddingLeft: `clamp(1px,
-                3vw,2.4rem)`,
+                3.2vw,2.56rem)`,
                 paddingRight: `clamp(1px,
                   2vw,1.6rem)`,
               }}
             />
           </motion.div>
           <motion.div
-            className="relative h-auto w-full"
+            className="relative  w-full "
             style={{
+              height: `clamp(1px,11.6vw,9.28rem)`,
               marginBottom: `clamp(1px,
                     2vw,1.6rem)`,
             }}
           >
+            <motion.div
+              className="absolute z-10 flex h-full w-auto flex-col items-center justify-center"
+              style={{
+                left: `clamp(1px,
+                    3vw,2.4rem)`,
+              }}
+            >
+              <motion.svg
+                id={"1"}
+                xmlns="http://www.w3.org/2000/svg"
+                width="clamp(1px,
+                4vw,3.2rem)"
+                height="clamp(1px,
+                4vw,3.2rem)"
+                onClick={decreaseIndex}
+                whileHover={{
+                  scale: 1.05,
+                }}
+                whileTap={{ scale: 1.1 }}
+                viewBox="-180 -50 600 600"
+                className="rounded-full border-4 border-gray-50   bg-white focus:outline-none"
+              >
+                <path
+                  d="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z"
+                  fill="gray"
+                />
+              </motion.svg>
+            </motion.div>
+            <motion.div
+              className="absolute z-10 flex h-full w-auto flex-col items-center justify-center"
+              style={{
+                right: `clamp(1px,
+                  3vw,2.4rem)`,
+              }}
+            >
+              <motion.svg
+                id={"2"}
+                xmlns="http://www.w3.org/2000/svg"
+                width="clamp(1px,
+                4vw,3.2rem)"
+                height="clamp(1px,
+                4vw,3.2rem)"
+                onClick={increaseIndex}
+                whileHover={{
+                  scale: 1.05,
+                }}
+                whileTap={{ scale: 1.1 }}
+                viewBox="-160 -50 600 600"
+                className="rounded-full border-4 border-gray-50   bg-white focus:outline-none"
+              >
+                <path
+                  d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"
+                  fill="gray"
+                />
+              </motion.svg>
+            </motion.div>
             <AnimatePresence
               initial={false}
               onExitComplete={toggleLeaving}
               custom={direction}
             >
               <motion.div
-                className="relative left-0 right-0 mx-auto grid w-3/4 grid-cols-6"
+                className="absolute left-0 right-0 mx-auto grid  w-4/5 grid-cols-6 "
                 custom={direction}
                 variants={rowVariants}
                 initial="hidden"
@@ -311,104 +368,36 @@ const Home: NextPage = () => {
                 transition={{ type: "tween", duration: 1 }}
                 key={index}
               >
-                <motion.div
-                  className="absolute flex h-full w-auto flex-col items-center justify-center"
-                  style={{
-                    left: `clamp(-4.8rem,
-                    -6vw,1px)`,
-                  }}
-                >
-                  <motion.svg
-                    id={"1"}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="clamp(1px,
-                4vw,3.2rem)"
-                    height="clamp(1px,
-                4vw,3.2rem)"
-                    onClick={decreaseIndex}
-                    whileHover={{
-                      scale: 1.05,
-                    }}
-                    whileTap={{ scale: 1.1 }}
-                    viewBox="-180 -50 600 600"
-                    className="rounded-xl bg-red-300 focus:outline-none"
-                  >
-                    <path
-                      d="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z"
-                      fill="white"
-                    />
-                  </motion.svg>
-                </motion.div>
-                <motion.div
-                  className="absolute flex h-full w-auto flex-col items-center justify-center"
-                  style={{
-                    right: `clamp(-4.8rem,
-                    -6vw,1px)`,
-                  }}
-                >
-                  <motion.svg
-                    id={"2"}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="clamp(1px,
-                4vw,3.2rem)"
-                    height="clamp(1px,
-                4vw,3.2rem)"
-                    onClick={increaseIndex}
-                    whileHover={{
-                      scale: 1.05,
-                    }}
-                    whileTap={{ scale: 1.1 }}
-                    viewBox="-160 -50 600 600"
-                    className="rounded-xl bg-red-300 focus:outline-none"
-                  >
-                    <path
-                      d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"
-                      fill="white"
-                    />
-                  </motion.svg>
-                </motion.div>
                 {getUserProfilesData?.getUserProfiles.getUserProfiles
                   .slice(offset * index, offset * index + offset)
-                  .map((user) =>
-                    user.profileImg ? (
+                  .map((user) => (
+                    <motion.div key={user.id} className="relative">
                       <motion.div
                         key={user.id}
+                        layoutId={user.id + "user"}
                         className="relative aspect-square overflow-hidden rounded-full border-4 border-gray-50 bg-white shadow-lg"
                         style={{
                           height: `clamp(1px,10vw,8rem)`,
                           margin: `clamp(1px,0.8vw,0.64rem)`,
                         }}
+                        transition={{ type: "tween" }}
                         onHoverStart={() => setMouseOnUser(user.id)}
                         onHoverEnd={() => setMouseOnUser(undefined)}
                       >
-                        <Image
-                          priority
-                          src={`${user.profileImg}`}
-                          alt={`${user.biography}`}
-                          placeholder="blur"
-                          blurDataURL={user.profileImg}
-                          width="1000"
-                          height="1000"
-                          style={{
-                            borderRadius: "clamp(1px,2vw,1.6rem)",
-                          }}
-                        ></Image>
-                        <motion.span
-                          className={cls(
-                            "absolute                  w-full truncate break-words px-2 font-bold transition-all",
-                            mouseOnUser === user.id
-                              ? "z-10 text-center text-white"
-                              : ""
-                          )}
-                          style={{
-                            bottom: `clamp(1px,
-                  0.8vw,0.64rem)`,
-                            fontSize: `clamp(1px,
-                 1.2vw,0.96rem)`,
-                          }}
-                        >
-                          {user.username}
-                        </motion.span>
+                        {user.profileImg ? (
+                          <Image
+                            priority
+                            src={`${user.profileImg}`}
+                            alt={`${user.biography}`}
+                            placeholder="blur"
+                            blurDataURL={user.profileImg}
+                            width="1000"
+                            height="1000"
+                            style={{
+                              borderRadius: "clamp(1px,2vw,1.6rem)",
+                            }}
+                          ></Image>
+                        ) : null}
                         {mouseOnUser === user.id ? (
                           <>
                             <motion.div
@@ -421,40 +410,40 @@ const Home: NextPage = () => {
                               }}
                             ></motion.div>
                             <motion.span
-                              className="absolute px-3 font-bold text-white"
+                              className={cls(
+                                "absolute z-10 w-full truncate break-words px-2 text-center font-bold text-white transition-all"
+                              )}
                               style={{
-                                top: `clamp(1px,
-                  1.2vw,0.96rem)`,
+                                bottom: `clamp(1px,
+                  0.8vw,0.64rem)`,
                                 fontSize: `clamp(1px,
                  1.2vw,0.96rem)`,
                               }}
                             >
-                              {user.biography}
+                              {user.username}
                             </motion.span>
                           </>
                         ) : null}
                       </motion.div>
-                    ) : null
-                  )}
-                {/*    {data?.results
-                  .slice(1)
-                  .slice(offset * index, offset * index + offset)
-                  .map((movie) => (
-                    <motion.div
-                      layoutId={movie.id + ""}
-                      key={movie.id}
-                      whileHover="hover"
-                      initial="normal"
-                      variants={boxVariants}
-                      onClick={() => onBoxClicked(movie.id, "")}
-                      transition={{ type: "tween" }}
-                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                    >
-                      <motion.div variants={infoVariants}>
-                        <h4>{movie.title}</h4>
-                      </motion.div>
+                      {mouseOnUser === user.id ? (
+                        <>
+                          {user.biography ? (
+                            <motion.div
+                              className=" absolute left-1/2 z-10 -translate-x-1/2 overflow-hidden  text-ellipsis  rounded-3xl border-4 border-gray-100 bg-white px-4 py-1 font-bold shadow-xl"
+                              style={{
+                                width: `clamp(1px,
+                              32vw,25.6rem)`,
+                                fontSize: `clamp(1px,
+                                1.2vw,0.96rem)`,
+                              }}
+                            >
+                              {user.biography}
+                            </motion.div>
+                          ) : null}
+                        </>
+                      ) : null}
                     </motion.div>
-                  ))} */}
+                  ))}
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -478,6 +467,7 @@ const Home: NextPage = () => {
                   blurDataURL={briz.coverImg}
                   width="1000"
                   height="1000"
+                  className="shadow-lg"
                   style={{
                     borderRadius: "clamp(1px,2vw,1.6rem)",
                   }}
