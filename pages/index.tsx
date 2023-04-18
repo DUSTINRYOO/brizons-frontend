@@ -3,6 +3,8 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/layout";
 import bg from "public/homebg.jpeg";
+import quote1 from "public/1.jpeg";
+import bucket from "public/bucket.jpeg";
 import exam1 from "public/exam1.png";
 import exam2 from "public/exam2.png";
 import exam3 from "public/exam3.png";
@@ -188,7 +190,7 @@ const Home: NextPage = () => {
   }
   return !isLoggedIn ? (
     <Layout title="Home" hasTabBar>
-      <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl  ">
+      <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl">
         <Image
           priority
           src={bg}
@@ -201,13 +203,37 @@ const Home: NextPage = () => {
       </div>
       <div className="h-auto w-full py-20 ">
         <div className="mx-auto mt-0 h-auto max-w-6xl p-10 pb-14 ">
-          <h3 className="mt-4 text-center text-6xl font-bold text-gray-100">
+          <h3 className="mt-6 text-center text-6xl font-bold text-gray-50">
             Broaden your horizons!
           </h3>
-          <h3 className="mt-4 text-center text-2xl font-bold text-gray-100">
-            A portfolio-based archive service for all you want.
+          <h3 className="mt-4 text-center text-3xl font-black text-gray-50 ">
+            A sharable portfolio-based archive service
           </h3>
-          <div className=" mt-8 grid grid-cols-2 items-center gap-8 sm:grid-cols-3 lg:grid-cols-4 ">
+          <div className=" mt-8 flex flex-col items-center justify-center   ">
+            <div className="relative aspect-video w-full max-w-4xl overflow-hidden rounded-3xl ">
+              <Image
+                className="opacity-80"
+                priority
+                src={quote1}
+                alt={"Brizons"}
+                fill
+                style={{
+                  objectFit: "cover",
+                }}
+              ></Image>
+              <div
+                className=" absolute flex h-full w-full flex-col items-center justify-center px-4 font-black italic text-gray-50"
+                style={{
+                  fontSize: `clamp(0.85rem,
+                  2.5vw,2rem)`,
+                }}
+              >
+                <span> “ It’s not about being the best.</span>
+                <span>It’s about being better than you were yesterday. ”</span>
+              </div>
+            </div>
+          </div>
+          {/*   <div className=" mt-8 grid grid-cols-2 items-center gap-8 sm:grid-cols-3 lg:grid-cols-4 ">
             <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam1} alt="Background" fill />
             </div>
@@ -220,7 +246,7 @@ const Home: NextPage = () => {
             <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
               <Image src={exam4} alt="Background" fill />
             </div>
-          </div>
+          </div> */}
           <Link legacyBehavior href="/signup">
             <a className="mx-auto mt-8 flex w-fit items-center justify-center font-bold text-gray-100">
               <Button large text={"Start now"} />
@@ -228,12 +254,21 @@ const Home: NextPage = () => {
           </Link>
         </div>
         <Homepage
-          bgColor="bg-red-500"
-          pageTitle="Draw whatever you are into now!"
-          pageDescription="Visualize your progress of what you are doing!   Collect everything you love! and Be who you want to be!"
+          bgColor="bg-red-300"
+          pageTitle="Add your ideas into the bucket!"
+          pageDescription="Like a Note / Planner / To-Do list / Bucket list, Put anything that comes to your mind throughout the day into the bucket"
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
-            <Image src={exam3} alt="Background" fill />
+            <Image
+              className="opacity-90"
+              priority
+              src={bucket}
+              alt={"Brizons"}
+              fill
+              style={{
+                objectFit: "cover",
+              }}
+            ></Image>
           </div>
         </Homepage>
         <Homepage

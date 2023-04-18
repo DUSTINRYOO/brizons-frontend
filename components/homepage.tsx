@@ -24,12 +24,16 @@ export default function Homepage({
   reverse,
 }: HomepageProps) {
   return (
-    <div className={cls(`h-auto w-full ${bgColor}`)}>
+    <div
+      className={cls(
+        `left-0 right-0 mx-auto h-auto w-full max-w-7xl ${bgColor} rounded-3xl`
+      )}
+    >
       <div className="mx-auto h-auto max-w-6xl px-10 py-14 ">
         <div className=" grid grid-cols-1 items-center gap-8 sm:grid-cols-2 lg:grid-cols-2 ">
           {!reverse ? (
             <>
-              <div>
+              <div className="border-y-2 py-8">
                 <h3
                   className={cls(`text-center text-6xl font-bold ${textColor}`)}
                 >
@@ -37,7 +41,7 @@ export default function Homepage({
                 </h3>
                 <h3
                   className={cls(
-                    `mt-4 text-center text-2xl font-bold ${textColor}`
+                    `mt-6 text-center text-2xl font-bold ${textColor}`
                   )}
                 >
                   {pageDescription}
