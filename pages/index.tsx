@@ -2,7 +2,7 @@ import Button from "@/components/button";
 import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/layout";
-import bg from "public/homebg.png";
+import bg from "public/homebg.jpeg";
 import exam1 from "public/exam1.png";
 import exam2 from "public/exam2.png";
 import exam3 from "public/exam3.png";
@@ -188,12 +188,18 @@ const Home: NextPage = () => {
   }
   return !isLoggedIn ? (
     <Layout title="Home" hasTabBar>
-      <div className=" absolute -z-10 h-auto w-screen overflow-hidden">
-        <div className="relative h-[100rem] w-full min-w-[80rem] bg-slate-600">
-          <Image src={bg} alt="Background" fill />
-        </div>
+      <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl  ">
+        <Image
+          priority
+          src={bg}
+          alt={"Brizons"}
+          fill
+          style={{
+            objectFit: "cover",
+          }}
+        ></Image>
       </div>
-      <div className="h-auto w-full py-20">
+      <div className="h-auto w-full py-20 ">
         <div className="mx-auto mt-0 h-auto max-w-6xl p-10 pb-14 ">
           <h3 className="mt-4 text-center text-6xl font-bold text-gray-100">
             Broaden your horizons!

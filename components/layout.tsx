@@ -51,10 +51,11 @@ export default function Layout({
       router.push("/");
     }
   };
+  const titleWithBrizons = `${title} | Brizons`;
   return (
     <div>
       <Head>
-        <title>{title} | Brizons</title>
+        <title>{titleWithBrizons}</title>
       </Head>
       <div>{children}</div>
       {hasTabBar ? (

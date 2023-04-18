@@ -4,15 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
-import bg from "public/homebg.png";
+import bg from "public/homebg.jpeg";
 import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { useForm } from "react-hook-form";
-
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { isLoggedInVar } from "@/libs/apolloClient";
 import { LOCALSTORAGE_TOKEN } from "@/src/constants";
-
 import { motion } from "framer-motion";
 import { CreateAccountInput, CreateAccountOutput } from "@/src/gql/graphql";
 
@@ -88,10 +86,16 @@ const Signup: NextPage = () => {
   }, [isLoggedIn]);
   return (
     <Layout title="Sign up" hasTabBar>
-      <div className=" absolute -z-10 h-screen w-screen overflow-hidden bg-black opacity-90">
-        <div className="relative mx-auto h-screen w-full min-w-[80rem] max-w-[80rem] bg-slate-600">
-          <Image src={bg} alt="Background" fill />
-        </div>
+      <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl opacity-50 ">
+        <Image
+          priority
+          src={bg}
+          alt={"Brizons"}
+          fill
+          style={{
+            objectFit: "cover",
+          }}
+        ></Image>
       </div>
       <div className="h-screen w-full px-4 py-20">
         <motion.div className="mx-auto mt-14 max-w-lg rounded-3xl bg-white p-10 pb-14 shadow-lg">
@@ -147,7 +151,7 @@ const Signup: NextPage = () => {
                 name="password"
                 type="password"
                 required
-                minlength="8"
+                minLength="8"
                 register={register("password")}
               />
               <Input
