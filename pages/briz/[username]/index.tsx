@@ -229,6 +229,7 @@ interface EditBrizInputForm {
   title?: string;
   pinned?: boolean;
   description?: string;
+  coverImg?: string;
   metatags?: string;
   zindex?: number;
   text?: IText | null;
@@ -559,7 +560,7 @@ const Briz: NextPage = () => {
     setOpenAI("Hello! What do you want to know?");
   };
 
-  const onClickDelete = async (brizId: number) => {
+  const onClickDelete = async (brizId: number, brizCoverImg: string) => {
     if (meData?.me.username !== brizUserName) {
       return null;
     }
@@ -570,6 +571,22 @@ const Briz: NextPage = () => {
             brizId,
           },
         },
+      });
+    }
+
+    const objectName = brizCoverImg.replace(
+      "https://dustinbrizonsbucketlfg.s3.amazonaws.com/",
+      ""
+    );
+    if (brizCoverImg) {
+      const deleteImage = await fetch("http://localhost:4000/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          objectName,
+        }),
       });
     }
   };
@@ -1729,7 +1746,10 @@ const Briz: NextPage = () => {
                     </button>
                     <button
                       onClick={() => {
-                        onClickDelete(brizLongPressed.id!);
+                        onClickDelete(
+                          brizLongPressed.id!,
+                          brizLongPressed.coverImg!
+                        );
                         setBrizLongPressed(undefined);
                         setGridOnOff((prev) => !prev);
                       }}
@@ -1975,6 +1995,7 @@ const Briz: NextPage = () => {
                             description: briz.description,
                             text: briz.text,
                             zindex: briz.zindex,
+                            coverImg: briz.coverImg,
                           });
                           setTextBold(briz.text?.bold!);
                           setTextItalic(briz.text?.italic!);

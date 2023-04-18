@@ -111,9 +111,15 @@ const Home: NextPage = () => {
   const [slider, setSlider] = useState("");
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
   const [mouseOnUser, setMouseOnUser] = useState<number | undefined>(undefined);
-  const { data, loading, error, refetch } = useQuery<meQuery>(ME_QUERY);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const authToken = useReactiveVar(authTokenVar);
+
+  const {
+    data: meData,
+    loading: meLoading,
+    error: meError,
+    refetch: meRefetch,
+  } = useQuery<meQuery>(ME_QUERY);
 
   const {
     data: getUserProfilesData,
@@ -132,6 +138,12 @@ const Home: NextPage = () => {
   } = useQuery<getRecentBrizQuery>(RECENT_BRIZ_QUERY, {
     variables: { getRecentBrizInput: { scrollPage: 1 } },
   });
+
+  useEffect(() => {
+    meRefetch();
+    getUserProfilesRefetch();
+    getRecentBrizRefetch();
+  }, [meData, getUserProfilesData, getRecentBrizData]);
 
   const {
     register: registerSearch,
@@ -167,11 +179,7 @@ const Home: NextPage = () => {
     }
   };
 
-  useEffect(() => {
-    refetch();
-  }, [data, loading, error]);
-
-  if (loading) {
+  if (meLoading) {
     return (
       <span className="fixed top-[15vw] w-full   py-2 text-center text-2xl font-extrabold text-gray-300">
         Loading
@@ -290,7 +298,7 @@ const Home: NextPage = () => {
             />
           </motion.div>
           <motion.div
-            className="relative  w-full overflow-hidden rounded-full "
+            className="relative  w-full "
             style={{
               height: `clamp(1px,11.6vw,9.28rem)`,
               marginBottom: `clamp(1px,
