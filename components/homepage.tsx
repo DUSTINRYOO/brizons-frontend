@@ -26,7 +26,7 @@ export default function Homepage({
   return (
     <div
       className={cls(
-        `left-0 right-0 mx-auto h-auto w-full max-w-7xl ${bgColor} rounded-3xl`
+        `left-0 right-0 mx-auto h-auto w-full max-w-7xl ${bgColor} `
       )}
     >
       <div className="mx-auto h-auto max-w-6xl px-10 py-14 ">
@@ -52,7 +52,7 @@ export default function Homepage({
           ) : (
             <>
               <div>{children}</div>
-              <div>
+              <div className="border-y-2 py-8">
                 <h3
                   className={cls(`text-center text-6xl font-bold ${textColor}`)}
                 >

@@ -109,11 +109,11 @@ export default function Layout({
                 <span>HOME</span>
               </a>
             </Link>
-            <Link legacyBehavior href="/about">
+            <Link legacyBehavior href="/briz/brizons">
               <a
                 className={cls(
                   "ml-4 flex items-center justify-center text-xl font-extrabold max-md:invisible max-md:m-0 max-md:text-sm",
-                  router.pathname === "/about"
+                  router.pathname === "/briz/brizons"
                     ? "text-red-500"
                     : "transition-colors hover:text-red-500"
                 )}

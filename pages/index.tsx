@@ -5,6 +5,8 @@ import Layout from "../components/layout";
 import bg from "public/homebg.jpeg";
 import quote1 from "public/1.jpeg";
 import bucket from "public/bucket.jpeg";
+import photo from "public/photo.jpeg";
+import light from "public/light.jpeg";
 import exam1 from "public/exam1.png";
 import exam2 from "public/exam2.png";
 import exam3 from "public/exam3.png";
@@ -194,7 +196,7 @@ const Home: NextPage = () => {
         <Image
           priority
           src={bg}
-          alt={"Brizons"}
+          alt={"A sharable portfolio-based archive service"}
           fill
           style={{
             objectFit: "cover",
@@ -215,7 +217,7 @@ const Home: NextPage = () => {
                 className="opacity-80"
                 priority
                 src={quote1}
-                alt={"Brizons"}
+                alt={"Broaden your horizons"}
                 fill
                 style={{
                   objectFit: "cover",
@@ -233,20 +235,7 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
-          {/*   <div className=" mt-8 grid grid-cols-2 items-center gap-8 sm:grid-cols-3 lg:grid-cols-4 ">
-            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
-              <Image src={exam1} alt="Background" fill />
-            </div>
-            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
-              <Image src={exam2} alt="Background" fill />
-            </div>
-            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
-              <Image src={exam3} alt="Background" fill />
-            </div>
-            <div className="relative h-[26rem] w-full  overflow-hidden rounded-2xl">
-              <Image src={exam4} alt="Background" fill />
-            </div>
-          </div> */}
+
           <Link legacyBehavior href="/signup">
             <a className="mx-auto mt-8 flex w-fit items-center justify-center font-bold text-gray-100">
               <Button large text={"Start now"} />
@@ -255,7 +244,7 @@ const Home: NextPage = () => {
         </div>
         <Homepage
           bgColor="bg-red-300"
-          pageTitle="Add your ideas into the bucket!"
+          pageTitle="Capture ideas resonate with you!"
           pageDescription="Like a Note / Planner / To-Do list / Bucket list, Put anything that comes to your mind throughout the day into the bucket"
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
@@ -263,7 +252,26 @@ const Home: NextPage = () => {
               className="opacity-90"
               priority
               src={bucket}
-              alt={"Brizons"}
+              alt={"Capture ideas resonate with you"}
+              fill
+              style={{
+                objectFit: "cover",
+              }}
+            ></Image>
+          </div>
+        </Homepage>
+        <Homepage
+          bgColor="bg-yellow-300"
+          pageTitle="Visualize projects you are into!"
+          pageDescription="Like a Blog / Portfolio / Collection / Album, Make your own pages that show your achivement or progress on the Briz"
+          reverse
+        >
+          <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
+            <Image
+              className="opacity-90"
+              priority
+              src={photo}
+              alt={"Visualize projects you are into"}
               fill
               style={{
                 objectFit: "cover",
@@ -273,22 +281,20 @@ const Home: NextPage = () => {
         </Homepage>
         <Homepage
           bgColor="bg-black"
-          pageTitle="Share your things!"
-          pageDescription="Experience, knowledge and knowhow... Also get more things from other people for what you want to try"
-          reverse
+          pageTitle="Share experiences in your life!"
+          pageDescription="Like a Story / Course / Mentoring / Motivation, Collaborate with others to learn from each other and get closer together"
         >
           <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
-            <Image src={exam2} alt="Background" fill />
-          </div>
-        </Homepage>
-        <Homepage
-          bgColor="bg-white"
-          pageTitle="Big data hub!"
-          pageDescription="With various records and results people share for specific subjects, you can easily try or challange something you really want  "
-          textColor="text-black"
-        >
-          <div className="relative h-[46rem] w-full  overflow-hidden rounded-2xl">
-            <Image src={exam1} alt="Background" fill />
+            <Image
+              className="opacity-90"
+              priority
+              src={light}
+              alt={"Share experiences in your life"}
+              fill
+              style={{
+                objectFit: "cover",
+              }}
+            ></Image>
           </div>
         </Homepage>
       </div>
