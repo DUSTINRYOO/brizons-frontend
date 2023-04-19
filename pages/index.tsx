@@ -7,21 +7,18 @@ import quote1 from "public/1.jpeg";
 import bucket from "public/bucket.jpeg";
 import photo from "public/photo.jpeg";
 import light from "public/light.jpeg";
-import exam1 from "public/exam1.png";
-import exam2 from "public/exam2.png";
-import exam3 from "public/exam3.png";
-import exam4 from "public/exam4.png";
 import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
-import { capitalizeFirstLetter, cls } from "@/libs/utils";
+import { cls } from "@/libs/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput, GetUserProfilesOutput } from "@/src/gql/graphql";
 import { useRouter } from "next/router";
 import Input from "@/components/input";
 import { useForm } from "react-hook-form";
+import Quotes from "@/components/quotes";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -112,7 +109,7 @@ const Home: NextPage = () => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const [slider, setSlider] = useState("");
+  const [quoteNumber, setQuoteNumber] = useState(1);
   const [mouseOnBriz, setMouseOnBriz] = useState<number | undefined>(undefined);
   const [mouseOnUser, setMouseOnUser] = useState<number | undefined>(undefined);
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -230,8 +227,7 @@ const Home: NextPage = () => {
                   2.5vw,2rem)`,
                 }}
               >
-                <span> “ It’s not about being the best.</span>
-                <span>It’s about being better than you were yesterday. ”</span>
+                <Quotes />
               </div>
             </div>
           </div>
