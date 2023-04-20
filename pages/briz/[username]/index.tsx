@@ -579,15 +579,18 @@ const Briz: NextPage = () => {
       ""
     );
     if (brizCoverImg) {
-      const deleteImage = await fetch("http://localhost:4000/delete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          objectName,
-        }),
-      });
+      const deleteImage = await fetch(
+        "https://brizons-proto-backend.herokuapp.com/delete",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            objectName,
+          }),
+        }
+      );
     }
   };
   const onSubmitCreate = async (data: CreateBrizForm) => {
@@ -611,7 +614,7 @@ const Briz: NextPage = () => {
         const formBody = new FormData();
         formBody.append("file", actualFile);
         const { fileUrl: fetchCoverImg } = await (
-          await fetch("http://localhost:4000/uploads", {
+          await fetch("https://brizons-proto-backend.herokuapp.com/uploads", {
             method: "POST",
             body: formBody,
           })
@@ -720,7 +723,7 @@ const Briz: NextPage = () => {
         const formBody = new FormData();
         formBody.append("file", actualFile);
         const { fileUrl: fetchProfileImg } = await (
-          await fetch("http://localhost:4000/uploads", {
+          await fetch("https://brizons-proto-backend.herokuapp.com/uploads", {
             method: "POST",
             body: formBody,
           })
@@ -822,15 +825,18 @@ const Briz: NextPage = () => {
   const onSubmitOpenAi = async (data: OpenAiForm) => {
     const prompt = data.prompt;
 
-    const test = await fetch("http://localhost:4000/openai", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-      }),
-    });
+    const test = await fetch(
+      "https://brizons-proto-backend.herokuapp.com/openai",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+        }),
+      }
+    );
     console.log(test);
     /* 
     const { openAi } = await (
