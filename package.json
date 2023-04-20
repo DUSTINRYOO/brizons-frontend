@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "tailwind:build": "tailwind build ./src/styles/tailwind.css -o ./src/styles/styles.css",
     "dev": "next dev",
-    "build": "next build",
+    "build": "CI=false next build",
+    "prebuild": "npm run tailwind:build",
     "start": "next start",
     "lint": "next lint",
     "codegen": "rm -rf src/gql && graphql-codegen --watch"
