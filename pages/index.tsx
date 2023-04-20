@@ -187,7 +187,9 @@ const Home: NextPage = () => {
       <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl">
         <Image
           priority
-          src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/homebg.jpeg"}
+          src={
+            "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681797953674IMG_1459.jpeg"
+          }
           alt={"A sharable portfolio-based archive service"}
           fill
           style={{
