@@ -267,7 +267,9 @@ const Home: NextPage = () => {
             <Image
               className="opacity-90"
               priority
-              src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/photo.jpeg"}
+              src={
+                "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681967960751photo.jpeg"
+              }
               alt={"Visualize projects you are into"}
               fill
               style={{
