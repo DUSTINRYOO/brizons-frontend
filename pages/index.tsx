@@ -188,7 +188,7 @@ const Home: NextPage = () => {
         <Image
           priority
           src={
-            "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681797953674IMG_1459.jpeg"
+            "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681967827187homebg.jpeg"
           }
           alt={"A sharable portfolio-based archive service"}
           fill
@@ -210,7 +210,9 @@ const Home: NextPage = () => {
               <Image
                 className="opacity-80"
                 priority
-                src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/1.jpeg"}
+                src={
+                  "https://dustinbrizonsbucketlfg.s3.amazonaws.com/16819678820961.jpeg"
+                }
                 alt={"Broaden your horizons"}
                 fill
                 style={{
@@ -245,7 +247,7 @@ const Home: NextPage = () => {
               className="opacity-90"
               priority
               src={
-                "https://dustinbrizonsbucketlfg.s3.amazonaws.com/bucket.jpeg"
+                "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681967915227bucket.jpeg"
               }
               alt={"Capture ideas resonate with you"}
               fill
@@ -283,7 +285,9 @@ const Home: NextPage = () => {
             <Image
               className="opacity-90"
               priority
-              src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/light.jpeg"}
+              src={
+                "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681967999896light.jpeg"
+              }
               alt={"Share experiences in your life"}
               fill
               style={{

@@ -89,7 +89,9 @@ const Signup: NextPage = () => {
       <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl opacity-50 ">
         <Image
           priority
-          src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/homebg.jpeg"}
+          src={
+            "https://dustinbrizonsbucketlfg.s3.amazonaws.com/1681967827187homebg.jpeg"
+          }
           alt={"Brizons"}
           fill
           style={{
