@@ -14,7 +14,10 @@ export const isLoggedInVar = makeVar(false);
 export const authTokenVar = makeVar("");
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "https://brizons-proto-backend.herokuapp.com/graphql"
+      : "http://localhost:4000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
