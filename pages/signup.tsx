@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/button";
 import Input from "../components/input";
-import bg from "public/homebg.jpeg";
+
 import { gql, useMutation, useReactiveVar } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -89,7 +89,7 @@ const Signup: NextPage = () => {
       <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl opacity-50 ">
         <Image
           priority
-          src={bg}
+          src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/homebg.jpeg"}
           alt={"Brizons"}
           fill
           style={{
