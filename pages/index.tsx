@@ -11,7 +11,7 @@ import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { authTokenVar, isLoggedInVar } from "@/libs/apolloClient";
-import { cls } from "@/libs/utils";
+import { cls, capitalizeFirstLetter } from "@/libs/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput, GetUserProfilesOutput } from "@/src/gql/graphql";
@@ -299,7 +299,7 @@ const Home: NextPage = () => {
     <Layout title="Home" hasTabBar>
       <motion.div className="h-auto w-full py-20 ">
         <motion.div className="relative mx-auto mt-0 h-auto w-[92vw] max-w-7xl ">
-          <motion.div
+          {/*    <motion.div
             className="left-0 right-0 mx-auto  flex w-1/2 flex-row items-center justify-start rounded-full border-2 border-gray-300"
             style={{
               height: `clamp(1px,
@@ -339,6 +339,21 @@ const Home: NextPage = () => {
                   2vw,1.6rem)`,
               }}
             />
+          </motion.div> */}
+          <motion.div
+            className="left-0 right-0 mx-auto  flex w-full flex-row items-center justify-center font-extrabold"
+            style={{
+              fontSize: `clamp(1px,
+                5vw,4rem)`,
+              height: `clamp(1px,
+                  4vw,3.2rem)`,
+              marginBottom: `clamp(1px,
+                    2vw,1.6rem)`,
+              marginTop: `clamp(1px,
+                      2vw,1.6rem)`,
+            }}
+          >
+            Hello, {capitalizeFirstLetter(`${meData?.me.username}`)}!
           </motion.div>
           <motion.div
             className="relative  w-full "

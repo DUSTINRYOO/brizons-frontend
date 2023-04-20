@@ -1159,7 +1159,7 @@ const Briz: NextPage = () => {
                         />
                       </svg>
                     </button>
-                    <button
+                    {/*  <button
                       onClick={() => {
                         setOpenAiOnOff((prev) => !prev);
                       }}
@@ -1178,7 +1178,7 @@ const Briz: NextPage = () => {
                           fill="white"
                         />
                       </svg>
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => {
                         setGridOnOff((prev) => !prev);
@@ -2516,7 +2516,7 @@ const Briz: NextPage = () => {
             </>
           ) : null}
         </AnimatePresence>
-        <AnimatePresence>
+        {/*  <AnimatePresence>
           {openAiOnOff ? (
             <>
               <motion.div
@@ -2566,7 +2566,7 @@ const Briz: NextPage = () => {
               </motion.div>
             </>
           ) : null}
-        </AnimatePresence>
+        </AnimatePresence> */}
       </motion.div>
     </Layout>
   );
