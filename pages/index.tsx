@@ -2,11 +2,7 @@ import Button from "@/components/button";
 import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "../components/layout";
-import bg from "public/homebg.jpeg";
-import quote1 from "public/1.jpeg";
-import bucket from "public/bucket.jpeg";
-import photo from "public/photo.jpeg";
-import light from "public/light.jpeg";
+
 import Image from "next/image";
 import Homepage from "@/components/homepage";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
@@ -16,7 +12,6 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GetRecentBrizOutput, GetUserProfilesOutput } from "@/src/gql/graphql";
 import { useRouter } from "next/router";
-import Input from "@/components/input";
 import { useForm } from "react-hook-form";
 import Quotes from "@/components/quotes";
 
@@ -192,7 +187,7 @@ const Home: NextPage = () => {
       <div className="absolute left-0 right-0 -z-10 mx-auto h-screen w-full max-w-7xl">
         <Image
           priority
-          src={bg}
+          src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/homebg.jpeg"}
           alt={"A sharable portfolio-based archive service"}
           fill
           style={{
@@ -213,7 +208,7 @@ const Home: NextPage = () => {
               <Image
                 className="opacity-80"
                 priority
-                src={quote1}
+                src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/1.jpeg"}
                 alt={"Broaden your horizons"}
                 fill
                 style={{
@@ -247,7 +242,9 @@ const Home: NextPage = () => {
             <Image
               className="opacity-90"
               priority
-              src={bucket}
+              src={
+                "https://dustinbrizonsbucketlfg.s3.amazonaws.com/bucket.jpeg"
+              }
               alt={"Capture ideas resonate with you"}
               fill
               style={{
@@ -266,7 +263,7 @@ const Home: NextPage = () => {
             <Image
               className="opacity-90"
               priority
-              src={photo}
+              src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/photo.jpeg"}
               alt={"Visualize projects you are into"}
               fill
               style={{
@@ -284,7 +281,7 @@ const Home: NextPage = () => {
             <Image
               className="opacity-90"
               priority
-              src={light}
+              src={"https://dustinbrizonsbucketlfg.s3.amazonaws.com/light.jpeg"}
               alt={"Share experiences in your life"}
               fill
               style={{
