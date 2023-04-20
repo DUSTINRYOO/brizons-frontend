@@ -5,7 +5,10 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:4000/:path*",
+        destination:
+          process.env.NODE_ENV === "production"
+            ? "https://brizons-proto-backend.herokuapp.com/graphql"
+            : "http://localhost:4000/graphql",
       },
     ];
   },
