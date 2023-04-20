@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "tailwind:prodbuild": "NODE_ENV=production npm run tailwind:build",
     "tailwind:build": "tailwind build ./src/styles/tailwind.css -o ./src/styles/styles.css",
     "dev": "next dev",
     "build": "CI=false next build",
-    "prebuild": "npm run tailwind:build",
+    "prebuild": "npm run tailwind:prodbuild",
     "start": "next start",
     "lint": "next lint",
     "codegen": "rm -rf src/gql && graphql-codegen --watch"
