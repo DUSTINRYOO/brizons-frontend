@@ -109,7 +109,7 @@ export default function Layout({
                 <span>HOME</span>
               </a>
             </Link>
-            <Link legacyBehavior href="/briz/brizons">
+            {/*  <Link legacyBehavior href="/briz/brizons">
               <a
                 className={cls(
                   "ml-4 flex items-center justify-center text-xl font-extrabold max-md:invisible max-md:m-0 max-md:text-sm",
@@ -120,7 +120,7 @@ export default function Layout({
               >
                 <span>ABOUT</span>
               </a>
-            </Link>
+            </Link> */}
             {!isLoggedIn ? (
               <Link legacyBehavior href="/login">
                 <a

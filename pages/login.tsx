@@ -152,11 +152,11 @@ const Login: NextPage = () => {
                 register={register("password")}
               />
 
-              <Link legacyBehavior href="/forgot">
+              {/* <Link legacyBehavior href="/forgot">
                 <a className="w-fit border-b-2 border-gray-500 text-sm font-bold text-gray-700">
                   <span>Forgot your password?</span>
                 </a>
-              </Link>
+              </Link> */}
               <Button text={"Log in"} />
             </form>
             <Link legacyBehavior href="/signup">
