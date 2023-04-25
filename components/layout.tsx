@@ -44,6 +44,7 @@ export default function Layout({
     data: meData,
     loading: meLoading,
     error: meError,
+    refetch: meRefetch,
   } = useQuery<meQuery>(ME_QUERY);
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
@@ -52,6 +53,7 @@ export default function Layout({
       localStorage.removeItem(LOCALSTORAGE_TOKEN);
       isLoggedInVar(false);
       authTokenVar("");
+      meRefetch();
       router.push("/");
     }
   };
@@ -125,7 +127,7 @@ export default function Layout({
                 <span>ABOUT</span>
               </a>
             </Link> */}
-            {meData?.me.username === "brizons" ? (
+            {isLoggedIn && meData?.me.username === "brizons" ? (
               <Link legacyBehavior href="/admin">
                 <a
                   className={cls(
