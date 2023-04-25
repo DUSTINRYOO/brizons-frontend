@@ -88,10 +88,9 @@ const Admin: NextPage = () => {
       const {
         deleteAccount: { ok, error },
       } = data;
-      return console.log("Deleted");
+      return reset();
     },
   });
-
   const {
     register,
     handleSubmit,
@@ -103,10 +102,13 @@ const Admin: NextPage = () => {
   });
 
   const onSubmit = (data: deleteAccountForm) => {
+    if (meData?.me.username !== "brizons") {
+      return null;
+    }
     if (!meLoading) {
       deleteAccountMutation({
         variables: {
-          loginInput: {
+          deleteAccountInput: {
             username: data.username.toLowerCase(),
           },
         },
@@ -117,7 +119,9 @@ const Admin: NextPage = () => {
   useEffect(() => {
     const localToken = localStorage.getItem(LOCALSTORAGE_TOKEN);
     if (localToken === ("" || null) && !isLoggedIn) router.replace("/");
-  }, [isLoggedIn]);
+    if (!meLoading && meData?.me.username !== "brizons") router.replace("/");
+  }, [isLoggedIn, meData]);
+
   if (meLoading) {
     return (
       <span className="fixed top-[15vw] w-full   py-2 text-center text-2xl font-extrabold text-gray-300">
@@ -195,7 +199,7 @@ const Admin: NextPage = () => {
               className="absolute left-0 right-0 mx-auto w-[22rem]  text-center font-semibold text-red-500"
               layout
             >
-              <span className="block">
+              <span className="mt-3 block">
                 {!deleteAccountMutationResult?.deleteAccount.ok
                   ? deleteAccountMutationResult?.deleteAccount.error
                   : null}
