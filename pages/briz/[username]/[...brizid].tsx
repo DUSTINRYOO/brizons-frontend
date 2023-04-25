@@ -749,11 +749,11 @@ const Briz: NextPage = () => {
               ) : null}
               {parentBrizClicked ? (
                 <motion.div
-                  className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] min-h-min w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-black p-4 shadow-lg"
+                  className="absolute left-0 right-0 top-[10vw] z-[201] mx-auto flex h-[50vh] max-h-max w-3/5 flex-col justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white p-4 shadow-lg"
+                  layout
                   key={
                     getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
                   }
-                  layout
                   layoutId={
                     getParentBrizData.getParentBriz.getParentBriz.id + "pinned"
                   }
@@ -761,25 +761,36 @@ const Briz: NextPage = () => {
                     setParentBrizClicked(false);
                   }}
                 >
-                  <Image
-                    priority
-                    src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
-                    alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
-                    fill
+                  <motion.div
+                    className="absolute left-0 right-0 top-2 z-[202] mx-auto flex flex-col items-center justify-center overflow-hidden rounded-3xl border-4 border-gray-50 bg-white"
                     style={{
-                      opacity: 0.8,
-                      objectFit: "cover",
+                      width: `clamp(1px,
+                        20vw,16rem)`,
+                      height: `clamp(1px,
+                          20vw,16rem)`,
                     }}
-                    onLoadingComplete={() => {
-                      setGrid({});
-                      setBrizLoading(false);
-                    }}
-                  ></Image>
+                  >
+                    <Image
+                      priority
+                      src={`${getParentBrizData.getParentBriz.getParentBriz.coverImg}`}
+                      alt={`${getParentBrizData.getParentBriz.getParentBriz.title}-${getParentBrizData.getParentBriz.getParentBriz.description}`}
+                      fill
+                      style={{
+                        objectFit: "cover",
+                      }}
+                      onLoadingComplete={() => {
+                        setGrid({});
+                        setBrizLoading(false);
+                      }}
+                    ></Image>
+                  </motion.div>
                   <motion.span
-                    className="left-0 right-0 z-[202] mx-auto block max-w-max rounded-xl border-4 border-gray-50 bg-white px-4 py-2 text-center font-semibold"
+                    className="absolute left-0 right-0 z-[202] mx-auto block h-full w-full rounded-xl bg-white px-4 py-2 text-left font-medium"
                     style={{
+                      top: `clamp(1px,
+                        22vw,17.6rem)`,
                       fontSize: `clamp(1px,
-                  1.8vw,1.44rem)`,
+                  1.6vw,1.28rem)`,
                     }}
                   >
                     {getParentBrizData.getParentBriz.getParentBriz.description}
