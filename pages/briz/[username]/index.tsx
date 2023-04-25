@@ -580,7 +580,9 @@ const Briz: NextPage = () => {
     );
     if (brizCoverImg) {
       const deleteImage = await fetch(
-        "https://brizons-proto-backend.herokuapp.com/delete",
+        process.env.NODE_ENV === "production"
+          ? "https://brizons-proto-backend.herokuapp.com/delete"
+          : "http://localhost:4000/graphql",
         {
           method: "POST",
           headers: {
@@ -614,10 +616,15 @@ const Briz: NextPage = () => {
         const formBody = new FormData();
         formBody.append("file", actualFile);
         const { fileUrl: fetchCoverImg } = await (
-          await fetch("https://brizons-proto-backend.herokuapp.com/uploads", {
-            method: "POST",
-            body: formBody,
-          })
+          await fetch(
+            process.env.NODE_ENV === "production"
+              ? "https://brizons-proto-backend.herokuapp.com/uploads"
+              : "http://localhost:4000/graphql",
+            {
+              method: "POST",
+              body: formBody,
+            }
+          )
         ).json();
         coverImg = fetchCoverImg;
       }
@@ -723,10 +730,15 @@ const Briz: NextPage = () => {
         const formBody = new FormData();
         formBody.append("file", actualFile);
         const { fileUrl: fetchProfileImg } = await (
-          await fetch("https://brizons-proto-backend.herokuapp.com/uploads", {
-            method: "POST",
-            body: formBody,
-          })
+          await fetch(
+            process.env.NODE_ENV === "production"
+              ? "https://brizons-proto-backend.herokuapp.com/uploads"
+              : "http://localhost:4000/graphql",
+            {
+              method: "POST",
+              body: formBody,
+            }
+          )
         ).json();
         profileImg = fetchProfileImg;
       }
@@ -826,7 +838,9 @@ const Briz: NextPage = () => {
     const prompt = data.prompt;
 
     const test = await fetch(
-      "https://brizons-proto-backend.herokuapp.com/openai",
+      process.env.NODE_ENV === "production"
+        ? "https://brizons-proto-backend.herokuapp.com/openai"
+        : "http://localhost:4000/graphql",
       {
         method: "POST",
         headers: {
