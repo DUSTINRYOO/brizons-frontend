@@ -870,7 +870,11 @@ const Briz: NextPage = () => {
                   ) : null}
                   {!brizLoading ? (
                     <motion.div
-                      className="my-4 flex h-[9vw] w-[9vw] flex-col items-center justify-center rounded-3xl border-4 border-gray-50 bg-white"
+                      className="my-4 flex  flex-col items-center justify-center rounded-3xl border-4 border-gray-50 bg-white"
+                      style={{
+                        height: `clamp(1px,10vw,8rem)`,
+                        width: `clamp(1px,10vw,8rem)`,
+                      }}
                       onClick={() => {
                         if (meData?.me.username !== brizUserName) {
                           return null;
