@@ -70,6 +70,16 @@ export type CreateExampleDto = {
   title: Scalars['String'];
 };
 
+export type DeleteAccountInput = {
+  username: Scalars['String'];
+};
+
+export type DeleteAccountOutput = {
+  __typename?: 'DeleteAccountOutput';
+  error?: Maybe<Scalars['String']>;
+  ok: Scalars['Boolean'];
+};
+
 export type DeleteBrizInput = {
   brizId: Scalars['Float'];
 };
@@ -205,6 +215,7 @@ export type GetUserProfilesOutput = {
   error?: Maybe<Scalars['String']>;
   getUserProfiles: Array<User>;
   ok: Scalars['Boolean'];
+  totalUsersCount: Scalars['Float'];
 };
 
 export type Grid = {
@@ -242,6 +253,7 @@ export type Mutation = {
   createAccount: CreateAccountOutput;
   createBriz: CreateBrizOutput;
   createExample: Scalars['Boolean'];
+  deleteAccount: DeleteAccountOutput;
   deleteBriz: DeleteBrizOutput;
   editBriz: EditBrizOutput;
   editProfile: EditProfileOutput;
@@ -263,6 +275,11 @@ export type MutationCreateBrizArgs = {
 
 export type MutationCreateExampleArgs = {
   input: CreateExampleDto;
+};
+
+
+export type MutationDeleteAccountArgs = {
+  deleteAccountInput: DeleteAccountInput;
 };
 
 

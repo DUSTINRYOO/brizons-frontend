@@ -582,7 +582,7 @@ const Briz: NextPage = () => {
       const deleteImage = await fetch(
         process.env.NODE_ENV === "production"
           ? "https://brizons-proto-backend.herokuapp.com/delete"
-          : "http://localhost:4000/graphql",
+          : "http://localhost:4000/delete",
         {
           method: "POST",
           headers: {
@@ -619,7 +619,7 @@ const Briz: NextPage = () => {
           await fetch(
             process.env.NODE_ENV === "production"
               ? "https://brizons-proto-backend.herokuapp.com/uploads"
-              : "http://localhost:4000/graphql",
+              : "http://localhost:4000/uploads",
             {
               method: "POST",
               body: formBody,
@@ -733,7 +733,7 @@ const Briz: NextPage = () => {
           await fetch(
             process.env.NODE_ENV === "production"
               ? "https://brizons-proto-backend.herokuapp.com/uploads"
-              : "http://localhost:4000/graphql",
+              : "http://localhost:4000/uploads",
             {
               method: "POST",
               body: formBody,
@@ -840,7 +840,7 @@ const Briz: NextPage = () => {
     const test = await fetch(
       process.env.NODE_ENV === "production"
         ? "https://brizons-proto-backend.herokuapp.com/openai"
-        : "http://localhost:4000/graphql",
+        : "http://localhost:4000/openai",
       {
         method: "POST",
         headers: {

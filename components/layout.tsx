@@ -40,7 +40,11 @@ export default function Layout({
   hasTabBar,
   children,
 }: LayoutProps) {
-  const { data, loading, error } = useQuery<meQuery>(ME_QUERY);
+  const {
+    data: meData,
+    loading: meLoading,
+    error: meError,
+  } = useQuery<meQuery>(ME_QUERY);
   const router = useRouter();
   const isLoggedIn = useReactiveVar(isLoggedInVar);
   const onClickLogOut = () => {
@@ -121,6 +125,20 @@ export default function Layout({
                 <span>ABOUT</span>
               </a>
             </Link> */}
+            {meData?.me.username === "brizons" ? (
+              <Link legacyBehavior href="/admin">
+                <a
+                  className={cls(
+                    "ml-4 flex items-center justify-center text-xl font-extrabold max-md:invisible max-md:m-0 max-md:text-sm",
+                    router.pathname === "/admin"
+                      ? "text-red-500"
+                      : "transition-colors hover:text-red-500"
+                  )}
+                >
+                  <span>ADMIN</span>
+                </a>
+              </Link>
+            ) : null}
             {!isLoggedIn ? (
               <Link legacyBehavior href="/login">
                 <a
@@ -158,7 +176,7 @@ export default function Layout({
                 </a>
               </Link>
             ) : (
-              <Link legacyBehavior href={`/briz/${data?.me.username}`}>
+              <Link legacyBehavior href={`/briz/${meData?.me.username}`}>
                 <a
                   className={cls(
                     "ml-4 flex items-center justify-center rounded-xl bg-red-500 px-3 text-center text-xl font-extrabold  text-gray-100 ",
