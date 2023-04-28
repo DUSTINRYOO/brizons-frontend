@@ -23,6 +23,7 @@ import {
   GetOthersProfileOutput,
   GetPinnedBrizOutput,
 } from "@/src/gql/graphql";
+import MuxPlayer from "@mux/mux-player-react";
 
 const ME_QUERY = gql`
   query meQuery {
@@ -2030,25 +2031,41 @@ const Briz: NextPage = () => {
                     }}
                   >
                     {briz.coverImg !== "null" ? (
-                      <Image
-                        onMouseOver={() => {
-                          setBrizMouseOn(briz.id);
-                        }}
-                        onClick={() => {
-                          setBrizClicked(true);
-                        }}
-                        priority
-                        src={`${briz.coverImg}`}
-                        alt={`${briz.title}-${briz.description}`}
-                        fill
-                        placeholder="blur"
-                        blurDataURL={briz.coverImg}
-                        onLoadingComplete={() => {
-                          setGrid({});
-                          setBrizLoading(false);
-                        }}
-                        style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
-                      ></Image>
+                      <>
+                        {briz.coverImg.slice(-5) !== "video" ? (
+                          <Image
+                            onMouseOver={() => {
+                              setBrizMouseOn(briz.id);
+                            }}
+                            onClick={() => {
+                              setBrizClicked(true);
+                            }}
+                            priority
+                            src={`${briz.coverImg}`}
+                            alt={`${briz.title}-${briz.description}`}
+                            fill
+                            placeholder="blur"
+                            blurDataURL={briz.coverImg}
+                            onLoadingComplete={() => {
+                              setGrid({});
+                              setBrizLoading(false);
+                            }}
+                            style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
+                          ></Image>
+                        ) : (
+                          <motion.video
+                            onMouseOver={() => {
+                              setBrizMouseOn(briz.id);
+                            }}
+                            className="h-full w-full "
+                            style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
+                            src={`${briz.coverImg}`}
+                            onClick={() => {
+                              setBrizClicked(true);
+                            }}
+                          ></motion.video>
+                        )}
+                      </>
                     ) : (
                       <motion.div className="relative h-full w-full">
                         {briz.text ? (
@@ -2296,7 +2313,7 @@ const Briz: NextPage = () => {
                           type="file"
                           required
                           tab
-                          accept="image/*"
+                          accept="image/*, video/*"
                           register={register("coverImg")}
                         />
                         <Input
