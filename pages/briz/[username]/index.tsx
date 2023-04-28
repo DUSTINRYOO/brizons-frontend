@@ -2057,8 +2057,10 @@ const Briz: NextPage = () => {
                             onMouseOver={() => {
                               setBrizMouseOn(briz.id);
                             }}
-                            className="h-full w-full "
-                            style={{ borderRadius: "clamp(1px,1vw,0.8rem)" }}
+                            className="h-full w-full bg-black"
+                            style={{
+                              borderRadius: "clamp(1px,1vw,0.8rem)",
+                            }}
                             src={`${briz.coverImg}`}
                             onClick={() => {
                               setBrizClicked(true);
@@ -2164,7 +2166,6 @@ const Briz: NextPage = () => {
                 </>
               ) : (
                 <>
-                  {" "}
                   <motion.div
                     className="fixed top-0 left-0 z-[200] h-screen w-full bg-gray-500 "
                     initial={{ opacity: 0 }}
@@ -2190,54 +2191,71 @@ const Briz: NextPage = () => {
                             >
                               {briz.title}
                             </motion.span>
-                            <Link
-                              legacyBehavior
-                              href={`/briz/${brizUserName}/${briz.id}`}
-                            >
-                              <motion.div
-                                className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
-                                whileTap={{ scale: 1.05 }}
-                                onClick={() => {
-                                  setBrizClicked(undefined);
+                            {briz.coverImg.slice(-5) !== "video" ? (
+                              <>
+                                <Link
+                                  legacyBehavior
+                                  href={`/briz/${brizUserName}/${briz.id}`}
+                                >
+                                  <motion.div
+                                    className=" relative my-4 aspect-square w-full overflow-hidden rounded-xl bg-gray-50 shadow-lg"
+                                    whileTap={{ scale: 1.05 }}
+                                    onClick={() => {
+                                      setBrizClicked(undefined);
+                                    }}
+                                  >
+                                    {" "}
+                                    <Image
+                                      priority
+                                      src={`${briz.coverImg}`}
+                                      alt={`${briz.title}-${briz.description}`}
+                                      fill
+                                      style={{
+                                        objectFit: "contain",
+                                      }}
+                                      onLoadingComplete={() => {
+                                        setGrid({});
+                                        setBrizLoading(false);
+                                      }}
+                                    ></Image>
+                                  </motion.div>
+                                </Link>
+                                <button
+                                  onClick={() => {
+                                    onClickPinned(briz.id, !briz.pinned);
+                                  }}
+                                  className={cls(
+                                    " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl p-1 shadow-xl transition-all hover:scale-105"
+                                  )}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="35"
+                                    height="35"
+                                    viewBox="-125 -80 625 625"
+                                  >
+                                    <path
+                                      d="M32 32C32 14.3 46.3 0 64 0H320c17.7 0 32 14.3 32 32s-14.3 32-32 32H290.5l11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3H32c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64H64C46.3 64 32 49.7 32 32zM160 384h64v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V384z"
+                                      fill={
+                                        briz.pinned
+                                          ? "black"
+                                          : "rgb(229 231 235)"
+                                      }
+                                    />
+                                  </svg>
+                                </button>
+                              </>
+                            ) : (
+                              <motion.video
+                                controls
+                                className="mt-4 h-full w-full"
+                                style={{
+                                  borderRadius: "clamp(1px,1vw,0.8rem)",
                                 }}
-                              >
-                                <Image
-                                  priority
-                                  src={`${briz.coverImg}`}
-                                  alt={`${briz.title}-${briz.description}`}
-                                  fill
-                                  style={{
-                                    objectFit: "contain",
-                                  }}
-                                  onLoadingComplete={() => {
-                                    setGrid({});
-                                    setBrizLoading(false);
-                                  }}
-                                ></Image>
-                              </motion.div>
-                            </Link>
-                            <button
-                              onClick={() => {
-                                onClickPinned(briz.id, !briz.pinned);
-                              }}
-                              className={cls(
-                                " absolute right-2 top-2 flex aspect-square cursor-pointer items-center justify-center rounded-2xl p-1 shadow-xl transition-all hover:scale-105"
-                              )}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="35"
-                                height="35"
-                                viewBox="-125 -80 625 625"
-                              >
-                                <path
-                                  d="M32 32C32 14.3 46.3 0 64 0H320c17.7 0 32 14.3 32 32s-14.3 32-32 32H290.5l11.4 148.2c36.7 19.9 65.7 53.2 79.5 94.7l1 3c3.3 9.8 1.6 20.5-4.4 28.8s-15.7 13.3-26 13.3H32c-10.3 0-19.9-4.9-26-13.3s-7.7-19.1-4.4-28.8l1-3c13.8-41.5 42.8-74.8 79.5-94.7L93.5 64H64C46.3 64 32 49.7 32 32zM160 384h64v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V384z"
-                                  fill={
-                                    briz.pinned ? "black" : "rgb(229 231 235)"
-                                  }
-                                />
-                              </svg>
-                            </button>
+                                src={`${briz.coverImg}`}
+                              ></motion.video>
+                            )}
+
                             <motion.span className="block text-left text-xl font-medium">
                               {briz.metatags}
                             </motion.span>
